@@ -18,11 +18,11 @@
 %]
 <script language="javascript">
     limpa_lista();
+    add_option('--- TODOS ---','TODOS'); 
     [% FOREACH guiche IN status_guiches.lista_guiches.guiche %]
         [% IF guiche.funcionario != "" %]
                 add_option('[% guiche.funcionario %]','[% guiche.jid %]'); 
         [% END %]
     [% END %]
     define_ativo();
-    add_option('--- TODOS ---','TODOS'); 
 </script>

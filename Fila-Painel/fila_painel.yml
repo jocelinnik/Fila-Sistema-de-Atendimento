@@ -6,4 +6,4 @@ Engine::XMPP2:
     password: password
     override_host: localhost
 timeout: 5
-output: /tmp/senhas_chamando.csv
+output: /home/fila/senhas_chamando.csv

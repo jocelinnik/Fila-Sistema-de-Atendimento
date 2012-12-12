@@ -21,7 +21,6 @@
 
 <script language="javascript">
 $('p_carregando_inicial').replace('');
-<P>Carregando...</P>
 </script>
 
 [% INCLUDE 'footer.tt' %]

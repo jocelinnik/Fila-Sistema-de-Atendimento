@@ -1,78 +1,74 @@
 #!/usr/bin/perl
-# Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
-#
-# Este arquivo é parte do programa FILA - Sistema de Atendimento
-#
-# O FILA é um software livre; você pode redistribui-lo e/ou modifica-lo
-# dentro dos termos da Licença Pública Geral GNU como publicada pela
-# Fundação do Software Livre (FSF); na versão 2 da Licença.
-#
-# Este programa é distribuido na esperança que possa ser util, mas SEM
-# NENHUMA GARANTIA; sem uma garantia implicita de ADEQUAÇÂO a qualquer
-# MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU
-# para maiores detalhes.
-#
-# Você deve ter recebido uma cópia da Licença Pública Geral GNU, sob o
-# título "LICENCA.txt", junto com este programa, se não, escreva para a
-# Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor,
+
 use warnings;
 use strict;
 use Gtk2 '-init';
 use Gnome2::Canvas;
 
-my $ts ;
+use XML::Feed;
+use utf8;
+use Encode;
+
+my $text;
+my $uri = 'http://rss.terra.com.br/0,,EI1,00.xml';
+my $posicao;
 my $tempo = 20; #maior é mais lento
 my $cor = "yellow"; #red, green, blue, black, white, etc..
-my $tamanho = "80000"; #tamanho da fonte
-my $width = 841; #largura da janela
-my $height = 120; #altura da janela
-my $altura_texto = 60; #posicao do texto relativa a janela
-my $deslocamento = 5; #deslocamento em pixels do texto
-
-if($ARGV[0]){
-    open my $source, '<:utf8', $ARGV[0];
-    read($source, $ts, -s $source );
-    close $source;
-}else{
-    $ts = "Erro ao abrir o arquivo.";
-}
-
-$ts =~ tr[\x0a\x0d][  ]d; #strip newlines
-
-my $window = Gtk2::Window->new();
-$window->set_default_size($width,$height);
-my $vp = Gtk2::Viewport->new();
-my $text = Gtk2::Label->new($ts.' ');
+my $width = 1920; #largura da janela
+my $height = 180; #altura da janela
+my $altura_texto = 56; #posicao do texto relativa a janela
+my $deslocamento = 2; #deslocamento em pixels do texto
 my $fontdesc = Gtk2::Pango::FontDescription->from_string("Sans 70");
-$text->modify_font($fontdesc);
-$vp->modify_bg($text->state, 
-Gtk2::Gdk::Color->new(0*257, 0*257, 125*257));
-$text->modify_fg($text->state, 
-Gtk2::Gdk::Color->new(255*255,255*255,0*255));
-$window->add($vp);
-$window->move(0,1100);
-$vp->add($text);
-$window->signal_connect('destroy'=>\&_closeapp);
+
+my $vp = Gtk2::Viewport->new();
+my $atualizacao = 0;
+
+my $window; 
+$text = Gtk2::Label->new('Notícias');
+$vp->modify_bg($text->state,Gtk2::Gdk::Color->new(0*257, 0*257, 125*257));
+my ($wi, $he) = $text->get_size_request();
 $vp->set_size_request($width, $height);
+$vp->add($text);
+$text->modify_font($fontdesc);
+$text->modify_fg($text->state,Gtk2::Gdk::Color->new(255*255,255*255,0*255));
+$vp->modify_bg($text->state,Gtk2::Gdk::Color->new(0*000, 0*000, 000*000));
+
+$window = Gtk2::Window->new();
+$window->set_decorated(0);
+$window->set_default_size($width,$height);
+$window->add($vp);
+$window->move(0,915);
 $window->show_all();
 
-my ($wi, $he) = $text->get_size_request();
-print $wi,$he,$/;
-
 my $timer = Glib::Timeout->add($tempo, \&timer);
-my $posicao = $vp->get_hadjustment->lower();
+$posicao = $vp->get_hadjustment->lower();
 
 Gtk2->main();
 
 sub timer {
+
     sleep 1 if $posicao == $vp->get_hadjustment->lower();
     $posicao += $deslocamento;
     $posicao = $vp->get_hadjustment->lower() if $posicao > $vp->get_hadjustment->upper();
-    $vp->get_hadjustment->set_value($posicao);
-    return 1;
-}
 
-sub _closeapp{
-    Gtk2->main_quit();
-    return 0;
+    $vp->get_hadjustment->set_value($posicao);
+    if (int(time() - $atualizacao) > (60 * 10)) {
+       warn ".";
+       my $ts ;
+       my $feed = XML::Feed->parse(URI->new($uri)) or die XML::Feed->errstr;
+       for my $entry ($feed->entries) {
+          $ts .= '       >> '.$entry->title;
+       }
+       $ts =~ tr[\x0a\x0d][  ]d; #strip newlines
+       if ($text->get_text() ne $ts) {
+          warn $text->get_text();
+          $text->set_text($ts);
+          ($wi, $he) = $text->get_size_request();
+          $vp->set_size_request($width, $height);
+          warn $text->get_text();
+          $posicao = $vp->get_hadjustment->lower();
+       }
+       $atualizacao = time();
+    }
+    return 1;
 }

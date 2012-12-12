@@ -22,6 +22,8 @@ use Net::XMPP2::Util qw(bare_jid);
 use DateTime;
 use DateTime::Format::Pg;
 use DateTime::Format::XSD;
+use DateTime::Format::ISO8601;
+
 use base
   'Fila::Servico::Controller',
   'Catalyst::Controller::SOAP',
@@ -88,7 +90,7 @@ sub listar_categorias :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
    		);
    	}
 
-    #my $categorias = $c->stash->{local}->configuracoes_categoria->search
+    # my $categorias = $c->stash->{local}->configuracoes_categoria->search
     #  ({ 'me.vt_ini' => { '<=', $now },
     #     'me.vt_fim' => { '>', $now }},
     #   { prefetch => 'categoria' });
@@ -114,12 +116,21 @@ sub listar_categorias :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
       ({ lista_categorias => { categoria => $cat }});
 }
 
+sub escalonar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
+    my ($self, $c, $query) = @_;
+    warn 'Gestao/Senha: escalonar_senha';
+    $c->stash->{escalonar_senha} = 1; 
+}
+
 sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
     my ($self, $c, $query) = @_;
 
     # Temos que ver qual é a senha do atendimento mais recente nessa
     # categoria, para dar uma senha subsequente.
+
     my $id_categoria = $query->{atendimento}{id_categoria};
+    my $vt_ini = $query->{atendimento}{vt_ini};
+    warn "vt_ini: $vt_ini";
     unless ($id_categoria) {
         die $c->stash->{soap}->fault
           ({ code => 'Server',
@@ -155,16 +166,32 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
     # aberto.
 
     my $codigo_senha_atual = 0;
-    my $recente = $c->stash->{local}->atendimentos->search
-      ({ 'vt_ini' => { '>=', $abertura },
-         'categoria.id_categoria' => $id_categoria },
-       { 'order_by' => 'me.vt_ini DESC',
-         'prefetch' => { 'senha' => 'categoria' },
-         'rows' => 1 })->first;
-    if ($recente) {
-        $codigo_senha_atual = $recente->senha->codigo;
+
+    my $inicio = $abertura;
+    $inicio = DateTime::Format::ISO8601->parse_datetime($vt_ini) if $vt_ini;
+    my $recente;
+
+    if (DateTime->compare_ignore_floating($inicio, $now)) {
+        warn 'inicio > now';
+        $codigo_senha_atual = int( ($inicio->epoch/60 - $abertura->epoch/60) % 999 );
+        $codigo_senha_atual = 0 if ($codigo_senha_atual > 999);
     }
 
+    unless ($codigo_senha_atual) {
+        warn 'inicio = now';
+        $inicio = $now;
+        $recente = $c->stash->{local}->atendimentos->search
+          ({ 'vt_ini' => { '>=', $abertura },
+             'vt_fim' => { '<=', $now },
+             'categoria.id_categoria' => $id_categoria },
+           { 'order_by' => 'me.vt_ini DESC',
+             'prefetch' => { 'senha' => 'categoria' },
+             'rows' => 1 })->first;
+        if ($recente) {
+            $codigo_senha_atual = $recente->senha->codigo;
+        }
+    }
+    warn $codigo_senha_atual;
 
     # se a senha gerada estiver alocada a um atendimento corrente,
     # tentar a proxima, até encontrar uma senha válida.
@@ -174,6 +201,7 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
 
   CHECARSENHA:
     do {
+
         if ($codigo_senha_atual >= 999) {
             # as senhas acabaram, vamos reiniciar.
             $codigo_senha_atual = 0;
@@ -191,16 +219,19 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
         }
 
         # verificar se a senha está disponível.
+
         my $verificar = $c->model('DB::Senha')->search
           ({ 'me.id_categoria' => $id_categoria,
              'me.codigo' => $codigo_senha_atual,
-             'atendimentos.vt_ini' => { '>=' => $now },
-             'atendimentos.vt_fim' => { '<'  => $now },
+             'atendimentos.vt_ini' => { '>=' => $abertura },
+             'atendimentos.vt_fim' => { '='  => 'Infinity' },
              'atendimentos.id_local' => $c->stash->{local}->id_local },
            { join => 'atendimentos' });
+
         if ($verificar->first) {
             goto CHECARSENHA;
         }
+
     };
 
     my $senha = $c->stash->{local}->senhas->find
@@ -227,15 +258,15 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
     my $atendimento = $c->model('DB::Atendimento')->create
       ({ id_senha => $senha->id_senha,
          id_local => $c->stash->{local}->id_local,
-         vt_ini => $now,
+         vt_ini => $inicio,
          vt_fim => 'Infinity',
          estados =>
          [{ id_estado => $estado_espera->id_estado,
-            vt_ini => $now,
+            vt_ini => $inicio,
             vt_fim => 'Infinity' }],
          categorias =>
          [{ id_categoria => $id_categoria,
-            vt_ini => $now,
+            vt_ini => $inicio,
             vt_fim => 'Infinity' }]});
 
     # disparar o escalonamento.

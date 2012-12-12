@@ -134,6 +134,9 @@ sub fechar_guiche : WSDLPort('FilaWebAtendenteCallback') {
     my $fechar_guiche = $c->model('SOAP::Gestao::Atendente')
           ->fechar_guiche({ guiche => {} });
 
+
+    $c->stash->{template} = 'cb/atendente/fechar_guiche.tt';
+    $c->forward($c->view());
 }
 
 sub devolver_senha : WSDLPort('FilaWebAtendenteCallback') {

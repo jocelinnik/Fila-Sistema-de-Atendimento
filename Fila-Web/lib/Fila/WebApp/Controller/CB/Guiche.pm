@@ -42,7 +42,7 @@ sub abrir_user_guiche : Private {
     my ($self, $c, $query) = @_;
 
     my %params = (identificador => $::user_guiche);
-    $::user_guiche = undef;
+#    $::user_guiche = undef;
 
     $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/guiche']);
     $c->model('SOAP::Gestao::Guiche')

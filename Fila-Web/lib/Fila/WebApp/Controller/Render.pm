@@ -88,7 +88,7 @@ sub authenticated : Regex('^render/authenticated$') {
     $c->model('SOAP')->transport->connection($::connection);
 
     my $mode = 'gerente';
-    if ($::major_mode eq 'agents') {
+    if (defined $::major_mode && $::major_mode eq 'agents') {
       $mode = 'emissor';
       return $c->forward('/render/'.$mode);
     }
@@ -120,9 +120,7 @@ sub authenticated : Regex('^render/authenticated$') {
     } else {
         $c->stash->{dados_local} = $dados_local;
         $c->forward('/render/'.$mode);
-    }
-
-    
+    } 
 }
 
 sub emissor : Private {
@@ -183,7 +181,6 @@ sub atendente : Private {
         $c->stash->{template} = 'render/atendente.tt';
         $c->stash->{status_guiche} = $status_guiche;
     }
-
 }
 
 sub gerente : Private {
@@ -227,9 +224,6 @@ sub gerente : Private {
     } else {
         $c->stash->{lista_encaminhamentos} = $lista_encaminhamentos;
     }
-
-    use Data::Dumper;
-    warn Data::Dumper->Dump([ $c->stash ]);
 
 }
 

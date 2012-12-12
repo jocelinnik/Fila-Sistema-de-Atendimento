@@ -116,10 +116,10 @@
             <H3 class="titulos">Encaminhar para outra mesa</h3>
                 <DIV ID="lista_guiches_encaminhar" class="encaminhar">
                     <form name="encaminhar" id="encaminhar" onsubmit="return encaminhar_atendimento()"> 
-                        Mesas: <select name="mesaDestino" id="mesaDestino" size="1" style="width: 300px">
+                        Salas: <select name="mesaDestino" id="mesaDestino" size="1" style="width: 300px">
                         [% FOREACH guiche IN lista_guiches_encaminhar.lista_guiches.guiche %]
                             [% IF guiche.estado != 'fechado' && guiche.id_guiche != status_guiche.guiche.id_guiche %]
-                                <option value="[% guiche.id_guiche %]">Mesa [% guiche.identificador %]</option>
+                                <option value="[% guiche.id_guiche %]">[% guiche.identificador %]</option>
                             [% END %]
                         [% END %]
                         </select><br /><br />
@@ -326,15 +326,3 @@
 	[% END %]
 
     $('header2').replace("[% bloco_senha | js %]"); 
-
-        [% IF status_guiche.guiche.estado == 'concluido' %]
-          set_timeout([% status_guiche.guiche.timeout_concluido %],'disponivel',function() {
-             new Ajax.Request('/cb/atendente/disponivel', { asynchronous: 1 });
-          });
-        [% ELSIF status_guiche.guiche.estado == 'chamando' %]
-          set_timeout([% status_guiche.guiche.timeout_chamando %],'chamando',function() {
-             new Ajax.Request('/cb/atendente/registrar_no_show', { asynchronous: 1 });
-          });
-        [% ELSE %]
-          set_timeout(0,'',null);
-        [% END %]

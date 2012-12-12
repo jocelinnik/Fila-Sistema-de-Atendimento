@@ -22,7 +22,7 @@ use warnings;
 our $VERSION = '0.01';
 
 use Catalyst::Runtime '5.70';
-use Catalyst qw( -Debug ConfigLoader );
+use Catalyst qw( ConfigLoader );
 
 __PACKAGE__->config( name => 'Fila::ETL',
 		     'Plugin::ConfigLoader' => { file => 'fila_etl.yaml' }

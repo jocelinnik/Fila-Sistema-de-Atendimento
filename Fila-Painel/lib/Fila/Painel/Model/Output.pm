@@ -19,14 +19,14 @@ package Fila::Painel::Model::Output;
 use strict;
 use warnings;
 use IO::Handle;
-use Text::CSV_PP;
+use Text::CSV;
 use base 'Catalyst::Model';
 
-my $csv = Text::CSV_PP->new;
+my $csv = Text::CSV->new;
 
 sub salvar {
     my ($self, $senhas) = @_;
-    open my $output, '>', $Fila::Painel::output
+    open my $output, '>', '/tmp/senhas_chamando.csv'
       or die $!;
 
     for (@$senhas) {
