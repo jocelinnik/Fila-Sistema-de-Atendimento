@@ -21,7 +21,7 @@ use warnings;
 
 use Catalyst::Runtime '5.70';
 
-use Catalyst qw/Unicode ConfigLoader Static::Simple Session
+use Catalyst qw/Unicode ConfigLoader Session
       Session::Store::FastMmap Session::State::Cookie/;
 
 our $VERSION = '0.01';

@@ -145,12 +145,12 @@ sub abrir_guiche :WSDLPort('GestaoGuiche') :DBICTransaction('DB') :MI {
     }
 
     my $estado_aberto = $c->model('DB::TipoEstadoGuiche')->find
-      ({ nome => 'disponivel' });
+      ({ nome => 'concluido' });
 
     unless ($estado_aberto) {
         die $c->stash->{soap}->fault
           ({code => 'Server',
-            reason => 'Nao pode encontrar estado "disponivel"',
+            reason => 'Nao pode encontrar estado "concluido"',
             detail => 'Existe um erro de configuracao no banco de dados'});
     }
 
@@ -165,9 +165,7 @@ sub abrir_guiche :WSDLPort('GestaoGuiche') :DBICTransaction('DB') :MI {
          vt_fim => 'Infinity' });
 
     $c->stash->{guiche} = $guiche;
-    $c->stash->{escalonar_senha} = 1;
     $c->stash->{refresh_gerente} = 1;
-
 }
 
 

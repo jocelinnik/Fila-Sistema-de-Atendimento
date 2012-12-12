@@ -20,7 +20,7 @@ use strict;
 use warnings;
 use EV;
 use Catalyst::Runtime '5.70';
-use Catalyst qw/-Debug ConfigLoader Static::Simple/;
+use Catalyst qw/ConfigLoader/;
 use Net::XMPP2::Connection;
 
 our $VERSION = '0.01';

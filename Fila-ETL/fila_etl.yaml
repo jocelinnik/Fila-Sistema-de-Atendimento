@@ -4,20 +4,20 @@ Model::DB:
     schema_class: 'Fila::ETL::DB'
     connect_info:
         - 'dbi:Pg:host=localhost;database=filadw'
-        - ruoso
-        - teste
+        - fila
+        - senha
 Model::DBAgendamento:
     schema_class: 'Fila::Agendamento::DB'
     connect_info:
         - 'dbi:Pg:host=localhost;database=agendamento'
-        - ruoso
-        - teste
+        - fila
+        - senha
 Model::DBSERVI:
     schema_class: 'Fila::Servico::DB'
     connect_info:
         - 'dbi:Pg:host=localhost;database=fila'
         - fila
-        - teste
+        - senha
 Model::Federado:
     federacao:
         1: DBSERVI

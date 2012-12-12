@@ -17,9 +17,10 @@
 # Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor,
 %]
 [%# Template que desenha o modulo do emissor. %]
-
+<script>
+     var keep_alive_interval = 0;
+</script>
 <script language='javascript'>
-
     [% USE JavaScript %]
     
     [%# Estrutura básica da página %]

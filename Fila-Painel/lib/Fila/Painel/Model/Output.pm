@@ -19,20 +19,22 @@ package Fila::Painel::Model::Output;
 use strict;
 use warnings;
 use IO::Handle;
-use Text::CSV_PP;
+use Text::CSV_XS;
 use base 'Catalyst::Model';
-
-my $csv = Text::CSV_PP->new;
+use Data::Dumper;
+my $csv = Text::CSV_XS->new;
 
 sub salvar {
     my ($self, $senhas) = @_;
-    open my $output, '>', $Fila::Painel::output
+    open my $output, '>', '/home/fila/painel/senhas_chamando.csv'
       or die $!;
-
+    warn 'Arquivo vazio! /home/fila/painel/senhas_chamando.csv';
     for (@$senhas) {
         $csv->print($output, $_);
         print {$output} "\n";
+        warn Dumper ($_);
     }
+    warn 'Arquivo gravado!';
     close $output;
 }
 

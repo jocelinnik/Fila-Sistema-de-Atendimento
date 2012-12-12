@@ -93,7 +93,7 @@ módulo mas ainda não foi aceito), isso é fundamental para o correto
 funcionamento do sistema. Para isso execute:
 
 cd /usr/share/perl5
-patch -p4 /usr/share/fila/patches/DBIx-Class-ResultSource.patch
+patch -p4 < /usr/share/fila/patches/DBIx-Class-ResultSource.patch
 
 Ele deve dar uma mensagem como "Hunk xxxx succeeded", o que indica que
 funcionou.

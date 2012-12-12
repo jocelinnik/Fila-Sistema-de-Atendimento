@@ -20,7 +20,9 @@
     [%# Montando menu das ações disponíveis. %]
     [% ACOES = BLOCK %]
        <DIV ID='bloco_lista_acoes'>
-       <DIV>[% c.prototype.link_to_remote('Sair', { url => '/emissor/sair', confirm => 'confirmar(\'Deseja mesmo sair?\')' }) %]</DIV>
+                               <DIV ID="senha0">
+
+                                </DIV>
        </DIV>
     [% END %]
     $('bloco_lista_acoes').replace("[% ACOES | js %]"); 

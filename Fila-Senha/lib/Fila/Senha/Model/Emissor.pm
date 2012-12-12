@@ -31,7 +31,7 @@ sub bloquear {
     my $self = shift;
 
     if ($Fila::Senha::porta_emissor eq 'emulate') {
-        warn 'Emissor Bloqueado!'.$/;
+        #warn 'Emissor Bloqueado!'.$/;
     } else {
         $self->push_write('@ESP0000.');
     }
@@ -41,12 +41,12 @@ my $cats;
 sub abrir {
     my $self = shift;
 
-	warn 'Buscando categorias..';
+	#warn 'Buscando categorias..';
 	$cats ||= Fila::Senha->model('SOAP::Senha')->listar_categorias
       ({ local => {} });
 
 	unless ($cats) {
-        warn 'Erro buscando categorias.';
+        #warn 'Erro buscando categorias.';
         die 'Erro buscando categorias.';
 	}
 
@@ -65,16 +65,16 @@ sub abrir {
     }
 
     if ($Fila::Senha::porta_emissor eq 'emulate') {
-        warn 'Emissor aberto '.$categorias.'!'.$/;
+        #warn 'Emissor aberto '.$categorias.'!'.$/;
         $self->_check_emulate_watcher();
     } else {
-        warn 'Escrevendo categorias';
+        #warn 'Escrevendo categorias';
         $self->push_write('@ESP'.$categorias.'.');
     }
 }
 
 sub push_write {
-    warn 'Iniciando push_write '.$_[1];
+    #warn 'Iniciando push_write '.$_[1];
     my ($self, $buf) = @_;
 
     $self->write_buffer
@@ -83,7 +83,7 @@ sub push_write {
 
     $self->_check_fh;
     $self->_check_wb;
-	warn 'Fim push_write';
+	#warn 'Fim push_write';
 }
 
 sub _check_fh {
@@ -94,7 +94,7 @@ sub _check_fh {
 	
     open my $fh, '+<', $Fila::Senha::porta_emissor
       or do {
-          warn 'Erro abrindo porta do emissor: '.$!;
+          #warn 'Erro abrindo porta do emissor: '.$!;
           EV::unloop(EV::UNLOOP_ALL);
           die 'Erro abrindo porta do emissor: '.$!;
       };
@@ -124,7 +124,7 @@ sub _check_readwatcher {
         my $buf;
         my $ret;
         while ($ret = $self->fh->sysread($buf, '100')) {
-            warn 'sysread: '.$buf;
+            #warn 'sysread: '.$buf;
             $self->push_read($buf);
         }
     };
@@ -155,7 +155,7 @@ sub _check_wb {
         my $wrote = substr($buf,0,$wrt,'');
         $self->write_buffer($buf);
 
-        warn 'Wrote ('.$wrote.') into device';
+        #warn 'Wrote ('.$wrote.') into device';
         $write_watcher = undef;
         $self->_check_readwatcher unless $buf; 
     };
@@ -183,12 +183,12 @@ sub _check_rb {
         if (substr($buf,0,1) ne '@') {
             my $pos = index $buf, '@';
             if ($pos < 0) {
-                warn 'Disarding bad read buffer ('.$buf.')';
+                #warn 'Disarding bad read buffer ('.$buf.')';
                 $self->read_buffer('');
                 return;
             } else {
                 my $bad = substr($buf,0,$pos,'');
-                warn 'Discaring bad read buffer ('.$bad.')';
+                #warn 'Discaring bad read buffer ('.$bad.')';
             }
             $self->read_buffer($buf); 
         } elsif ($buf =~ s/^\@ESE.//) {

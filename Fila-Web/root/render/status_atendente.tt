@@ -17,6 +17,7 @@
 # Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor,
 %]
     [%# Montando o espaço de informações sobre o local de atendimento. %]
+
     [% MAIN_INFORMACOES = BLOCK %]
     <DIV ID="bloco_informacoes">
 
@@ -47,11 +48,24 @@
             <UL>
                 [% FOREACH no_show IN lista_no_show.lista_atendimentos.atendimento %]
                     <li>
-                        Atendimento: [% no_show.id_atendimento %] - Senha: [% no_show.senha %] [% c.prototype.link_to_remote('Atender', { url => '/cb/atendente/atender_no_show/' _ no_show.id_atendimento }) %] 
+                        Atendimento: [% no_show.id_atendimento %] - Senha: [% no_show.senha %] [% c.prototype.link_to_remote('Chamar ' _ no_show.senha , { url => '/cb/atendente/atender_no_show/' _ no_show.id_atendimento }, { class =>'btn btn-large'}) %] 
                     </li>
                 [% END %]
             </UL>
         </DIV>              
+        [% END %]
+
+        [% IF lista_pendente %]
+        <h3 id="TitAtendPendente" class="titulos">Atendimentos Pendentes:</h3><br>
+        <DIV ID="atendimentos_pendente">
+            <UL>
+                [% FOREACH pendente IN lista_pendente.lista_atendimentos.atendimento %]
+                    <li>
+                        Atendimento: [% pendente.id_atendimento %] - Senha: [% pendente.senha %] [% c.prototype.link_to_remote('Chamar ' _ pendente.senha , { url => '/cb/atendente/atender_pendente/' _ pendente.id_atendimento }, {class => 'btn btn-large'}) %]
+                    </li>
+                [% END %]
+            </UL>
+        </DIV>
         [% END %]
         [% END %]
 
@@ -73,7 +87,7 @@
                           [% END %]
                      <li>
                       [% servico.nome %]
-                          [% c.prototype.link_to_remote('Ir para', { url => '/cb/atendente/iniciar_servico_interno/' _ servico.id_servico }) %] 
+                          [% c.prototype.link_to_remote('Ir para', { url => '/cb/atendente/iniciar_servico_interno/' _ servico.id_servico }, { class => 'btn btn-large'} ) %] 
                      </li>
                         [% END %]
                     </UL>
@@ -101,7 +115,7 @@
                           [% END %]
                      <li>
                       [% servico.nome %]
-                          [% c.prototype.link_to_remote('Iniciar Serviço', { url => '/cb/atendente/iniciar_servico_atendimento/' _ servico.id_servico }) %] 
+                          [% c.prototype.link_to_remote('Iniciar', { url => '/cb/atendente/iniciar_servico_atendimento/' _ servico.id_servico }, {class => 'btn btn-large'} ) %] 
                      </li>
                         [% END %]
                     </UL>
@@ -191,7 +205,7 @@
                                         </form>
                                         </div>
                                     </td>
-                                    <td> [% c.prototype.link_to_remote('(Encerrar)' , { url => '/cb/atendente/fechar_servico_atendimento/' _ servico.id_servico }) %] </td>
+                                    <td> [% c.prototype.link_to_remote('(Encerrar)' , { url => '/cb/atendente/fechar_servico_atendimento/' _ servico.id_servico }, {class => 'btn btn-large'} ) %] </td>
                                 </tr>
                             [% END %]
                         </table>
@@ -236,82 +250,46 @@
     </DIV>
     
     [% END %]
+
     $('bloco_informacoes').replace("[% MAIN_INFORMACOES | js %]");
 
     [%# Montando menu das ações disponíveis para o atendente. %]
+
     [% ACOES_ATENDENTE = BLOCK %]
        <DIV ID="bloco_lista_acoes">
-        [% SWITCH status_guiche.guiche.estado %]
-            
-            [% CASE 'chamando' %]
-                <SPAN class="botao_acao acao_iniciar">
-                 [% c.prototype.link_to_remote('Iniciar Atendimento', { url => '/cb/atendente/iniciar_atendimento' }) %]
-                </SPAN>
-                <SPAN class="botao_acao acao_devolver_senha">
-                 [% c.prototype.link_to_remote('Devolver Senha', { url => '/cb/atendente/devolver_senha' }) %]
-                </SPAN>
-                <SPAN class="botao_acao acao_registrar_ausencia">
-                 [% c.prototype.link_to_remote('Registrar Ausência', { url => '/cb/atendente/registrar_no_show' , confirm => 'confirmar(\'Deseja mesmo registrar ausência?\')' }) %]
-                </SPAN>
-            
+        [% SWITCH status_guiche.guiche.estado %]            
+            [% CASE 'chamando' %]                
+                 [% c.prototype.link_to_remote('Iniciar',{url=>'/cb/atendente/iniciar_atendimento'},{class=>'btn btn-large'}) %]
+                 [% c.prototype.link_to_remote('Devolver',{url=>'/cb/atendente/devolver_senha'},{class=>'btn btn-large '}) %]
+                 [% c.prototype.link_to_remote('Ausente',{url=>'/cb/atendente/registrar_no_show'},{class=>'btn btn-large '}) %]
             [% CASE 'atendimento' %]
-                <SPAN class="botao_acao acao_ir_para">
-                    [% c.prototype.link_to_remote('Ir Para', { url => '/cb/atendente/listar_servicos_atendimento' }) %]
-                </SPAN>
-                <SPAN class="botao_acao acao_encaminhar">
-                    [% c.prototype.link_to_remote('Encaminhar', { url => '/cb/atendente/listar_guiches_encaminhar' }) %]
-                </SPAN>
-                <SPAN class="botao_acao acao_concluir">
-                 [% c.prototype.link_to_remote('Concluir Atendimento', { url => '/cb/atendente/concluir_atendimento' }) %]
-                </SPAN>
+                 [% c.prototype.link_to_remote('Serviços',{url=>'/cb/atendente/listar_servicos_atendimento'},{class=>'btn btn-large'}) %]
+                 [% c.prototype.link_to_remote('Encaminhar',{url=>'/cb/atendente/listar_guiches_encaminhar'},{class=>'btn btn-large '}) %]
+                 [% c.prototype.link_to_remote('Pendente',{url=>'/cb/atendente/registrar_pendente'},{class=>'btn btn-large '})%]
+                 [% c.prototype.link_to_remote('Concluir',{url=>'/cb/atendente/concluir_atendimento'},{class=>'btn btn-large '}) %]
             [% CASE 'pausa' %]
-                <SPAN class="botao_acao acao_retornar_pausa">
-                    [% c.prototype.link_to_remote('Retornar da Pausa', { url => '/cb/atendente/retornar_pausa' }) %]
-                </SPAN>
-            
+                 [% c.prototype.link_to_remote('Concluir',{url=>'/cb/atendente/retornar_pausa'},{class=>'btn btn-large '})%]     
             [% CASE 'interno' %]
-                <SPAN class="botao_acao acao_voltar_serv_interno">
-                    [% c.prototype.link_to_remote('Voltar', { url => '/cb/atendente/fechar_servico_interno' }) %]
-                </SPAN>
-
+                [% c.prototype.link_to_remote('Concluir',{url=>'/cb/atendente/fechar_servico_interno'},{class=>'btn btn-large '}) %]
             [% CASE 'concluido' %]
-                <SPAN class="botao_acao acao_fechar_mesa">
-                [% c.prototype.link_to_remote('Fechar Mesa', { url => '/cb/atendente/fechar_guiche' , confirm => 'confirmar(\'Deseja mesmo fechar mesa?\')'}) %]
-                </SPAN>
-                <SPAN class="botao_acao acao_iniciar_pausa">
-                    [% c.prototype.link_to_remote('Iniciar Pausa', { url => '/cb/atendente/iniciar_pausa' , confirm => 'confirmar(\'Deseja mesmo iniciar uma pausa?\')'}) %]
-                </SPAN>
-                <SPAN class="botao_acao acao_atender_ausente">
-                [% c.prototype.link_to_remote('Atender Ausente', { url => '/cb/atendente/listar_no_show' }) %]
-                </SPAN>
-                <SPAN class="botao_acao acao_iniciar_servico">
-                [% c.prototype.link_to_remote('Ir Para', { url => '/cb/atendente/listar_servicos' }) %]
-                </SPAN>                                            
-                <SPAN class="botao_acao acao_disponivel">
-                [% c.prototype.link_to_remote('Disponível', { url => '/cb/atendente/disponivel' }) %]
-                </SPAN>
-            
+                [% c.prototype.link_to_remote('Fechar',{url=>'/cb/atendente/fechar_guiche'},{class=>'btn btn-large '})%]
+                [% c.prototype.link_to_remote('Pausar',{url=>'/cb/atendente/iniciar_pausa'},{class=>'btn btn-large '})%]
+                [% c.prototype.link_to_remote('Ausentes',{url=>'/cb/atendente/listar_no_show'},{class=>'btn btn-large'}) %]
+                [% c.prototype.link_to_remote('Pendentes',{ url => '/cb/atendente/listar_pendente'},{class=>'btn btn-large '}) %]
+                [% c.prototype.link_to_remote('Serviços',{ url=>'/cb/atendente/listar_servicos'},{class =>'btn btn-large'}) %]
+                [% c.prototype.link_to_remote('Disponível',{url=>'/cb/atendente/disponivel'},{class => 'btn btn-large '}) %]
             [% CASE 'disponivel' %]
-                <SPAN class="botao_acao acao_fechar_mesa">
-                [% c.prototype.link_to_remote('Fechar Mesa', { url => '/cb/atendente/fechar_guiche', confirm => 'confirmar(\'Deseja mesmo fechar mesa?\')' }) %]
-                </SPAN>
-                <SPAN class="botao_acao acao_iniciar_pausa">
-                    [% c.prototype.link_to_remote('Iniciar Pausa', { url => '/cb/atendente/iniciar_pausa' , confirm => 'confirmar(\'Deseja mesmo iniciar uma pausa?\')'}) %]
-                </SPAN>
-                <SPAN class="botao_acao acao_atender_ausente">
-                [% c.prototype.link_to_remote('Atender Ausente', { url => '/cb/atendente/listar_no_show' }) %]
-                </SPAN>
-                <SPAN class="botao_acao acao_iniciar_servico">
-                [% c.prototype.link_to_remote('Ir Para', { url => '/cb/atendente/listar_servicos' }) %]
-                </SPAN>
-              
+                [% c.prototype.link_to_remote('Fechar',{url=>'/cb/atendente/fechar_guiche'},{class =>'btn btn-large '}) %]
+                [% c.prototype.link_to_remote('Pausar',{url=>'/cb/atendente/iniciar_pausa'},{class =>'btn btn-large '}) %]
+                [% c.prototype.link_to_remote('Ausentes',{url=>'/cb/atendente/listar_no_show'},{class =>'btn btn-large '}) %]
+                [% c.prototype.link_to_remote('Pendentes',{url=>'/cb/atendente/listar_pendente'},{class =>'btn btn-large '}) %]
+                [% c.prototype.link_to_remote('Serviços',{url=>'/cb/atendente/listar_servicos'},{class =>'btn btn-large '}) %] 
             [% CASE 'avaliacao' %]
-                Aguardando o término da avaliação.
-                
-                
+                Aguardando o término da avaliação.                                
         [% END %]
        </DIV>
     [% END %]
+
     $('bloco_lista_acoes').replace("[% ACOES_ATENDENTE | js %]");
 	
     [% bloco_senha = BLOCK %]
@@ -321,7 +299,8 @@
 		    		Usuário<font color='black'>:</font> [% status_guiche.guiche.funcionario %] <BR /> 
 		    		(<SPAN class='link_dot'><a href="javascript:abrir_popup_senha()">Mudar Senha</a></SPAN>)<br />
 		    	[% END %]
-		    	(<a href="/static/doc/ajuda.html" target="_blank">Ajuda</a></SPAN>)
+		    	(<a href="/static/doc/ajuda.html" target="_blank">Ajuda</a>)
+		    </P>
 		</DIV>
 	[% END %]
 

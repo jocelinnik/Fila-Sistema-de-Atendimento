@@ -175,6 +175,7 @@ INSERT INTO tipo_estado_atendimento VALUES (4, 'atendimento');
 INSERT INTO tipo_estado_atendimento VALUES (5, 'avaliacao');
 INSERT INTO tipo_estado_atendimento VALUES (6, 'encerrado');
 INSERT INTO tipo_estado_atendimento VALUES (7, 'no_show');
+INSERT INTO tipo_estado_atendimento VALUES (8, 'pendente');
 
 INSERT INTO gerente_local VALUES (1, 1, '2008-01-01 00:00:00+0000', 'Infinity');
 

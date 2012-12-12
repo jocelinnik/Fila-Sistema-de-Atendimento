@@ -21,7 +21,7 @@ use warnings;
 
 use Catalyst::Runtime '5.70';
 
-use Catalyst qw/-Debug ConfigLoader Static::Simple/;
+use Catalyst qw/ConfigLoader/;
 
 our $VERSION = '0.01';
 

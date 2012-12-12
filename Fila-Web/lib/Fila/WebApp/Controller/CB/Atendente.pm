@@ -26,13 +26,40 @@ __PACKAGE__->config->{wsdl} =
 __PACKAGE__->config->{pode_encaminhar_para_mesa} = 1;
 __PACKAGE__->mk_accessors('pode_encaminhar_para_mesa');
 
+sub registrar_pendente : WSDLPort('FilaWebAtendenteCallback') {
+    my ($self, $c) = @_;
+    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
+    my $registrar_pendente = $c->model('SOAP::Gestao::Atendente')
+          ->registrar_pendente({ atendimento => {} });
+}
+
 sub registrar_no_show : WSDLPort('FilaWebAtendenteCallback') {
     my ($self, $c) = @_;
-
     $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
     my $registrar_no_show = $c->model('SOAP::Gestao::Atendente')
           ->registrar_no_show({ atendimento => {} });
+}
 
+sub listar_pendente : WSDLPort('FilaWebAtendenteCallback') {
+    my ($self, $c) = @_;
+
+    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
+    my $lista_pendente = $c->model('SOAP::Gestao::Atendente')
+          ->listar_pendente({ atendimento => {} });
+
+    if ($lista_pendente->{Fault}) {
+        $c->stash->{error_message} = $lista_pendente->{Fault}{faultstring};
+        return $c->forward('/render/error_message');
+    }
+
+    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
+    $c->stash->{status_guiche} = $c->model('SOAP::Gestao::Atendente')
+          ->status_guiche({ guiche => {} });
+
+    $c->stash->{lista_pendente} = $lista_pendente;
+
+    $c->stash->{template} = 'cb/atendente/refresh.tt';
+    $c->forward($c->view());
 }
 
 sub listar_no_show : WSDLPort('FilaWebAtendenteCallback') {
@@ -115,6 +142,15 @@ sub encaminhar_atendimento_categoria : WSDLPort('FilaWebAtendenteCallback') {
       ->encaminhar_atendimento({ encaminhamento => { id_categoria => $id_categoria, informacoes => $motivo } });
 }
 
+sub atender_pendente : WSDLPort('FilaWebAtendenteCallback') {
+    my ($self, $c,$query) = @_;
+
+    my %params = map { $_->{name} => $_->{value} } @{$query->{callback_request}{param}};
+    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
+    my $iniciar_atendimento = $c->model('SOAP::Gestao::Atendente')
+          ->atender_pendente({ atendimento => \%params });
+}
+
 sub atender_no_show : WSDLPort('FilaWebAtendenteCallback') {
     my ($self, $c,$query) = @_;
 
@@ -134,6 +170,8 @@ sub fechar_guiche : WSDLPort('FilaWebAtendenteCallback') {
     my $fechar_guiche = $c->model('SOAP::Gestao::Atendente')
           ->fechar_guiche({ guiche => {} });
 
+    $c->stash->{template} = 'cb/atendente/fechar_guiche.tt';
+    $c->forward($c->view());
 }
 
 sub devolver_senha : WSDLPort('FilaWebAtendenteCallback') {

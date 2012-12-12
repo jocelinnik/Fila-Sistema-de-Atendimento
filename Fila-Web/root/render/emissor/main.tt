@@ -23,19 +23,23 @@
 			
 			<DIV>
 			[% FOREACH categoria IN categorias.lista_categorias.categoria %]
-				<DIV><SPAN><A href='Javascript:solicitar_senha([% categoria.id_categoria %])'>[% categoria.nome %]</a></SPAN></DIV>
+				<DIV><SPAN><A class="btn btn-large" href='Javascript:solicitar_senha([% categoria.id_categoria %])'>[% categoria.nome %]</a></SPAN></DIV>
 			[% END %]
 			</DIV>
 			
-				<DIV ID="senha0">
-				</DIV>
        </DIV>
     [% END %]
-    $('bloco_informacoes').replace("[% BLOCO | js %]"); 
+	$('bloco_informacoes').replace("[% BLOCO | js %]"); 
 
 	function solicitar_senha(categoria) {
 		new Ajax.Request('/emissor/solicitar_senha/' + categoria, {});
 	}
-
+        function keep_alive() {
+                new Ajax.Request('/emissor/keep_alive/', {});
+        }
+	if (keep_alive_interval) {
+		window.clearTimeout(keep_alive_interval);
+	}
+	keep_alive_interval = window.setTimeout('keep_alive()', 30000);
 	$('footer').replace("<DIV id='footer'><P>Interface do Emissor </P></DIV>");
 </script>

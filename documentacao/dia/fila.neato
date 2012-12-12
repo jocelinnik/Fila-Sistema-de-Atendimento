@@ -1,0 +1,132 @@
+digraph g {
+node [ fontsize = "10", shape = record ];
+edge [];
+
+"agendamento" [shape = record, label = "{<col0> \N| id_atendimento:  integer\lid_agendamento:  integer\lnome:  character varying\lemail:  character varying\ltipopessoa:  character varying\lcnpjf:  character varying\l}" ];
+
+"atendente_guiche" [shape = record, label = "{<col0> \N| id_funcionario:  integer\lid_guiche:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\l}" ];
+
+"atendimento" [shape = record, label = "{<col0> \N| id_atendimento:  serial\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\lid_local:  integer\lid_senha:  integer\l}" ];
+
+"categoria" [shape = record, label = "{<col0> \N| id_categoria:  serial\lnome:  character varying\lcodigo:  character(1)\l}" ];
+
+"categoria_atendimento" [shape = record, label = "{<col0> \N| id_atendimento:  integer\lid_categoria:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\l}" ];
+
+"classe_servico" [shape = record, label = "{<col0> \N| id_classe:  serial\lnome:  character varying\l}" ];
+
+"configuracao_categoria" [shape = record, label = "{<col0> \N| id_local:  integer\lid_categoria:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\lprioridade:  integer\llimite_tempo_espera:  integer\llimite_pessoas_espera:  integer\lordem:  integer\l}" ];
+
+"configuracao_limite" [shape = record, label = "{<col0> \N| id_local:  integer\lid_estado:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\lsegundos:  integer\l}" ];
+
+"configuracao_perguntas" [shape = record, label = "{<col0> \N| id_local:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\lpergunta1:  integer\lpergunta2:  integer\lpergunta3:  integer\lpergunta4:  integer\lpergunta5:  integer\l}" ];
+
+"configuracao_perguntas_praca" [shape = record, label = "{<col0> \N| id_local:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\lpergunta1:  integer\lpergunta2:  integer\lpergunta3:  integer\lpergunta4:  integer\lpergunta5:  integer\l}" ];
+
+"estado_atendimento" [shape = record, label = "{<col0> \N| id_atendimento:  integer\lid_estado:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\l}" ];
+
+"estado_guiche" [shape = record, label = "{<col0> \N| id_guiche:  integer\lid_estado:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\l}" ];
+
+"estado_local" [shape = record, label = "{<col0> \N| id_local:  integer\lid_estado:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\l}" ];
+
+"funcionario" [shape = record, label = "{<col0> \N| id_funcionario:  serial\lnome:  character varying\ljid:  character varying\lpassword:  character varying\l}" ];
+
+"funcionario_local" [shape = record, label = "{<col0> \N| id_funcionario:  integer\lid_local:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\l}" ];
+
+"gerente_local" [shape = record, label = "{<col0> \N| id_funcionario:  integer\lid_local:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\l}" ];
+
+"guiche" [shape = record, label = "{<col0> \N| id_guiche:  serial\lid_local:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\lidentificador:  character(10)\ljid_opiniometro:  character varying\lpular_opiniometro:  integer\ltimeout_chamando:  integer\ltimeout_concluido:  integer\l}" ];
+
+"guiche_atendimento" [shape = record, label = "{<col0> \N| id_atendimento:  integer\lid_guiche:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\l}" ];
+
+"guiche_categoria" [shape = record, label = "{<col0> \N| id_guiche:  integer\lid_categoria:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\l}" ];
+
+"guiche_encaminhamento" [shape = record, label = "{<col0> \N| id_atendimento:  integer\lid_guiche:  integer\lid_guiche_origem:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\linformacoes:  character varying\l}" ];
+
+"local" [shape = record, label = "{<col0> \N| id_local:  serial\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\lnome:  character varying\ljid_senhas:  character varying\ljid_painel:  character varying\ljid_opiniometro:  character varying\l}" ];
+
+"pausa" [shape = record, label = "{<col0> \N| id_funcionario:  integer\lid_guiche:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\lmotivo:  character varying\l}" ];
+
+"pergunta_avaliacao" [shape = record, label = "{<col0> \N| id_pergunta:  serial\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\lpergunta:  character varying\l}" ];
+
+"pergunta_avaliacao_praca" [shape = record, label = "{<col0> \N| id_pergunta:  serial\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\lpergunta:  character varying\l}" ];
+
+"post" [shape = record, label = "{<col0> \N| post_id:  serial\ltitle:  character varying\ltext:  character varying\l}" ];
+
+"resposta_avaliacao" [shape = record, label = "{<col0> \N| id_pergunta:  integer\lid_atendimento:  integer\lvt_fac:  timestamp with time zone\lresposta:  integer\l}" ];
+
+"resposta_avaliacao_praca" [shape = record, label = "{<col0> \N| id_pergunta:  integer\lid_local:  integer\lvt_fac:  timestamp with time zone\lresposta:  integer\l}" ];
+
+"senha" [shape = record, label = "{<col0> \N| id_senha:  serial\lid_categoria:  integer\lid_local:  integer\lcodigo:  integer\l}" ];
+
+"servico" [shape = record, label = "{<col0> \N| id_servico:  serial\lid_classe:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\lnome:  character varying\l}" ];
+
+"servico_atendimento" [shape = record, label = "{<col0> \N| id_atendimento:  integer\lid_servico:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\linformacoes:  character varying\l}" ];
+
+"servico_guiche" [shape = record, label = "{<col0> \N| id_servico:  integer\lid_guiche:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\linformacoes:  character varying\l}" ];
+
+"servico_interno" [shape = record, label = "{<col0> \N| id_servico:  serial\lid_classe:  integer\lvt_ini:  timestamp with time zone\lvt_fim:  timestamp with time zone\lnome:  character varying\l}" ];
+
+"tipo_estado_atendimento" [shape = record, label = "{<col0> \N| id_estado:  serial\lnome:  character varying\l}" ];
+
+"tipo_estado_guiche" [shape = record, label = "{<col0> \N| id_estado:  serial\lnome:  character varying\l}" ];
+
+"tipo_estado_local" [shape = record, label = "{<col0> \N| id_estado:  serial\lnome:  character varying\l}" ];
+
+
+"atendente_guiche" -> "funcionario" [label="atendente_guiche_id_funcionario_fkey"];
+"atendente_guiche" -> "guiche" [label="atendente_guiche_id_guiche_fkey"];
+"atendimento" -> "local" [label="atendimento_id_local_fkey"];
+"atendimento" -> "senha" [label="atendimento_id_senha_fkey"];
+"categoria_atendimento" -> "atendimento" [label="categoria_atendimento_id_atendimento_fkey"];
+"categoria_atendimento" -> "categoria" [label="categoria_atendimento_id_categoria_fkey"];
+"configuracao_categoria" -> "local" [label="configuracao_categoria_id_local_fkey"];
+"configuracao_categoria" -> "categoria" [label="configuracao_categoria_id_categoria_fkey"];
+"configuracao_limite" -> "local" [label="configuracao_limite_id_local_fkey"];
+"configuracao_limite" -> "tipo_estado_guiche" [label="configuracao_limite_id_estado_fkey"];
+"configuracao_perguntas" -> "local" [label="configuracao_perguntas_id_local_fkey"];
+"configuracao_perguntas" -> "pergunta_avaliacao" [label="configuracao_perguntas_pergunta1_fkey"];
+"configuracao_perguntas" -> "pergunta_avaliacao" [label="configuracao_perguntas_pergunta2_fkey"];
+"configuracao_perguntas" -> "pergunta_avaliacao" [label="configuracao_perguntas_pergunta3_fkey"];
+"configuracao_perguntas" -> "pergunta_avaliacao" [label="configuracao_perguntas_pergunta4_fkey"];
+"configuracao_perguntas" -> "pergunta_avaliacao" [label="configuracao_perguntas_pergunta5_fkey"];
+"configuracao_perguntas_praca" -> "local" [label="configuracao_perguntas_praca_id_local_fkey"];
+"configuracao_perguntas_praca" -> "pergunta_avaliacao_praca" [label="configuracao_perguntas_praca_pergunta1_fkey"];
+"configuracao_perguntas_praca" -> "pergunta_avaliacao_praca" [label="configuracao_perguntas_praca_pergunta2_fkey"];
+"configuracao_perguntas_praca" -> "pergunta_avaliacao_praca" [label="configuracao_perguntas_praca_pergunta3_fkey"];
+"configuracao_perguntas_praca" -> "pergunta_avaliacao_praca" [label="configuracao_perguntas_praca_pergunta4_fkey"];
+"configuracao_perguntas_praca" -> "pergunta_avaliacao_praca" [label="configuracao_perguntas_praca_pergunta5_fkey"];
+"estado_atendimento" -> "atendimento" [label="estado_atendimento_id_atendimento_fkey"];
+"estado_atendimento" -> "tipo_estado_atendimento" [label="estado_atendimento_id_estado_fkey"];
+"estado_guiche" -> "guiche" [label="estado_guiche_id_guiche_fkey"];
+"estado_guiche" -> "tipo_estado_guiche" [label="estado_guiche_id_estado_fkey"];
+"estado_local" -> "local" [label="estado_local_id_local_fkey"];
+"estado_local" -> "tipo_estado_local" [label="estado_local_id_estado_fkey"];
+"funcionario_local" -> "funcionario" [label="funcionario_local_id_funcionario_fkey"];
+"funcionario_local" -> "local" [label="funcionario_local_id_local_fkey"];
+"gerente_local" -> "funcionario" [label="gerente_local_id_funcionario_fkey"];
+"gerente_local" -> "local" [label="gerente_local_id_local_fkey"];
+"guiche" -> "local" [label="guiche_id_local_fkey"];
+"guiche_atendimento" -> "atendimento" [label="guiche_atendimento_id_atendimento_fkey"];
+"guiche_atendimento" -> "guiche" [label="guiche_atendimento_id_guiche_fkey"];
+"guiche_categoria" -> "guiche" [label="guiche_categoria_id_guiche_fkey"];
+"guiche_categoria" -> "categoria" [label="guiche_categoria_id_categoria_fkey"];
+"guiche_encaminhamento" -> "atendimento" [label="guiche_encaminhamento_id_atendimento_fkey"];
+"guiche_encaminhamento" -> "guiche" [label="guiche_encaminhamento_id_guiche_fkey"];
+"guiche_encaminhamento" -> "guiche" [label="guiche_encaminhamento_id_guiche_origem_fkey"];
+"pausa" -> "funcionario" [label="pausa_id_funcionario_fkey"];
+"pausa" -> "guiche" [label="pausa_id_guiche_fkey"];
+"resposta_avaliacao" -> "pergunta_avaliacao" [label="resposta_avaliacao_id_pergunta_fkey"];
+"resposta_avaliacao" -> "atendimento" [label="resposta_avaliacao_id_atendimento_fkey"];
+"resposta_avaliacao_praca" -> "pergunta_avaliacao_praca" [label="resposta_avaliacao_praca_id_pergunta_fkey"];
+"resposta_avaliacao_praca" -> "local" [label="resposta_avaliacao_praca_id_local_fkey"];
+"senha" -> "categoria" [label="senha_id_categoria_fkey"];
+"senha" -> "local" [label="senha_id_local_fkey"];
+"servico" -> "classe_servico" [label="servico_id_classe_fkey"];
+"servico_atendimento" -> "atendimento" [label="servico_atendimento_id_atendimento_fkey"];
+"servico_atendimento" -> "servico" [label="servico_atendimento_id_servico_fkey"];
+"servico_guiche" -> "servico_interno" [label="servico_guiche_id_servico_fkey"];
+"servico_guiche" -> "guiche" [label="servico_guiche_id_guiche_fkey"];
+"servico_interno" -> "classe_servico" [label="servico_interno_id_classe_fkey"];
+}
+
+

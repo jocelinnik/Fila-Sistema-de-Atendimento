@@ -165,7 +165,6 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
         $codigo_senha_atual = $recente->senha->codigo;
     }
 
-
     # se a senha gerada estiver alocada a um atendimento corrente,
     # tentar a proxima, até encontrar uma senha válida.
 
@@ -194,8 +193,7 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
         my $verificar = $c->model('DB::Senha')->search
           ({ 'me.id_categoria' => $id_categoria,
              'me.codigo' => $codigo_senha_atual,
-             'atendimentos.vt_ini' => { '>=' => $now },
-             'atendimentos.vt_fim' => { '<'  => $now },
+             'atendimentos.vt_fim' => { 'Infinity' },
              'atendimentos.id_local' => $c->stash->{local}->id_local },
            { join => 'atendimentos' });
         if ($verificar->first) {

@@ -354,6 +354,7 @@ GROUP BY
 
 }
 
+
 sub no_show :Chained('atendimento') :PathPart :Args(0) {
   my ($self, $c) = @_;
 
@@ -446,6 +447,108 @@ GROUP BY
 
        $c->model('DB::ActivityLog')->create
          ({ activity_type => '/atendimento/no_show',
+            id_local => $id,
+            vt_base => $c->stash->{vt_base},
+            vt_ini => $c->stash->{now} });
+
+     });
+
+}
+
+
+
+sub pendente :Chained('atendimento') :PathPart :Args(0) {
+  my ($self, $c) = @_;
+
+  $c->model('Federado')->doeach
+    ($c, sub {
+       my $id = shift;
+
+       my $result = $c->model('DB::ActivityLog')->search
+         ({ activity_type => '/atendimento/pendente',
+            id_local => $id },
+          { order_by => 'vt_base DESC' });
+
+       if (my $last = $result->first) {
+         $c->stash->{last_vt_base} = $last->vt_base;
+       } else {
+         $c->stash->{last_vt_base} = '-Infinity';
+       }
+
+       my $local = $c->model('Federado')->target($c, $id, 'Local')->find
+	 ({ id_local => $id });
+
+       my $sql = q#
+SELECT
+ DATE_TRUNC('minute', estado_atendimento.vt_ini) AS datahora,
+ COUNT(estado_atendimento.*) AS quantidade,
+ categoria.nome, categoria.codigo, categoria.id_categoria
+
+FROM
+ tipo_estado_atendimento INNER JOIN
+ estado_atendimento
+  ON (tipo_estado_atendimento.id_estado=estado_atendimento.id_estado AND
+      estado_atendimento.vt_ini > ? AND
+      estado_atendimento.vt_ini <= ?) INNER JOIN
+ atendimento
+  ON (estado_atendimento.id_atendimento=atendimento.id_atendimento AND
+      atendimento.id_local = ? AND
+      atendimento.vt_ini > ? AND
+      atendimento.vt_ini <= ?) INNER JOIN
+ categoria_atendimento
+  ON (categoria_atendimento.id_atendimento=atendimento.id_atendimento AND
+      categoria_atendimento.vt_ini <= estado_atendimento.vt_ini AND
+      categoria_atendimento.vt_fim > estado_atendimento.vt_ini) INNER JOIN
+ categoria USING (id_categoria)
+
+WHERE tipo_estado_atendimento.nome='pendente'
+
+GROUP BY
+ DATE_TRUNC('minute', estado_atendimento.vt_ini),
+ categoria.nome, categoria.codigo, categoria.id_categoria
+
+#;
+
+       my $storage = $c->model('Federado')->storage($c, $id);
+       $storage->ensure_connected;
+       my $dbi = $storage->dbh;
+
+       my $sth = $dbi->prepare($sql);
+       $sth->execute( $c->stash->{last_vt_base}, $c->stash->{vt_base},
+                      $id,
+                      $c->stash->{last_vt_base}, $c->stash->{vt_base},
+                    );
+
+       my $dlocal = $c->model('DB::DLocal')->get_dimension($local);
+       my $cat_cache = {};
+
+       while (my $item = $sth->fetchrow_hashref) {
+         my $datahora = $item->{datahora};
+         my $datahora_dt = DateTime::Format::Pg->parse_datetime($datahora);
+         my $data = $c->model('DB::DData')->get_dimension($datahora_dt);
+         my $horario = $c->model('DB::DHorario')->get_dimension($datahora_dt);
+         my $id_categoria = $item->{id_categoria};
+
+         unless (exists $cat_cache->{$id_categoria}) {
+           $cat_cache->{$id_categoria} = $c->model('DB::DCategoria')->get_dimension
+             (Fila::Servico::DB::Categoria->new
+              ({ map { $_ => $item->{$_}
+                     } qw(id_categoria nome codigo) }));
+         }
+         my $categoria = $cat_cache->{$id_categoria};
+
+         $c->model('DB::FNoShow')->create
+           ({ id_local => $dlocal,
+              id_categoria => $categoria,
+              data => $data,
+              horario => $horario,
+              quantidade => $item->{quantidade}
+            });
+       }
+
+
+       $c->model('DB::ActivityLog')->create
+         ({ activity_type => '/atendimento/pendente',
             id_local => $id,
             vt_base => $c->stash->{vt_base},
             vt_ini => $c->stash->{now} });

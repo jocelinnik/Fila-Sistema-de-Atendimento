@@ -17,14 +17,14 @@
 # Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor,
 %]
 <script>
-    [% BLOCO = BLOCK %]
-    		<DIV ID="senha0">
-			<DIV ID="senhaemissor"><font size='18'>Senha: [% senha %]</font>
-					<br>[% vt_ini %] 
-					<br>Atendimento: [% id_atendimento %]
-			</DIV>
-    		</DIV>
-    [% END %]
-    $('senha0').replace("[% BLOCO | js %]"); 
-
+[% BLOCO = BLOCK %]
+<DIV ID="senha0">
+<DIV ID="senhaemissor">
+<font size='18'>[% senha %]</font><br>
+[% vt_ini %]<br>
+<font size='16'>[% id_atendimento %]</font>
+</DIV>
+</DIV>
+[% END %]
+$('senha0').replace("[% BLOCO | js %]"); 
 </script>

@@ -35,7 +35,7 @@ __PACKAGE__->config->{wsdl} =
 
 sub auto : Private {
     my ($self, $c) = @_;
-
+    warn 'auto '.$c->req->header('XMPP_Stanza');
     return 0 if $c->req->header('XMPP_Stanza') eq 'presence';
 
     my $from = $c->req->header('XMPP_Stanza_from');
@@ -57,6 +57,7 @@ sub auto : Private {
         $c->stash->{funcionario} = $funcionario;
         $c->stash->{gerente} = $funcionario->gerentes->first;
         $c->stash->{local} = $c->stash->{gerente}->local;
+        warn 'auto: return 1';
         return 1;
     } else {
         $c->action->prepare_soap_helper($self, $c);
@@ -64,13 +65,20 @@ sub auto : Private {
           ({code => 'Server',
             reason => 'Permissao Negada',
             detail => 'Funcionario precisa ser gerente para acessar'});
+        warn 'auto: return 0';
         return 0;
     }
 }
 
 sub refresh_painel :Private {
     my ($self, $c) = @_;
+
+    warn 'refresh_painel';
+
     return unless $c->stash->{local};
+
+    #warn 'atendimentos';
+
     my $atendimentos = $c->stash->{local}->atendimentos_atuais->search
       ({ 'estado.nome' => 'chamando' },
        { prefetch => [{ 'estado_atual' => 'estado' },
@@ -83,8 +91,9 @@ sub refresh_painel :Private {
         push @$ret, { senha => sprintf('%s%03d', $atendimento->senha->categoria->codigo,
                                        $atendimento->senha->codigo),
                       guiche => $id };
+        #warn $id;
     }
-
+    warn 'senhas chamando';
     $c->model('SOAP')->transport->connection($c->engine->connection($c));
     $c->model('SOAP')->transport->addrs([$c->stash->{local}->jid_painel.'/callback']);
     $c->model('SOAP::Painel')->senhas_chamando({ senhas_chamando => { senha => $ret }});
@@ -228,8 +237,8 @@ sub encerrar_senhas :WSDLPort('GestaoLocal') :DBICTransaction('DB') :MI {
     $c->model('SOAP')->transport->connection($c->engine->connection($c));
     $c->model('SOAP')->transport->addrs([$c->stash->{local}->jid_senhas.'/callback']);
     $c->model('SOAP::Senha')->senhas_encerradas({ refresh_request => 'non-empty' });
-
     $c->stash->{refresh_gerente} = 1;
+    $c->stash->{refresh_painel} = 1;
 }
 
 sub status_local :WSDLPort('GestaoLocal') :DBICTransaction('DB') :MI {
@@ -253,8 +262,8 @@ sub status_local :WSDLPort('GestaoLocal') :DBICTransaction('DB') :MI {
     my $busca_gerente = $c->model('DB::Funcionario')->find
       ({ id_funcionario => $id_gerente });
     my $gerente = $busca_gerente->nome;
-    require Data::Dumper;
-    print STDERR "O hash é ", Data::Dumper::Dumper( \$gerente ), "\n";
+    # require Data::Dumper;
+    # print STDERR "O hash é ", Data::Dumper::Dumper( \$gerente ), "\n";
 
     # agora tah faltando 'mandar 'o $gerente para ser mostrado no template
 
@@ -582,6 +591,7 @@ sub fechar_local_force :WSDLPort('GestaoLocal') :DBICTransaction('DB') :MI {
          vt_fim => 'Infinity' });
 
     $c->stash->{refresh_gerente} = 1;
+    $c->stash->{refresh_painel} = 1;
 }
 
 sub fechar_local :WSDLPort('GestaoLocal') :DBICTransaction('DB') :MI {
@@ -644,6 +654,7 @@ sub fechar_local :WSDLPort('GestaoLocal') :DBICTransaction('DB') :MI {
          vt_fim => 'Infinity' });
 
     $c->stash->{refresh_gerente} = 1;
+    $c->stash->{refresh_painel} = 1;
 }
 
 sub status_guiches :WSDLPort('GestaoLocal') :DBICTransaction('DB') :MI {
@@ -886,7 +897,7 @@ sub escalonar_senha :WSDLPort('GestaoLocal') :DBICTransaction('DB') :MI {
         join => { estados => 'estado' },
         order_by => 'estados.vt_ini DESC',
         rows => 1,
-        offset => 2,
+        offset => 100,
         select => [ 'estados.vt_ini' ],
         as => [ 'vt_ini' ]})->first;
     if ($vtinis) {
@@ -900,8 +911,8 @@ sub escalonar_senha :WSDLPort('GestaoLocal') :DBICTransaction('DB') :MI {
         }
 
     }
-
-    $c->stash->{refresh_painel} = 1;
+    #warn 'escalonar senha: refresh painel';
+    $c->forward('/ws/gestao/local/refresh_painel');
     $c->stash->{refresh_gerente} = 1;
 }
 

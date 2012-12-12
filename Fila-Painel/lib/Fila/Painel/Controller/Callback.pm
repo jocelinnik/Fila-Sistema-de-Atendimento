@@ -25,6 +25,7 @@ __PACKAGE__->config->{wsdl} =
 
 sub senhas_chamando :WSDLPort('FilaPainelCallback') {
     my ($self, $c, $dados) = @_;
+    #warn 'senhas chamando';
     my @senhas = map { [ $_->{senha}, $_->{guiche} ] }
       @{$dados->{senhas_chamando}{senha}};
     $c->model('Output')->salvar(\@senhas);

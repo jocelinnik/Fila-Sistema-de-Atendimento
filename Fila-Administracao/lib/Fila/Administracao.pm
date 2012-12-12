@@ -26,7 +26,7 @@ our $VERSION = '0.01';
 
 __PACKAGE__->config( name => 'Fila::Administracao',
 					 static => { dirs => [ 'static', qr/^(images|css|doc)$/ ] }  );
-__PACKAGE__->setup(qw/-Debug ConfigLoader Static::Simple/);
+__PACKAGE__->setup(qw/ConfigLoader/);
 
 1;
 

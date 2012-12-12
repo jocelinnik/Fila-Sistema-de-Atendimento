@@ -320,4 +320,18 @@
        aggregator="sum" visible="true" />
   </Cube>
 
+  <Cube name="Pendentes" cache="true" enabled="true">
+    <Table name="f_pendentes" schema="public" alias="Pendentes" />
+    <DimensionUsage source="Local" name="Local" foreignKey="id_local" />
+    <DimensionUsage source="Horario" name="Horario" foreignKey="horario" />
+    <DimensionUsage source="CategoriaPrioritaria" name="CategoriaPrioritaria" foreignKey="id_categoria" />
+    <DimensionUsage source="CategoriaNome" name="CategoriaNome" foreignKey="id_categoria" />
+    <DimensionUsage source="Anos" name="Anos" foreignKey="data" />
+    <DimensionUsage source="Meses" name="Meses" foreignKey="data" />
+    <DimensionUsage source="DiasDoMes" name="DiasDoMes" foreignKey="data" />
+    <DimensionUsage source="DiasDaSemana" name="DiasDaSemana" foreignKey="data" />
+    <Measure
+       name="Quantidade" column="quantidade" datatype="Integer"
+       aggregator="sum" visible="true" />
+  </Cube>
 </Schema>

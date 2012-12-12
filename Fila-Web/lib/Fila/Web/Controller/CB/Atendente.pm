@@ -119,6 +119,18 @@ sub iniciar_atendimento : Local {
               value => '' } ]}});
 }
 
+sub atender_pendente : Local {
+    my ($self, $c, $id) = @_;
+
+    $c->model('SOAP')->transport
+        ->addrs([$c->session->{user_jid}.'/cb/atendente']);
+    my $req = $c->model('SOAP::Atendente')->atender_pendente
+     ({ callback_request =>
+        { param =>
+          [ { name => 'id_atendimento',
+              value => $id } ]}});
+}
+
 sub atender_no_show : Local {
     my ($self, $c, $id) = @_;
 
@@ -155,6 +167,19 @@ sub disponivel : Local {
 
 }
 
+sub listar_pendente : Local {
+    my ($self, $c) = @_;
+
+    $c->model('SOAP')->transport
+        ->addrs([$c->session->{user_jid}.'/cb/atendente']);
+    my $req = $c->model('SOAP::Atendente')->listar_pendente
+     ({ callback_request =>
+        { param =>
+          [ { name => '',
+              value => '' } ]}});
+
+}
+
 sub listar_no_show : Local {
     my ($self, $c) = @_;
 
@@ -162,6 +187,19 @@ sub listar_no_show : Local {
         ->addrs([$c->session->{user_jid}.'/cb/atendente']);
     my $req = $c->model('SOAP::Atendente')->listar_no_show
      ({ callback_request => 
+        { param =>
+          [ { name => '',
+              value => '' } ]}});
+
+}
+
+sub registrar_pendente : Local {
+    my ($self, $c) = @_;
+
+    $c->model('SOAP')->transport
+        ->addrs([$c->session->{user_jid}.'/cb/atendente']);
+    my $req = $c->model('SOAP::Atendente')->registrar_pendente
+     ({ callback_request =>
         { param =>
           [ { name => '',
               value => '' } ]}});

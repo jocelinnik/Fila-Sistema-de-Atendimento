@@ -31,9 +31,15 @@ sub solicitar_senha : Local {
             { param =>
                 [ { name => 'id_categoria',
                     value => $id_categoria } ] } } );
+	warn "solicitar senha";
+}
 
 
-
+sub keep_alive : Local {
+        my ($self, $c) = @_;
+        $c->model('SOAP')->transport->addrs([$c->session->{user_jid}.'/cb/emissor']);
+        my $req = $c->model('SOAP::Emissor')->keep_alive({ callback_request => {} });
+        warn "keep alive";
 }
 
 sub sair: Local {

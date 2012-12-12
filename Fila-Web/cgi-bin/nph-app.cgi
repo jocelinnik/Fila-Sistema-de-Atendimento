@@ -32,7 +32,7 @@ print $query->header(-type => 'text/html',
 
 STDOUT->autoflush(1);
 
-print '<HTML><HEAD><TITLE>Sistema de Atendimento</TITLE></HEAD><BODY><P id="p_carregando_inicial">Carregando...</P></BODY></HTML>';
+print '<HTML><HEAD><TITLE>Sistema de Atendimento</TITLE></HEAD><BODY><P id="p_carregando_inicial"></P></BODY></HTML>';
 
 {   package Fila::WebApp;
 
@@ -42,7 +42,7 @@ print '<HTML><HEAD><TITLE>Sistema de Atendimento</TITLE></HEAD><BODY><P id="p_ca
     use Catalyst::Runtime '5.70';
     use Net::XMPP2::Connection;
 
-    use Catalyst qw/-Debug Unicode Static::Simple Prototype/;
+    use Catalyst qw/Unicode Prototype/;
     our $VERSION = '0.01';
 
     my $app = __PACKAGE__;

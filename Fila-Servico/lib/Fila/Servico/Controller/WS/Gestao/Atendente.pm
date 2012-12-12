@@ -352,6 +352,7 @@ sub registrar_no_show :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
          vt_fim => 'Infinity',
          id_estado => $estado_concluido->id_estado });
 
+    $c->forward('/ws/gestao/local/refresh_painel');
     $c->stash->{refresh_guiche} ||= [];
     push @{$c->stash->{refresh_guiche}}, $c->stash->{guiche}->id_guiche;
 }
@@ -389,21 +390,21 @@ sub atender_no_show :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
       ({ },
        { prefetch => 'estado' })->first;
 
-    my $estado_atendendo_at = $c->model('DB::TipoEstadoAtendimento')->find
-      ({ nome => 'atendimento' });
-    unless ($estado_atendendo_at) {
+    my $estado_chamando_at = $c->model('DB::TipoEstadoAtendimento')->find
+      ({ nome => 'chamando' });
+    unless ($estado_chamando_at) {
         die $c->stash->{soap}->fault
           ({ code => 'Server',
-             reason => 'Nao encontrou estado "atendimento"',
+             reason => 'Nao encontrou estado "chamando"',
              detail => 'Ocorreu um erro de configuracao no sistema.' });
     }
 
-    my $estado_atendendo_gu = $c->model('DB::TipoEstadoGuiche')->find
-      ({ nome => 'atendimento' });
-    unless ($estado_atendendo_gu) {
+    my $estado_chamando_gu = $c->model('DB::TipoEstadoGuiche')->find
+      ({ nome => 'chamando' });
+    unless ($estado_chamando_gu) {
         die $c->stash->{soap}->fault
           ({ code => 'Server',
-             reason => 'Nao encontrou estado "atendimento"',
+             reason => 'Nao encontrou estado "chamando"',
              detail => 'Ocorreu um erro de configuracao no sistema.' });
     }
 
@@ -423,7 +424,7 @@ sub atender_no_show :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
         die $c->stash->{soap}->fault
           ({ code => 'Server',
              reason => 'Estado invalido',
-             detail => 'Atendimento precisa estar "chamando" para iniciar atendimento' });
+             detail => 'Atendimento precisa estar "no_show" para iniciar atendimento' });
     }
 
     $estado_atendimento->update
@@ -432,7 +433,7 @@ sub atender_no_show :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
     $atendimento->estados->create
       ({ vt_ini => $now,
          vt_fim => 'Infinity',
-         id_estado => $estado_atendendo_at->id_estado });
+         id_estado => $estado_chamando_at->id_estado });
 
     $estado_guiche->update
       ({ vt_fim => $now });
@@ -445,8 +446,194 @@ sub atender_no_show :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
     $c->stash->{guiche}->estados->create
       ({ vt_ini => $now,
          vt_fim => 'Infinity',
-         id_estado => $estado_atendendo_gu->id_estado });
+         id_estado => $estado_chamando_gu->id_estado });
 
+
+    $c->forward('/ws/gestao/local/refresh_painel');
+    $c->stash->{refresh_guiche} ||= [];
+    push @{$c->stash->{refresh_guiche}}, $c->stash->{guiche}->id_guiche;
+}
+
+sub registrar_pendente :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
+    my ($self, $c, $query) = @_;
+
+    my $now = $c->stash->{now};
+    my $estado_guiche = $c->stash->{guiche}->estados->search
+      ({ vt_ini => { '<=', $now },
+         vt_fim => { '>', $now }},
+       { prefetch =>  'estado' })->first;
+    unless ($estado_guiche && $estado_guiche->estado->nome eq 'atendimento') {
+        die $c->stash->{soap}->fault
+          ({ code => 'Server',
+             reason => 'Estado invalido',
+             detail => 'Guiche precisa estar "atendimento" para registrar pendente' });
+    }
+
+    my $estado_pendente = $c->model('DB::TipoEstadoAtendimento')->find
+      ({ nome => 'pendente' });
+    unless ($estado_pendente) {
+        die $c->stash->{soap}->fault
+          ({ code => 'Server',
+             reason => 'Nao encontrou estado "pendente"',
+             detail => 'Ocorreu um erro de configuracao no sistema.' });
+    }
+
+    my $estado_concluido = $c->model('DB::TipoEstadoGuiche')->find
+      ({ nome => 'concluido' });
+    unless ($estado_concluido) {
+        die $c->stash->{soap}->fault
+          ({ code => 'Server',
+             reason => 'Nao encontrou estado "concluido"',
+             detail => 'Ocorreu um erro de configuracao no sistema.' });
+    }
+
+    my $atend_guiche = $c->stash->{guiche}->atendimento_atual->find({});
+    unless ($atend_guiche) {
+        die $c->stash->{soap}->fault
+          ({ code => 'Server',
+             reason => 'Nao encontrou atendimento associado.',
+             detail => 'Nao existia atendimento associado ao guiche.' });
+    }
+
+    my $atendimento = $atend_guiche->atendimento;
+    unless ($atendimento) {
+        die $c->stash->{soap}->fault
+          ({ code => 'Server',
+             reason => 'Nao encontrou atendimento associado.',
+             detail => 'Nao existia atendimento associado ao guiche.' });
+    }
+
+    my $estado_atendimento = $atendimento->estados->find
+      ({ vt_ini => { '<=', $now },
+         vt_fim => { '>', $now } },
+       { prefetch => 'estado' });
+    unless ($estado_atendimento && $estado_atendimento->estado->nome eq 'atendimento') {
+        die $c->stash->{soap}->fault
+          ({ code => 'Server',
+             reason => 'Estado invalido',
+             detail => 'Atendimento precisa estar "atendimento" para registrar pendente' });
+    }
+
+    $atend_guiche->update
+      ({ vt_fim => $now });
+
+    $estado_atendimento->update
+      ({ vt_fim => $now });
+
+    $atendimento->estados->create
+      ({ vt_ini => $now,
+         vt_fim => 'Infinity',
+         id_estado => $estado_pendente->id_estado });
+
+    $estado_guiche->update
+      ({ vt_fim => $now });
+
+    $c->stash->{guiche}->estados->create
+      ({ vt_ini => $now,
+         vt_fim => 'Infinity',
+         id_estado => $estado_concluido->id_estado });
+
+    $c->stash->{refresh_guiche} ||= [];
+    push @{$c->stash->{refresh_guiche}}, $c->stash->{guiche}->id_guiche;
+}
+
+sub listar_pendente :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
+    #lista todos os atendimentos pendente
+    my($self, $c) = @_;
+
+    #Procurar todos os atendimentos pendente
+    my $list = $c->stash->{local}->atendimentos_atuais->search 
+        ({ 'estado.nome' => 'pendente' },
+         { prefetch => [ { 'senha' => 'categoria' }, { 'estado_atual' => 'estado' }]});   
+
+    my $retorno = [];
+    while (my $atendimento = $list->next) {
+        my $senha = $atendimento->senha;
+        push @{$retorno},
+            {( map { $_ => $atendimento->$_() }
+              qw/ id_atendimento id_local id_senha / ),
+             estado => 'no_show',
+             senha => sprintf('%s%03d',$senha->categoria->codigo, $senha->codigo)}
+    }
+
+    $c->stash->{soap}->compile_return
+    ({ lista_atendimentos =>
+         { atendimento => $retorno }});
+
+}
+
+sub atender_pendente :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
+    my ($self, $c, $query) = @_;
+
+    my $now = $c->stash->{now};
+    my $estado_guiche = $c->stash->{guiche}->estado_atual->search
+      ({ },
+       { prefetch => 'estado' })->first;
+
+    my $estado_chamando_at = $c->model('DB::TipoEstadoAtendimento')->find
+      ({ nome => 'chamando' });
+
+    unless ($estado_chamando_at) {
+        die $c->stash->{soap}->fault
+          ({ code => 'Server',
+             reason => 'Nao encontrou estado "chamando"',
+             detail => 'Ocorreu um erro de configuracao no sistema.' });
+    }
+
+    my $estado_chamando_gu = $c->model('DB::TipoEstadoGuiche')->find
+      ({ nome => 'chamando' });
+
+    unless ($estado_chamando_gu) {
+        die $c->stash->{soap}->fault
+          ({ code => 'Server',
+             reason => 'Nao encontrou estado "chamando"',
+             detail => 'Ocorreu um erro de configuracao no sistema.' });
+    }
+
+    my $atendimento = $c->model('DB::Atendimento')->find
+        ($query->{atendimento});
+
+    unless ($atendimento) {
+        die $c->stash->{soap}->fault
+          ({ code => 'Server',
+             reason => 'Nao encontrou atendimento associado.',
+             detail => 'Nao existia atendimento associado ao guiche.' });
+    }
+
+    my $estado_atendimento = $atendimento->estado_atual->find
+      ({  },
+       { prefetch => 'estado' });
+
+    unless ($estado_atendimento && $estado_atendimento->estado->nome eq 'pendente') {
+        die $c->stash->{soap}->fault
+          ({ code => 'Server',
+             reason => 'Estado invalido',
+             detail => 'Atendimento precisa estar "pendente" para iniciar atendimento' });
+    }
+
+    $estado_atendimento->update
+      ({ vt_fim => $now });
+
+    $atendimento->estados->create
+      ({ vt_ini => $now,
+         vt_fim => 'Infinity',
+         id_estado => $estado_chamando_at->id_estado });
+
+    $estado_guiche->update
+      ({ vt_fim => $now });
+
+    $c->stash->{guiche}->atendimentos->create
+      ({ vt_ini => $now,
+         vt_fim => 'Infinity',
+         id_atendimento => $atendimento->id_atendimento });
+
+    $c->stash->{guiche}->estados->create
+      ({ vt_ini => $now,
+         vt_fim => 'Infinity',
+         id_estado => $estado_chamando_gu->id_estado });
+
+
+    $c->forward('/ws/gestao/local/refresh_painel');
     $c->stash->{refresh_guiche} ||= [];
     push @{$c->stash->{refresh_guiche}}, $c->stash->{guiche}->id_guiche;
 }
@@ -518,7 +705,7 @@ sub iniciar_atendimento :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI 
          id_estado => $estado_atendendo_gu->id_estado });
 
 
-    $c->stash->{refresh_painel} = 1;
+    $c->forward('/ws/gestao/local/refresh_painel');
     $c->stash->{refresh_guiche} ||= [];
     push @{$c->stash->{refresh_guiche}}, $c->stash->{guiche}->id_guiche;
 }
@@ -593,7 +780,7 @@ sub devolver_senha :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
     $atendimento->update
       ({ vt_fim => $now });
 
-    $c->stash->{refresh_painel} = 1;
+    $c->forward('/ws/gestao/local/refresh_painel');
     $c->stash->{refresh_guiche} ||= [];
     push @{$c->stash->{refresh_guiche}}, $c->stash->{guiche}->id_guiche;
 }
@@ -734,8 +921,7 @@ sub concluir_atendimento :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI
         $c->stash->{refresh_guiche} ||= [];
         push @{$c->stash->{refresh_guiche}}, $guiche->id_guiche;
     }
-
-    $c->stash->{refresh_painel} = 1;
+    $c->forward('/ws/gestao/local/refresh_painel');
     $c->stash->{refresh_guiche} ||= [];
     push @{$c->stash->{refresh_guiche}}, $c->stash->{guiche}->id_guiche;
 }

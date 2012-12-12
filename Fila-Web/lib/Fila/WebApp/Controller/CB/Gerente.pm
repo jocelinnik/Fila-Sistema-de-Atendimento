@@ -275,7 +275,7 @@ sub passar_gerencia :WSDLPort('FilaWebGerenteCallback') {
     my $lista_funcionarios = $c->model('SOAP::Gestao::Local')
           ->listar_funcionarios({ lista_funcionarios => {} });
 
-	warn $lista_funcionarios;
+	#warn $lista_funcionarios;
 
     if ($lista_funcionarios->{Fault}) {
         $c->stash->{error_message} = $lista_funcionarios->{Fault}{faultstring};

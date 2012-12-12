@@ -139,15 +139,15 @@ sub emissor : Private {
     } elsif ($dados_local->{Fault}) {
         $c->stash->{status_local} = 'Erro ao obter os dados do local: '.$dados_local->{Fault}{faultstring};
     } else {
-        $c->stash->{status_local} = 'Abrindo para senhas';
+        $c->stash->{status_local} = 'Aberto';
 	    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/senha']);	
 	    my $categorias = $c->model('SOAP::Gestao::Senha')->listar_categorias({ local => {} });
 		if ($categorias->{Fault}) {
 	        $c->stash->{error_message} = $categorias->{Fault}{faultstring};
 	        return $c->forward('/render/error_message');
 	    } else {
-			$c->stash->{categorias} = $categorias;
-			$c->forward('/render/emissor.tt');
+			$c->stash->{categorias} = $categorias;	
+			$c->forward($c->view());
 	    }
     }
 }
@@ -182,6 +182,7 @@ sub atendente : Private {
 
         $c->stash->{template} = 'render/atendente.tt';
         $c->stash->{status_guiche} = $status_guiche;
+	$c->forward($c->view());
     }
 
 }
@@ -228,8 +229,8 @@ sub gerente : Private {
         $c->stash->{lista_encaminhamentos} = $lista_encaminhamentos;
     }
 
-    use Data::Dumper;
-    warn Data::Dumper->Dump([ $c->stash ]);
+    #use Data::Dumper;
+    #warn Data::Dumper->Dump([ $c->stash ]);
 
 }
 

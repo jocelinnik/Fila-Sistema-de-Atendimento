@@ -180,6 +180,12 @@
   <wsdl:operation name="disponivel">
    <wsdl:input message="filasv:callback_request" />
   </wsdl:operation>
+  <wsdl:operation name="registrar_pendente">
+   <wsdl:input message="filasv:callback_request" />
+  </wsdl:operation>
+  <wsdl:operation name="atender_pendente">
+   <wsdl:input message="filasv:callback_request" />
+  </wsdl:operation>
   <wsdl:operation name="registrar_no_show">
    <wsdl:input message="filasv:callback_request" />
   </wsdl:operation>
@@ -193,6 +199,9 @@
    <wsdl:input message="filasv:callback_request" />
   </wsdl:operation>
   <wsdl:operation name="encaminhar_atendimento_categoria">
+   <wsdl:input message="filasv:callback_request" />
+  </wsdl:operation>
+  <wsdl:operation name="listar_pendente">
    <wsdl:input message="filasv:callback_request" />
   </wsdl:operation>
   <wsdl:operation name="listar_no_show">
@@ -278,6 +287,18 @@
    <soap:operation style="rpc" />
    <wsdl:input><soap:body namespace="urn:oktiva:fila:web:servico" use="literal"/></wsdl:input>
   </wsdl:operation>
+  <wsdl:operation name="registrar_pendente">
+   <soap:operation style="rpc" />
+   <wsdl:input><soap:body namespace="urn:oktiva:fila:web:servico" use="literal"/></wsdl:input>
+  </wsdl:operation>
+  <wsdl:operation name="atender_pendente">
+   <soap:operation style="rpc" />
+   <wsdl:input><soap:body namespace="urn:oktiva:fila:web:servico" use="literal"/></wsdl:input>
+  </wsdl:operation>
+  <wsdl:operation name="listar_pendente">
+   <soap:operation style="rpc" />
+   <wsdl:input><soap:body namespace="urn:oktiva:fila:web:servico" use="literal"/></wsdl:input>
+  </wsdl:operation>
   <wsdl:operation name="registrar_no_show">
    <soap:operation style="rpc" />
    <wsdl:input><soap:body namespace="urn:oktiva:fila:web:servico" use="literal"/></wsdl:input>
@@ -358,6 +379,9 @@
   <wsdl:operation name="solicitar_senha">
    <wsdl:input message="filasv:callback_request" />
   </wsdl:operation>
+    <wsdl:operation name="keep_alive">
+   <wsdl:input message="filasv:callback_request" />
+  </wsdl:operation>
     <wsdl:operation name="sair">
    <wsdl:input message="filasv:callback_request" />
   </wsdl:operation>
@@ -366,6 +390,10 @@
  <wsdl:binding name="FilaWebEmissorCallbackSOAPXMPP" type="filasv:FilaWebEmissorCallback">
   <soap:binding transport="http://jabber.org/protocol/soap" style="rpc"/>
   <wsdl:operation name="solicitar_senha">
+   <soap:operation style="rpc" />
+   <wsdl:input><soap:body namespace="urn:oktiva:fila:web:servico" use="literal"/></wsdl:input>
+  </wsdl:operation>
+  <wsdl:operation name="keep_alive">
    <soap:operation style="rpc" />
    <wsdl:input><soap:body namespace="urn:oktiva:fila:web:servico" use="literal"/></wsdl:input>
   </wsdl:operation>

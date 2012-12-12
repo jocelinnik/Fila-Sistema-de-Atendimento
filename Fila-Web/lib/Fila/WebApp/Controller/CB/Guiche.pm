@@ -33,7 +33,7 @@ sub abrir_guiche : WSDLPort('FilaWebGuicheCallback') {
     $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/guiche']);
     $c->model('SOAP::Gestao::Guiche')
       ->abrir_guiche({ guiche => \%params });
-
+    $::user_guiche = $params{identificador};
     $c->forward('/render/atendente');
     $c->forward($c->view());
 }
@@ -42,7 +42,6 @@ sub abrir_user_guiche : Private {
     my ($self, $c, $query) = @_;
 
     my %params = (identificador => $::user_guiche);
-    $::user_guiche = undef;
 
     $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/guiche']);
     $c->model('SOAP::Gestao::Guiche')
