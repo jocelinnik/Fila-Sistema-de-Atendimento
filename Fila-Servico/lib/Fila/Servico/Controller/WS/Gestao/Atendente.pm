@@ -953,14 +953,17 @@ sub encaminhar_atendimento :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :
 
     my $estado_concluido_gu = $c->model('DB::TipoEstadoGuiche')->find
       ({ nome => 'concluido' });
+
     unless ($estado_concluido_gu) {
         die $c->stash->{soap}->fault
           ({ code => 'Server',
              reason => 'Nao encontrou estado "concluido"',
              detail => 'Ocorreu um erro de configuracao no sistema.' });
     }
+
     my $estado_encaminhado = $c->model('DB::TipoEstadoAtendimento')->find
       ({ nome => 'encaminhado' });
+
     unless ($estado_encaminhado) {
         die $c->stash->{soap}->fault
           ({ code => 'Server',
@@ -976,6 +979,50 @@ sub encaminhar_atendimento :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :
          vt_fim => 'Infinity',
          id_estado => $estado_encaminhado->id_estado });
 
+    my $data_encaminhamento = $now;
+
+    warn "Motivo: ".$motivo;
+
+    if ($motivo =~ /^\s*(\d\d)\D(\d\d)\s*$/) {
+       my $h = $1 + 0;
+       my $m = $2 + 0;
+
+       my $year = $now->year;
+       my $month = $now->month;
+       my $day = $now->day;
+
+       # DateTime->now(time_zone => 'local');
+       if ($h >= $now->hour) {
+           warn "$h:$m";						
+       } elsif ($h < $now->hour && $now->hour > 22) {
+           my $t = $now;
+	   $t->add(days => 1);
+	   $year = $t->year;
+	   $month = $t->month;
+	   $day = $t->day;
+	   warn "$year-$month-$day $h:$m";
+	} else {
+	   $h = undef;
+	   $m = undef;
+	}
+	unless ($h >= 0 && $h <= 23 && $m >= 0 && $m <= 59) {
+           $h = undef;
+	   $m = undef;
+	}
+	if (defined($h) && defined($m)) {
+	   $data_encaminhamento = DateTime->new(
+	     time_zone	=> 'local',
+	     year		=> $year,
+	     month		=> $month,
+	     day		=> $day,
+	     hour		=> $h,
+	     minute		=> $m,
+	     second		=> 10,
+	     nanosecond	=> 10,
+	   );
+        } 
+    }
+ 
     if ($query->{encaminhamento}{id_guiche}) {
       my $outro_guiche = $c->model('DB::Guiche')
         ->find({ id_guiche => $query->{encaminhamento}{id_guiche} })
@@ -985,20 +1032,20 @@ sub encaminhar_atendimento :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :
                detail => 'O guiche informado não existe.' });
 
       $outro_guiche->encaminhamentos->create
-        ({ vt_ini => $now,
-           vt_fim => 'Infinity',
-           id_atendimento => $atendimento->id_atendimento,
-           id_guiche_origem => $guiche_origem->id_guiche,
-           informacoes => $motivo });
-    } elsif ($query->{encaminhamento}{id_categoria}) {
-      $c->stash->{local}->encaminhamentos_categoria->create
-        ({ id_categoria => $query->{encaminhamento}{id_categoria},
-           vt_ini => $now,
+        ({ vt_ini => $data_encaminhamento,
            vt_fim => 'Infinity',
            id_atendimento => $atendimento->id_atendimento,
            id_guiche_origem => $guiche_origem->id_guiche,
            informacoes => $motivo });
 
+    } elsif ($query->{encaminhamento}{id_categoria}) {
+      $c->stash->{local}->encaminhamentos_categoria->create
+        ({ id_categoria => $query->{encaminhamento}{id_categoria},
+           vt_ini => $data_encaminhamento,
+           vt_fim => 'Infinity',
+           id_atendimento => $atendimento->id_atendimento,
+           id_guiche_origem => $guiche_origem->id_guiche,
+           informacoes => $motivo });
     } else {
       die $c->stash->{soap}->fault
         ({ code => 'Client',
@@ -1183,6 +1230,7 @@ sub disponivel :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
     }
 
     my $atendimento = $c->stash->{guiche}->atendimento_atual->find;
+
     if ($atendimento) {
         die $c->stash->{soap}->fault
           ({ code => 'Server',

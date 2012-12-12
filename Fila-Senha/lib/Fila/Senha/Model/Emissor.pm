@@ -16,9 +16,10 @@ package Fila::Senha::Model::Emissor;
 # título "LICENCA.txt", junto com este programa, se não, escreva para a
 # Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor
 
-use strict;
 use warnings;
+use strict;
 use EV;
+
 use IO::Handle;
 use POSIX qw(:termios_h);
 use base 'Catalyst::Model';
@@ -29,9 +30,10 @@ our ($read_watcher, $write_watcher);
 
 sub bloquear {
     my $self = shift;
-
     if ($Fila::Senha::porta_emissor eq 'emulate') {
-        #warn 'Emissor Bloqueado!'.$/;
+        warn 'Emissor Bloqueado EMULATE!'.$/;
+    } elsif ($Fila::Senha::porta_emissor eq 'gtk') {
+      @::categorias_nomes = ();
     } else {
         $self->push_write('@ESP0000.');
     }
@@ -40,24 +42,22 @@ sub bloquear {
 my $cats;
 sub abrir {
     my $self = shift;
-
-	#warn 'Buscando categorias..';
-	$cats ||= Fila::Senha->model('SOAP::Senha')->listar_categorias
-      ({ local => {} });
-
+	$cats ||= Fila::Senha->model('SOAP::Senha')->listar_categorias ({ 
+			local => {} 
+			});
 	unless ($cats) {
-        #warn 'Erro buscando categorias.';
         die 'Erro buscando categorias.';
 	}
-
     $self->ids({});
-
     my $max_ordem = 0;
     foreach my $tmp (@{$cats->{lista_categorias}{categoria}}) {
 	$self->ids->{$tmp->{ordem}} = $tmp->{id_categoria};
+        eval {
+	  $::categorias_nomes[ $tmp->{ordem} - 1 ] = ' ' . $tmp->{nome} . ' ';
+          $::categorias_ids[ $tmp->{ordem} - 1 ] = $tmp->{id_categoria};
+        };
 	$max_ordem = $tmp->{ordem} if $tmp->{ordem} > $max_ordem;
     }
-
     my $categorias;
     for (1..$max_ordem) {
         $categorias .=
@@ -65,8 +65,9 @@ sub abrir {
     }
 
     if ($Fila::Senha::porta_emissor eq 'emulate') {
-        #warn 'Emissor aberto '.$categorias.'!'.$/;
         $self->_check_emulate_watcher();
+    } elsif ($Fila::Senha::porta_emissor eq 'gtk') { 
+#        warn 'Emissor aberto '.$categorias.'!'.$/;
     } else {
         #warn 'Escrevendo categorias';
         $self->push_write('@ESP'.$categorias.'.');
@@ -83,7 +84,6 @@ sub push_write {
 
     $self->_check_fh;
     $self->_check_wb;
-	#warn 'Fim push_write';
 }
 
 sub _check_fh {
@@ -91,6 +91,7 @@ sub _check_fh {
 
     return if $self->fh;
     return if $Fila::Senha::porta_emissor eq 'emulate';
+    return if $Fila::Senha::porta_emissor eq 'gtk';
 	
     open my $fh, '+<', $Fila::Senha::porta_emissor
       or do {
@@ -115,8 +116,6 @@ sub _check_fh {
 
     $self->fh($fh);
 }
-
-
 
 sub _check_readwatcher {
 	my $self = shift;
@@ -154,8 +153,6 @@ sub _check_wb {
         my $wrt = $self->fh->syswrite($buf, $len);
         my $wrote = substr($buf,0,$wrt,'');
         $self->write_buffer($buf);
-
-        #warn 'Wrote ('.$wrote.') into device';
         $write_watcher = undef;
         $self->_check_readwatcher unless $buf; 
     };
@@ -183,7 +180,6 @@ sub _check_rb {
         if (substr($buf,0,1) ne '@') {
             my $pos = index $buf, '@';
             if ($pos < 0) {
-                #warn 'Disarding bad read buffer ('.$buf.')';
                 $self->read_buffer('');
                 return;
             } else {
@@ -232,8 +228,6 @@ sub _check_rb {
             $self->read_buffer($buf); 
         }
     }
-
-
 }
 
 1;

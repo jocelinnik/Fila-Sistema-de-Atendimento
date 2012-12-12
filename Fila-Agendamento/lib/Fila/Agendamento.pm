@@ -27,7 +27,7 @@ our $VERSION = '0.01';
 
 __PACKAGE__->config( name => 'Fila::Agendamento' );
 
-__PACKAGE__->setup(qw/-Debug ConfigLoader Static::Simple Session
+__PACKAGE__->setup(qw/ ConfigLoader Static::Simple Session
       Session::Store::FastMmap Session::State::Cookie Unicode/);
 
 1;

@@ -42,7 +42,7 @@ print '<HTML><HEAD><TITLE>Sistema de Atendimento</TITLE></HEAD><BODY><P id="p_ca
     use Catalyst::Runtime '5.70';
     use Net::XMPP2::Connection;
 
-    use Catalyst qw/Unicode Prototype/;
+    use Catalyst qw/ Unicode Static::Simple Prototype/;
     our $VERSION = '0.01';
 
     my $app = __PACKAGE__;
@@ -54,6 +54,7 @@ print '<HTML><HEAD><TITLE>Sistema de Atendimento</TITLE></HEAD><BODY><P id="p_ca
 	    $user_jid = $query->param('usuario').'@agents.fila.vhost'; #emissor@agents.fila.vhost
 	    $domain = 'agents.fila.vhost'; #dominio agents.fila.vhost
     } else { 
+       $::major_mode = 'people';
 	    $user_jid = $query->param('usuario').'@people.fila.vhost'; #emissor@agents.fila.vhost
 	    $domain = 'people.fila.vhost';
     }

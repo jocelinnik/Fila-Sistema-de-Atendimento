@@ -890,29 +890,7 @@ sub escalonar_senha :WSDLPort('GestaoLocal') :DBICTransaction('DB') :MI {
 
     }
 
-    # Vamos obter o vt_ini do estado 'chamando' da 3 senha atras...
-    my $vtinis = $c->stash->{local}->atendimentos->search
-      ({ 'estado.nome' => 'chamando' },
-       {
-        join => { estados => 'estado' },
-        order_by => 'estados.vt_ini DESC',
-        rows => 1,
-        offset => 100,
-        select => [ 'estados.vt_ini' ],
-        as => [ 'vt_ini' ]})->first;
-    if ($vtinis) {
-        my $vt_ini = $vtinis->get_column('vt_ini');
-        my $encerrar = $c->stash->{local}->atendimentos_atuais->search
-          ({ 'estado.nome' => 'no_show',
-             'estados.vt_ini' => { '<' => $vt_ini } },
-           { join => { estados => 'estado' }});
-        while (my $at = $encerrar->next) {
-            $at->update({ 'vt_fim' => $now });
-        }
-
-    }
-    #warn 'escalonar senha: refresh painel';
-    $c->forward('/ws/gestao/local/refresh_painel');
+    $c->stash->{refresh_painel} = 1;
     $c->stash->{refresh_gerente} = 1;
 }
 

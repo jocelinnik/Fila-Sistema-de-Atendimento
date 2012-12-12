@@ -24,7 +24,7 @@
 <LEGEND>Entrar</LEGEND>
 <P><LABEL>Usuário: <INPUT TYPE="text" name="usuario" /></LABEL></P>
 <P><LABEL>Senha: <INPUT TYPE="password" name="senha" /></LABEL></P>
-<P><LABEL>Mesa: <INPUT TYPE="text" name="guiche" /></LABEL></P>
+<P><LABEL>Sala: <INPUT TYPE="text" name="guiche" /></LABEL></P>
 <P><INPUT TYPE="submit" VALUE="Entrar" /></P>
 </FIELDSET>
 

@@ -46,13 +46,13 @@ sub auto :Private {
 # nenhuma checagem de autenticação.
 sub escalonar_senha :WSDLPort('Scheduler') :DBICTransaction('DB') :MI {
   my ($self, $c, $query) = @_;
-
+  warn "Escalonar senha";
   my $id_local = $query->{local}{id_local};
   $c->stash->{local} = $c->model('DB::Local')->find({ id_local => $id_local });
   $c->stash->{gerente} = $c->stash->{local}->gerente_atual->first;
   $c->stash->{funcionario} = $c->stash->{gerente}->funcionario;
   $c->forward('/ws/gestao/local/escalonar_senha');
-
+  
   $c->stash->{soap}->compile_return(undef);
 }
 

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkWindow" id="window_painel">
+    <property name="width_request">1920</property>
+    <property name="height_request">1080</property>
+    <property name="can_focus">False</property>
+    <property name="resizable">False</property>
+    <property name="hide_titlebar_when_maximized">True</property>
+    <property name="accept_focus">False</property>
+    <property name="focus_on_map">False</property>
+    <property name="decorated">False</property>
+    <property name="deletable">False</property>
+    <property name="gravity">center</property>
+    <property name="has_resize_grip">False</property>
+    <property name="mnemonics_visible">False</property>
+    <property name="focus_visible">False</property>
+    <child>
+      <object class="GtkFixed" id="fixed_principal">
+        <property name="width_request">1920</property>
+        <property name="height_request">1080</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkFixed" id="fixed_video">
+            <property name="width_request">1280</property>
+            <property name="height_request">720</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="tooltip_markup" translatable="yes">	</property>
+            <child>
+              <object class="GtkImage" id="image_video">
+                <property name="width_request">1280</property>
+                <property name="height_request">720</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="stock">gtk-missing-image</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkFixed" id="fixed_painel">
+            <property name="width_request">640</property>
+            <property name="height_request">900</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkFixed" id="fixed_chamando">
+                <property name="width_request">640</property>
+                <property name="height_request">180</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="senha_chamando">
+                    <property name="width_request">640</property>
+                    <property name="height_request">180</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="label" translatable="yes">W000 00</property>
+                    <property name="justify">center</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Courier New Bold 100"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkFixed" id="fixed_ultimas">
+                <property name="width_request">640</property>
+                <property name="height_request">720</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="label_ultimas">
+                    <property name="width_request">640</property>
+                    <property name="height_request">720</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="label" translatable="yes">W000 00
+W000 00
+W000 00
+W000 00
+W000 00</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Courier New Bold 100"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="y">180</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="x">1280</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFixed" id="fixed_noticias">
+            <property name="width_request">1920</property>
+            <property name="height_request">180</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkLabel" id="label_noticias">
+                <property name="width_request">1920</property>
+                <property name="height_request">180</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">Notícias notícias notícias</property>
+                <property name="justify">center</property>
+                <property name="ellipsize">start</property>
+                <property name="single_line_mode">True</property>
+                <attributes>
+                  <attribute name="font-desc" value="Arial 100"/>
+                  <attribute name="foreground" value="#cccccccccccc"/>
+                </attributes>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="y">900</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFixed" id="fixed_clima">
+            <property name="width_request">1280</property>
+            <property name="height_request">180</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkLabel" id="label_hora">
+                <property name="width_request">400</property>
+                <property name="height_request">180</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">00:00</property>
+                <attributes>
+                  <attribute name="font-desc" value="Courier New Bold 100"/>
+                </attributes>
+              </object>
+            </child>
+            <child>
+              <object class="GtkImage" id="image_clima">
+                <property name="width_request">180</property>
+                <property name="height_request">180</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="stock">gtk-missing-image</property>
+              </object>
+              <packing>
+                <property name="x">400</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_clima">
+                <property name="width_request">700</property>
+                <property name="height_request">180</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">Clima</property>
+                <property name="justify">center</property>
+                <attributes>
+                  <attribute name="font-desc" value="Arial 100"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="x">580</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="y">720</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

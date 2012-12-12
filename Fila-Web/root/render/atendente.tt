@@ -109,7 +109,7 @@
         <DIV ID="CHAT_WINDOW">&nbsp;</DIV>
         <DIV ID="CHAT_SEND">
             <form name="chat" id="chat" onsubmit="return enviarchat()">
-            	<input type="hidden" name="chatTo" value="[% dados_local.local.jid_gerente | html %]">
+    		<input type="hidden" name="chatTo" value="[% dados_local.local.jid_gerente | html %]">
                 <input type="text" name="txtTexto" id="txtTexto" style="width: 100%" maxlength="100"> 
                 <button value="Enviar" id="BtEnviar" type="submit">Enviar</button>
             </FORM>
