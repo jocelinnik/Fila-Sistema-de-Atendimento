@@ -96,7 +96,6 @@ function aplicar_filtro_servicos(text) {
     <BODY onload='disconnected_so_move_away()'>
     <DIV id="BackHeader">
 	    <DIV id="header">
-	    	<H1>Sistema de Atendimento</H1>
 	    	<DIV id="header2"> </DIV>
 	    </div>
     </DIV>
