@@ -201,6 +201,7 @@ sub imprimir_senha {
         if ( $dados->{Fault} ) {
             warn 'Erro ao pedir senha. ' . $dados->{Fault}{faultstring};
             &limpar_senha;
+            $::chamar = undef;
         }
         else {
             warn 'Imprimir senha';

@@ -141,7 +141,6 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
 
     my $id_categoria = $query->{atendimento}{id_categoria};
     my $vt_ini = $query->{atendimento}{vt_ini};
-    warn "vt_ini: $vt_ini";
     unless ($id_categoria) {
         die $c->stash->{soap}->fault(
             {
@@ -198,9 +197,7 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
 
     my $recente;
 
-    if ( DateTime->compare_ignore_floating( $inicio, $now ) ) {
-        $codigo_senha_atual = int( ( int($inicio->epoch / 60) - int($abertura->epoch / 60) ) % 999 );
-    }
+    $codigo_senha_atual = int( ( int($inicio->epoch / 60) - int($abertura->epoch / 60) ) % 999 );
 
     unless ($codigo_senha_atual) {
         $inicio  = $now;
