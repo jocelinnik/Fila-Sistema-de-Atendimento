@@ -215,8 +215,8 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
                 'prefetch' => { 'senha' => 'categoria' },
                 'rows'     => 1
             }
+	);
             $codigo_senha_atual = $recente->senha->codigo;
-        }
     }
 
     # se a senha gerada estiver alocada a um atendimento corrente,
