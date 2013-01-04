@@ -127,12 +127,6 @@ sub listar_categorias : WSDLPort('GestaoSenha') : DBICTransaction('DB') : MI {
       ->compile_return( { lista_categorias => { categoria => $cat } } );
 }
 
-sub escalonar_senha : WSDLPort('GestaoSenha') : DBICTransaction('DB') : MI {
-    my ( $self, $c, $query ) = @_;
-    warn 'Gestao/Senha: escalonar_senha';
-    $c->stash->{escalonar_senha} = 1;
-}
-
 sub escalonar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
     my ($self, $c, $query) = @_;
     warn 'Gestao/Senha: escalonar_senha';
