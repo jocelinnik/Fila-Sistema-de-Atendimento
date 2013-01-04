@@ -86,25 +86,19 @@ sub listar_categorias : WSDLPort('GestaoSenha') : DBICTransaction('DB') : MI {
 
     my $now = $c->stash->{now};
 
-    my $ordem = $c->stash->{local}->configuracoes_categoria->search(
-        {
-            'me.vt_ini' => { '<=' => $now },
-            'me.vt_fim' => { '>'  => $now },
-            'me.ordem'  => { '<>' => 0 }
-        },
-        { 'order_by' => 'me.ordem ASC', prefetch => 'categoria' }
-    );
-
-    unless ($ordem) {
-        die $c->stash->{soap}->fault(
-            {
-                code   => 'Server',
-                reason => 'Nao encontrou ordem das categorias do emissor',
-                detail =>
-                  'Ocorreu um erro ao buscar a ordem das categorias do emissor.'
-            }
-        );
-    }
+    
+    my $ordem = $c->stash->{local}->configuracoes_categoria->search
+      ({ 'me.vt_ini' => { '<=' => $now } ,
+    	 'me.vt_fim' => { '>' => $now },
+    	 'me.ordem' => { '<>' => 0 }}, { 'order_by' => 'me.ordem ASC' , prefetch => 'categoria' } );
+    	 
+   	unless ($ordem) {
+   		die $c->stash->{soap}->fault(
+   			{ code => 'Server' ,
+   			  reason => 'Nao encontrou ordem das categorias do emissor',
+   			  detail => 'Ocorreu um erro ao buscar a ordem das categorias do emissor.' }
+   		);
+   	}
 
     # my $categorias = $c->stash->{local}->configuracoes_categoria->search
     #  ({ 'me.vt_ini' => { '<=', $now },
@@ -139,15 +133,21 @@ sub escalonar_senha : WSDLPort('GestaoSenha') : DBICTransaction('DB') : MI {
     $c->stash->{escalonar_senha} = 1;
 }
 
-sub solicitar_senha : WSDLPort('GestaoSenha') : DBICTransaction('DB') : MI {
-    my ( $self, $c, $query ) = @_;
+sub escalonar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
+    my ($self, $c, $query) = @_;
+    warn 'Gestao/Senha: escalonar_senha';
+    $c->stash->{escalonar_senha} = 1; 
+}
+
+sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
+    my ($self, $c, $query) = @_;
 
     # Temos que ver qual é a senha do atendimento mais recente nessa
     # categoria, para dar uma senha subsequente.
 
     my $id_categoria = $query->{atendimento}{id_categoria};
-    my $vt_ini       = $query->{atendimento}{vt_ini};
-
+    my $vt_ini = $query->{atendimento}{vt_ini};
+    warn "vt_ini: $vt_ini";
     unless ($id_categoria) {
         die $c->stash->{soap}->fault(
             {
@@ -221,8 +221,6 @@ sub solicitar_senha : WSDLPort('GestaoSenha') : DBICTransaction('DB') : MI {
                 'prefetch' => { 'senha' => 'categoria' },
                 'rows'     => 1
             }
-        )->first;
-        if ($recente) {
             $codigo_senha_atual = $recente->senha->codigo;
         }
     }
@@ -235,9 +233,7 @@ sub solicitar_senha : WSDLPort('GestaoSenha') : DBICTransaction('DB') : MI {
 
   CHECARSENHA:
     do {
-
-        if ( $codigo_senha_atual >= 999 ) {
-
+        if ($codigo_senha_atual >= 999) {
             # as senhas acabaram, vamos reiniciar.
             $codigo_senha_atual = 0;
             $recicled++;
@@ -271,6 +267,7 @@ sub solicitar_senha : WSDLPort('GestaoSenha') : DBICTransaction('DB') : MI {
         if ( $verificar->first ) {
             goto CHECARSENHA;
         }
+
     };
 
     my $senha = $c->stash->{local}->senhas->find(

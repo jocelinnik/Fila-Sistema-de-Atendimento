@@ -1,7 +1,6 @@
 package Fila::Senha;
 use utf8;
 use 5.010;
-
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -39,15 +38,15 @@ our $porta_emissor;
 our $categorias;
 
 {
-    my $portas = __PACKAGE__->config->{portas};
-    die 'Porta da impressora nao configurada'
-      unless $porta_impressora = $portas->{impressora};
+	my $portas = __PACKAGE__->config->{portas};
+	die 'Porta da impressora nao configurada' unless
+		$porta_impressora = $portas->{impressora};
 
-    die 'Porta do emissor nao configurada'
-      unless $porta_emissor = $portas->{emissor};
+	die 'Porta do emissor nao configurada' unless
+		$porta_emissor = $portas->{emissor};
 
-    $categorias = __PACKAGE__->config->{categorias}
-      or die 'Categorias nao configuradas.';
+	$categorias = __PACKAGE__->config->{categorias}
+	or die 'Categorias nao configuradas.';
 
 }
 
