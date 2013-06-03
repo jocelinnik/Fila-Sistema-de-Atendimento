@@ -26,8 +26,8 @@ use POSIX qw(strftime ceil floor);
 use Weather::Google;
 use XML::Feed;
 
-#my $uri = 'http://rss.terra.com.br/0,,EI1,00.xml';
-my $uri = 'http://portalsaude.saude.gov.br/portalsaude/feeds/rss.cfm?area=2&codModuloArea=162';
+my $uri = 'http://rss.terra.com.br/0,,EI1,00.xml';
+#my $uri = 'http://portalsaude.saude.gov.br/portalsaude/feeds/rss.cfm?area=2&codModuloArea=162';
 my $chamada = 0;
 # If you plan on using locations with non-ASCII characters
 use encoding 'utf8';
@@ -88,7 +88,7 @@ sub atualizar_noticias {
 
   if (int(time() - $atualizacao) > (60 * 10)) {
      my $ts ;
-     my $feed = XML::Feed->parse(URI->new($uri)) or die XML::Feed->errstr;
+     my $feed = XML::Feed->parse(URI->new($uri)) or warn XML::Feed->errstr;
      for my $entry ($feed->entries) {
         $ts .= ' → '.$entry->title.'   ';
      }
@@ -304,14 +304,15 @@ sub cycle_ultimas {
 sub setup_widgets {
 	$window->signal_connect('destroy', sub { Gtk2->main_quit });
 	$window->set_decorated(0);
+        $window->move(1025,0);
 	$window->modify_bg($window->state, Gtk2::Gdk::Color->parse("#000000"));
 	Gtk2::Window::fullscreen($window);
 	$lblsenha->modify_font(Gtk2::Pango::FontDescription->from_string("Courier Bold 100")); $lblsenha->modify_fg($lblsenha->state, Gtk2::Gdk::Color->parse("Yellow"));
 	$lblultima->modify_font(Gtk2::Pango::FontDescription->from_string("Courier Bold 100")); $lblultima->modify_fg($lblultima->state, Gtk2::Gdk::Color->parse("Light Blue"));
 
-	$label_clima->modify_font(Gtk2::Pango::FontDescription->from_string("Georgia 50")); $label_clima->modify_fg($label_clima->state, Gtk2::Gdk::Color->parse("Light Blue"));
-	$label_time->modify_font(Gtk2::Pango::FontDescription->from_string("Georgia 50")); $label_time->modify_fg($label_time->state, Gtk2::Gdk::Color->parse("Light Yellow"));
-	$label_news->modify_font(Gtk2::Pango::FontDescription->from_string("Verdana 100")); $label_news->modify_fg($label_news->state, Gtk2::Gdk::Color->parse("Light Green"));
+	$label_clima->modify_font(Gtk2::Pango::FontDescription->from_string("Tahoma 50")); $label_clima->modify_fg($label_clima->state, Gtk2::Gdk::Color->parse("Light Blue"));
+	$label_time->modify_font(Gtk2::Pango::FontDescription->from_string("Tahoma 50")); $label_time->modify_fg($label_time->state, Gtk2::Gdk::Color->parse("Light Yellow"));
+	$label_news->modify_font(Gtk2::Pango::FontDescription->from_string("Tahoma 100")); $label_news->modify_fg($label_news->state, Gtk2::Gdk::Color->parse("Light Green"));
 	$viewport_news->modify_bg($label_news->state,Gtk2::Gdk::Color->new(0*000, 0*000, 000*000));
 	$window->show_all();
 }

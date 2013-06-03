@@ -36,8 +36,8 @@
     text-align: center;
 }
 .grid_h {
-    font-size: 1.5em;
-    padding: 6px;
+    font-size: 0.9em;
+    padding: 3px;
 }
 </STYLE>
 [% error %]

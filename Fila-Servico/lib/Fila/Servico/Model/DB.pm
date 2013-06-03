@@ -20,7 +20,17 @@ use strict;
 use warnings;
 use base 'Catalyst::Model::DBIC::Schema';
 
-
+__PACKAGE__->config(
+    schema_class    => 'Fila::Servico::DB',
+    connect_info    => [
+        'dbi:Pg:host=127.0.0.1;database=fila;',
+        'fila',
+        'senha',
+        {
+            pg_enable_utf8 => 1,
+        },
+    ]
+);
 1;
 
 __END__

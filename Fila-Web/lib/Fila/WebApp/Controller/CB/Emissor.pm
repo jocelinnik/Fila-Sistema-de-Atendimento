@@ -50,7 +50,7 @@ sub solicitar_senha : WSDLPort('FilaWebEmissorCallback') {
 	    my $id_atendimento = $atendimento->{atendimento}{id_atendimento};
 	    $c->stash->{id_atendimento} = $id_atendimento;
 	    eval {
-	    	$c->model('Impressora')->imprimir_senha($atendimento);
+	    	#$c->model('Impressora')->imprimir_senha($atendimento);
 	    };
 	    if ($@) {
 		warn $@;

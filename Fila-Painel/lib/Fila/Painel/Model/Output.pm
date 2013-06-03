@@ -26,9 +26,9 @@ my $csv = Text::CSV_XS->new;
 
 sub salvar {
     my ($self, $senhas) = @_;
-    open my $output, '>', '/home/fila/painel/senhas_chamando.csv'
-      or die $!;
-    warn 'Arquivo vazio! /home/fila/painel/senhas_chamando.csv';
+    open my $output, '>', '/home/fila/senhas_chamando.csv'
+      or die 'erro abrindo /home/fila/senhas_chamando.csv'.$!;
+    warn 'Arquivo vazio! /home/fila/senhas_chamando.csv';
     for (@$senhas) {
         $csv->print($output, $_);
         print {$output} "\n";

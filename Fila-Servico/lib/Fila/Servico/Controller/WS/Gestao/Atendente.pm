@@ -267,7 +267,7 @@ sub status_guiche :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
               qw/ estado_desde estado_atendimento_desde / ),
             id_local => $c->stash->{local}->id_local,
             senha => $guiche->get_column('codigo_senha') ?
-            ( sprintf('%s%03d', ( map { $guiche->get_column($_) || '' }
+            ( sprintf('%s%04d', ( map { $guiche->get_column($_) || '' }
                                   qw( codigo_categoria codigo_senha ) )) ) : '',
             servicos => { servico => $interno },
             agendamento => $agendamento } } );
@@ -373,7 +373,7 @@ sub listar_no_show :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
             {( map { $_ => $atendimento->$_() }
               qw/ id_atendimento id_local id_senha / ),
              estado => 'no_show',
-             senha => sprintf('%s%03d',$senha->categoria->codigo, $senha->codigo)}
+             senha => sprintf('%s%04d',$senha->categoria->codigo, $senha->codigo)}
     }
 
     $c->stash->{soap}->compile_return
@@ -553,7 +553,7 @@ sub listar_pendente :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
             {( map { $_ => $atendimento->$_() }
               qw/ id_atendimento id_local id_senha / ),
              estado => 'no_show',
-             senha => sprintf('%s%03d',$senha->categoria->codigo, $senha->codigo)}
+             senha => sprintf('%s%04d',$senha->categoria->codigo, $senha->codigo)}
     }
 
     $c->stash->{soap}->compile_return
@@ -1319,11 +1319,6 @@ sub fechar_guiche :WSDLPort('GestaoAtendente') :DBICTransaction('DB') :MI {
 
     if ($atendente) {
         $atendente->update({ vt_fim => $now });
-    } else {
-        die $c->stash->{soap}->fault
-          ({ code => 'Server',
-             reason => 'Atendimento ainda associado.',
-             detail => 'Nenhum atendente associado ao guichê.' });
     }
 
     $c->stash->{guiche}->estados->create

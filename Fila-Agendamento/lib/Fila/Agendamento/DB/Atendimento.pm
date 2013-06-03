@@ -43,6 +43,11 @@ __PACKAGE__->add_columns
    {
     data_type => 'varchar'
    },
+   telefone =>
+   {
+    data_type => 'varchar'
+   },
+ 
    tipopessoa =>
    {
     data_type => 'varchar',

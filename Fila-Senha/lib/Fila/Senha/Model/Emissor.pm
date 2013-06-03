@@ -30,18 +30,18 @@ our ($read_watcher, $write_watcher);
 
 sub bloquear {
     my $self = shift;
+    $::local_aberto = 0;
     if ($Fila::Senha::porta_emissor eq 'emulate') {
         warn 'Emissor Bloqueado EMULATE!'.$/;
-    } elsif ($Fila::Senha::porta_emissor eq 'gtk') {
-      @::categorias_nomes = ();
-    } else {
+    } elsif ($Fila::Senha::porta_emissor =~ /^\/dev\//) {
         $self->push_write('@ESP0000.');
     }
 }
-
+use Encode qw(decode encode);
 my $cats;
 sub abrir {
     my $self = shift;
+    $::local_aberto = 1;
 	$cats ||= Fila::Senha->model('SOAP::Senha')->listar_categorias ({ 
 			local => {} 
 			});
@@ -53,9 +53,10 @@ sub abrir {
     foreach my $tmp (@{$cats->{lista_categorias}{categoria}}) {
 	$self->ids->{$tmp->{ordem}} = $tmp->{id_categoria};
         eval {
-	  $::categorias_nomes[ $tmp->{ordem} - 1 ] = ' ' . $tmp->{nome} . ' ';
-          $::categorias_ids[ $tmp->{ordem} - 1 ] = $tmp->{id_categoria};
-        };
+          my $nome = decode("utf8", $tmp->{nome});
+	  $::categorias_ordem{ $nome } = $tmp->{ordem}; 
+	  $::categorias_id{ $nome } = $tmp->{id_categoria};
+	};
 	$max_ordem = $tmp->{ordem} if $tmp->{ordem} > $max_ordem;
     }
     my $categorias;
@@ -63,7 +64,6 @@ sub abrir {
         $categorias .=
           $self->ids->{$_} ? '1' : '0';
     }
-
     if ($Fila::Senha::porta_emissor eq 'emulate') {
         $self->_check_emulate_watcher();
     } elsif ($Fila::Senha::porta_emissor eq 'gtk') { 

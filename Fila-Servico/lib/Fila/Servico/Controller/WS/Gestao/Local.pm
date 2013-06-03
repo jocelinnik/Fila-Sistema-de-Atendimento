@@ -88,7 +88,7 @@ sub refresh_painel :Private {
     while (my $atendimento = $atendimentos->next) {
         my $id = $atendimento->guiche_atual->first->guiche->identificador;
         $id =~ s/(^\s+|\s+$)//gs;
-        push @$ret, { senha => sprintf('%s%03d', $atendimento->senha->categoria->codigo,
+        push @$ret, { senha => sprintf('%s%04d', $atendimento->senha->categoria->codigo,
                                        $atendimento->senha->codigo),
                       guiche => $id };
         #warn $id;
@@ -744,7 +744,7 @@ sub status_guiches :WSDLPort('GestaoLocal') :DBICTransaction('DB') :MI {
            id_local => $c->stash->{local}->id_local,
            alert => $alert,
            senha => $guiche->get_column('codigo_senha') ?
-           ( sprintf('%s%03d', ( map { $guiche->get_column($_) || '' }
+           ( sprintf('%s%04d', ( map { $guiche->get_column($_) || '' }
                                  qw( codigo_categoria codigo_senha ) )) ) : '',
           }
       }

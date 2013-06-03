@@ -33,7 +33,7 @@ __PACKAGE__->add_columns
    },
    codigo =>
    {
-    data_type => 'char(1)',
+    data_type => 'varchar',
    },
   );
 __PACKAGE__->set_primary_key(qw(id_categoria));

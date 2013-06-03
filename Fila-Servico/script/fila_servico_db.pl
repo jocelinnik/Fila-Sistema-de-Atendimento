@@ -230,7 +230,7 @@ SELECT SETVAL('servico_interno_id_servico_seq', 4);
 SQL
 
 for my $id_categoria (1..5) {
-    for my $senha (1..999) {
-        print 'INSERT INTO senha VALUES ('.((($id_categoria - 1)*999) + $senha).','.$id_categoria.',1,'.$senha.");\n";
+    for my $senha (1..9999) {
+        print 'INSERT INTO senha VALUES ('.((($id_categoria * 10000) + $senha).','.$id_categoria.',1,'.$senha.");\n";
     }
 }

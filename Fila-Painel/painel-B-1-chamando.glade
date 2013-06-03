@@ -1,4 +1,6 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
+<!--Generated with glade3 3.4.5 on Thu Feb  7 12:30:04 2013 -->
 <glade-interface>
   <widget class="GtkWindow" id="window1">
     <property name="visible">True</property>
@@ -8,109 +10,46 @@
       <widget class="GtkFixed" id="fixed_principal">
         <property name="width_request">1920</property>
         <property name="height_request">1080</property>
-        <property name="visible">True</property>   
-        <child>
-          <widget class="GtkFixed" id="fixed_video">
-            <property name="width_request">1280</property>
-            <property name="height_request">710</property>
-            <property name="visible">True</property>
-          </widget>
-          <packing>
-            <property name="x">0</property>
-            <property name="y">0</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="GtkFixed" id="fixed_clima">
-            <property name="width_request">1280</property>
-            <property name="height_request">180</property>
-            <property name="visible">True</property>
-            <child>
-              <widget class="GtkLabel" id="label_time">
-                <property name="width_request">320</property>
-                <property name="height_request">180</property>
-                <property name="visible">True</property>
-                <property name="xalign">0.5</property>
-                <property name="yalign">0.5</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="justify">center</property>
-              </widget>
-              <packing>
-                <property name="y">20</property>
-                <property name="x">960</property>
-              </packing> 
-            </child>
-            <child>
-              <widget class="GtkLabel" id="label_clima">
-                <property name="width_request">920</property>
-                <property name="height_request">180</property>
-                <property name="visible">True</property>
-                <property name="xalign">0.5</property>
-                <property name="yalign">0.5</property>
-                <property name="xpad">0</property>
-              </widget>
-              <packing>
-                <property name="y">20</property>
-                <property name="x">20</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="x">0</property>
-            <property name="y">710</property>
-          </packing> 
-        </child>
+        <property name="visible">True</property>
         <child>
           <widget class="GtkFixed" id="fixed_news">
             <property name="width_request">1920</property>
             <property name="height_request">160</property>
             <property name="visible">True</property>
-	    <child>
+            <child>
               <widget class="GtkViewport" id="viewport_news">
-              
                 <child>
                   <widget class="GtkLabel" id="label_news">
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                     <property name="yalign">0</property>
                   </widget>
-                  <packing>
-                    <property name="y">0</property>
-                    <property name="x">0</property>
-                  </packing> 
                 </child>
               </widget>
             </child>
           </widget>
           <packing>
-            <property name="x">0</property>
-            <property name="y">900</property>
-          </packing> 
+            <property name="y">961</property>
+          </packing>
         </child>
         <child>
           <widget class="GtkFixed" id="fixed_chamando">
             <property name="width_request">640</property>
-            <property name="height_request">300</property>
+            <property name="height_request">320</property>
             <property name="visible">True</property>
             <child>
               <widget class="GtkLabel" id="label_chamando">
                 <property name="width_request">640</property>
-                <property name="height_request">300</property>
+                <property name="height_request">320</property>
                 <property name="visible">True</property>
                 <property name="xalign">0</property>
                 <property name="yalign">0</property>
-                <property name="xpad">0</property>
               </widget>
-              <packing>
-                <property name="y">0</property>
-                <property name="x">0</property>
-              </packing>
             </child>
           </widget>
           <packing>
             <property name="x">1280</property>
-          </packing> 
+          </packing>
         </child>
         <child>
           <widget class="GtkFixed" id="fixed_ultimas">
@@ -124,17 +63,12 @@
                 <property name="visible">True</property>
                 <property name="xalign">0</property>
                 <property name="yalign">0</property>
-                <property name="xpad">0</property>
               </widget>
-              <packing>
-                <property name="y">0</property>
-                <property name="x">0</property>
-              </packing>
             </child>
           </widget>
           <packing>
             <property name="x">1280</property>
-            <property name="y">300</property>
+            <property name="y">320</property>
           </packing>
         </child>
       </widget>

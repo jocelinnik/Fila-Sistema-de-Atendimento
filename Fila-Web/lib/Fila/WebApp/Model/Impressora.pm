@@ -31,38 +31,37 @@ __PACKAGE__->mk_accessors('fh');
 
 sub imprimir_senha {
     my ($self, $dados) = @_;
-
+    return ();
     $self->_check_fh;
 
     my $date = DateTime::Format::XSD->parse_datetime
       ($dados->{atendimento}{vt_ini});
     $date->set_time_zone('local');
     my $san = $dados->{atendimento}{id_atendimento};
-    $san = substr($san,	-4);
+    $san = substr($san,	-9);
     my $a = encode('CP850',
 		    "\eH\e\x0f".
 		    "\eA".
-		    "Cartório do Barreiro\n".
+		    "Organização\n".
                     "\eB".
-                    "         Registro Civil e Notas  ".
+                    "Departamento".
 		    "\n\n".
                     "\eA\eC".
 		    "        ".$dados->{atendimento}{senha}.
 		    "\eB\eD".
                     "\n\n".
-                    "Controle interno:\n".
+                    "Atendimento:\n".
                     "\eA".
-                    sprintf('%04s',$san).
+                    sprintf('%09s',$san).
 		    " -- ".$date->strftime('%F').
 		    "\n".
                     "\eB".
-		    "   http://www.cartoriodobarreiro.com.br\n".
-                    "      Belo Horizonte - Minas Gerais\n\n"
+		    "   http://www.website.com.br\n".
+                    "      Cidade - UF \n\n"
 		  );
 
     use bytes;
     warn encode('utf8',$a);
-    syswrite $self->fh, $a.encode('CP850'," - - - - -  1ª VIA DA SENHA  - - - - - \n\n\x11");
     syswrite $self->fh, $a.encode('CP850'," - - - - -  2ª VIA DA SENHA  - - - - - \n\n\x11");
 
 }

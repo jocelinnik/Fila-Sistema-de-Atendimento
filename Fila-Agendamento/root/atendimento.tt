@@ -3,33 +3,93 @@
 #
 # Este arquivo √© parte do programa FILA - Sistema de Atendimento
 #
-# O FILA √© um software livre; voc√™ pode redistribui-lo e/ou modifica-lo
-# dentro dos termos da Licen√ßa P√∫blica Geral GNU como publicada pela
-# Funda√ß√£o do Software Livre (FSF); na vers√£o 2 da Licen√ßa.
+# O FILA &atilde;© um software livre; voc&atilde;™ pode redistribui-lo e/ou modifica-lo
+# dentro dos termos da Licen&atilde;a P&atilde;blica Geral GNU como publicada pela
+# Funda&atilde;&atilde;£o do Software Livre (FSF); na vers&atilde;£o 2 da Licen&atilde;a.
 #
-# Este programa √© distribuido na esperan√ßa que possa ser util, mas SEM
-# NENHUMA GARANTIA; sem uma garantia implicita de ADEQUA√á√ÇO a qualquer
-# MERCADO ou APLICA√á√ÉO EM PARTICULAR. Veja a Licen√ßa P√∫blica Geral GNU
+# Este programa &atilde;© distribuido na esperan&atilde;a que possa ser util, mas SEM
+# NENHUMA GARANTIA; sem uma garantia implicita de ADEQUA&atilde;á&atilde;ÇO a qualquer
+# MERCADO ou APLICA&atilde;á&atilde;ÉO EM PARTICULAR. Veja a Licen&atilde;a P&atilde;blica Geral GNU
 # para maiores detalhes.
 #
-# Voc√™ deve ter recebido uma c√≥pia da Licen√ßa P√∫blica Geral GNU, sob o
-# t√≠tulo "LICENCA.txt", junto com este programa, se n√£o, escreva para a
-# Funda√ß√£o do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor,
+# Voc&atilde;™ deve ter recebido uma c&atilde;≥pia da Licen&atilde;a P&atilde;blica Geral GNU, sob o
+# t&atilde;≠tulo "LICENCA.txt", junto com este programa, se n&atilde;£o, escreva para a
+# Funda&atilde;&atilde;£o do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor,
 %]
 [% INCLUDE 'header.tt' %]
 
-<h1>Informa&ccedil;&otilde;es do Agendamento</h1>
-<P><A HREF="javascript:window.print()">Imprima</A> esta tela, ela &eacute; o seu comprovante do agendamento.
-    O agendamento &eacute; pessoal e intransfer&iacute;vel.</P>
+<FIELDSET>
+<LEGEND>Informa&ccedil;&otilde;es do Agendamento</LEGEND>
+<BR/>
+
+<H2><P><A HREF="javascript:window.print()">Imprima</A> esta tela, ela &eacute; o seu comprovante do agendamento.
+    O agendamento &eacute; pessoal e intransfer&iacute;vel.</P></H2>
 [% error %]
-<TABLE style="border: 1px black solid; width: 20em">
+
+<H2>
+
+<TABLE style="font-size:15px; border: 2px black solid; width: 20em">
+
+<TR><TD><U>Prefeitura Municipal de Nova Igua&ccedil;u</U> </TD></TR>
+<TR><TD>R. Ata&iacute;de Pimenta de Morais, 528 </TD></TR>
+<TR><TD>Centro - Pa&atilde;o Municipal </TD></TR>
+<TR><TD>Telefone: (21) 2668-6774</TD></TR>
+
+</TABLE>
+
+</H2>
+
+<br/>
+
+<TABLE style="font-size:20px; border: 2px black solid; width: 30em">
  <TR>
-  <TH COLSPAN=2>Senha [% atendimento.senha %] - [% atendimento.local.nome %]</TH>
+  <TH COLSPAN=2><FONT SIZE="5" COLOR = "BLACK"> Senha [% atendimento.senha %] </FONT> - [% atendimento.local.nome %]</TH>
  </TR>
  <TR><TD>Data e Hora: </TD><TD>[% atendimento.data.strftime('%d/%m/%Y %H:%M') %]</TD></TR>
  <TR><TD>Nome: </TD><TD>[% atendimento.nome %]</TD></TR>
  <TR><TD>CPF/CNPJ: </TD><TD>[% atendimento.cnpjf %]</TD></TR>
  <TR><TD>Email: </TD><TD>[% atendimento.email %]</TD></TR>
 </TABLE>
+
+<br/>
+
+<H2>Documentos Necess&aacute;rios</H2>
+
+I &#45 c&oacute;pia da c&eacute;dula da identidade ou carteira de motorista; <br/>
+II &#45 c&oacute;pia da inscri&ccedil;&atilde;o no Cadastro de Pessoas F&iacute;sica &#45 CPF; <br/>
+III &#45 comprovante de resid&ecirc;ncia referente aos &uacute;ltimos tr&ecirc;s meses; <br/>
+IV &#45 certid&atilde;o de registro de im&oacute;vel, escritura definitiva de compra e venda ou declara&ccedil;&atilde;o de posse, no caso de tributos imobili&aacute;rios; <br/>
+V &#45 fornecimento de telefone fixo e celular. <br/>
+<br/><br/>
+1. A declara&ccedil;&atilde;o de posse descrita no inciso IV ser&aacute; firmada, exclusivamente, atrav&eacute;s de documento fornecido pela Secretaria de Economia e Finan&ccedil;as e produzir&aacute; efeitos apenas para a ades&atilde;o aos termos ao REFIS nos termo deste regulamento de da Lei 4.241/2013, n&atilde;o produzindo nenhum efeito judicial ou extrajudicial;<br/>
+2. A declara&ccedil;&atilde;o de posse n&atilde;o poder&aacute; fundamentar a altera&ccedil;&atilde;o cadastral nos arquivos da Secretaria de Economia e Finan&ccedil;as, tampouco nos processos judiciais movidos pelo Munic&iacute;pio atrav&eacute;s da Procuradoria Geral do Munic&iacute;pio, que somente ser&aacute; feita com a apresenta&ccedil;&atilde;o pelo titular ou procurador de Certid&atilde;o de Registro de Im&oacute;veis Atualizada e Autenticada;<br/>
+3. A declara&ccedil;&atilde;o de posse dever&aacute; ser id&ocirc;nea e verdadeira, sob pena de responsabiliza&ccedil;&atilde;o penal do declarante nos artigos 297 (falsifica&ccedil;&atilde;o de documento p&uacute;blico), 298 (falsifica&ccedil;&atilde;o de documento particular) e 299 (falsidade ideol&oacute;gica), todos do C&oacute;digo Penal Brasileiro, com penas de reclus&atilde;o que variam de 1 (um) a 6 (seis) anos.<br/>
+4. Na hip&oacute;tese do interessado ser representado por terceiro, ser&aacute; exigido instrumento de mandato especificamente outorgado para esse fim ou termo de inventarian&ccedil;a, sem preju&iacute;zo da apresenta&ccedil;&atilde;o dos documentos descritos no caput.<br/>
+5. Na hip&oacute;tese do interessado no parcelamento possuir v&iacute;nculo de parentesco com o sujeito passivo ou contribuinte que tiver falecido e n&atilde;o houver invent&aacute;rio em curso, o parcelamento poder&aacute; ser deferido desde que apresentada:<br/>
+
+I &#45 certid&atilde;o de &oacute;bito; <br/>
+II &#45 declara&ccedil;&atilde;o de que n&atilde;o h&aacute; invent&aacute;rio aberto, conforme modelo anexo; <br/>
+III &#45 c&oacute;pia da c&eacute;dula da identidade ou carteira de motorista; <br/>
+IV &#45 c&oacute;pia da inscri&ccedil;&atilde;o no Cadastro de Pessoas F&iacute;sica &#45 CPF; <br/>
+V &#45 comprovante de resid&ecirc;ncia referente aos &uacute;ltimos tr&ecirc;s meses;
+VI &#45 certid&atilde;o de registro de im&oacute;vel, escritura definitiva de compra e venda ou declara&ccedil;&atilde;o de posse, no caso de tributos imobili&aacute;rios; <br/>
+VII &#45 fornecimento de telefone fixo e celular. <br/>
+
+6. Na hip&oacute;tese do interessado no parcelamento descrito no caput n&atilde;o possuir a documenta&ccedil;&atilde;o exigida, poder&aacute; o Secret&aacute;rio de Economia e Finan&ccedil;as, em an&aacute;lise feita caso a caso, deferir ou n&atilde;o a ades&atilde;o do parcelamento, devendo o interessado juntar documenta&ccedil;&atilde;o que comprove do v&iacute;nculo parentesco, sem preju&iacute;zo das demais documenta&ccedil;&otilde;es exigidas no caput.
+
+<br/><br/>
+
+<H2>Descontos</H2>
+
+&#45 100% (cem por cento) para pagamento em cota &uacute;nica venc&iacute;vel em at&eacute; 30 (trinta) dias, contados do deferimento do pedido; <br/>
+&#45 80% (oitenta por cento), para quita&ccedil;&atilde;o em at&eacute; 12 (doze) parcelas; <br/>
+&#45 60% (sessenta por cento), para quita&ccedil;&atilde;o em at&eacute; 24 (vinte e quatro) parcelas; <br/>
+&#45 40% (quarenta por cento), para quita&ccedil;&atilde;o em at&eacute; 60 (sessenta) parcelas; <br/>
+&#45 20% (vinte por cento), para quita&ccedil;&atilde;o em 96 (noventa e seis) parcelas; <br/>
+
+</FIELDSET>
+
+<br/>
+
 
 [% INCLUDE 'footer.tt' %]

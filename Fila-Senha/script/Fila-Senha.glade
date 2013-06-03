@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Wed Nov 28 14:47:41 2012 -->
+<!--Generated with glade3 3.4.5 on Mon Jan 21 11:11:25 2013 -->
 <glade-interface>
   <widget class="GtkWindow" id="window1">
+    <property name="width_request">1024</property>
+    <property name="height_request">768</property>
+    <property name="border_width">5</property>
+    <property name="title">Fila - Sistema de Atendimento</property>
+    <property name="resizable">False</property>
+    <property name="window_position">GTK_WIN_POS_CENTER_ALWAYS</property>
+    <property name="default_width">1024</property>
+    <property name="default_height">768</property>
     <property name="skip_pager_hint">True</property>
     <property name="decorated">False</property>
     <property name="deletable">False</property>
@@ -12,273 +20,55 @@
         <property name="border_width">10</property>
         <property name="spacing">5</property>
         <child>
-          <widget class="GtkHBox" id="hbox1">
+          <widget class="GtkHBox" id="hbox3">
             <property name="visible">True</property>
-            <property name="spacing">5</property>
-            <property name="homogeneous">True</property>
             <child>
-              <widget class="GtkLabel" id="horario">
-                <property name="width_request">10</property>
+              <widget class="GtkImage" id="logo-cliente">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Chamar a partir de:</property>
+                <property name="pixbuf">header-logo-cliente.png</property>
               </widget>
               <packing>
-                <property name="padding">10</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkHBox" id="hbox2">
-                <property name="visible">True</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <widget class="GtkSpinButton" id="hora">
-                    <property name="width_request">10</property>
-                    <property name="visible">True</property>
-                    <property name="app_paintable">True</property>
-                    <property name="max_length">2</property>
-                    <property name="width_chars">2</property>
-                    <property name="xalign">1</property>
-                    <property name="adjustment">8 7 18 1 10 10</property>
-                    <property name="numeric">True</property>
-                    <property name="wrap">True</property>
-                  </widget>
-                  <packing>
-                    <property name="padding">10</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkSpinButton" id="minuto">
-                    <property name="visible">True</property>
-                    <property name="max_length">2</property>
-                    <property name="width_chars">2</property>
-                    <property name="xalign">1</property>
-                    <property name="adjustment">0 0 59 1 10 10</property>
-                    <property name="numeric">True</property>
-                    <property name="wrap">True</property>
-                  </widget>
-                  <packing>
-                    <property name="padding">10</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="position">1</property>
+                <property name="expand">False</property>
+                <property name="padding">3</property>
               </packing>
             </child>
             <child>
               <widget class="GtkLabel" id="header">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes"> </property>
-                <property name="justify">GTK_JUSTIFY_CENTER</property>
-                <property name="wrap">True</property>
-                <property name="width_chars">12</property>
+                <property name="xalign">0.019999999552965164</property>
+                <property name="label">Fila - Sistema de Atendimento</property>
               </widget>
               <packing>
-                <property name="position">2</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="padding">10</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="GtkHBox" id="categorias">
-            <property name="visible">True</property>
-            <property name="spacing">5</property>
-            <property name="homogeneous">True</property>
-            <child>
-              <widget class="GtkVBox" id="left">
-                <property name="visible">True</property>
-                <property name="spacing">5</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <widget class="GtkButton" id="button1">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                </child>
-                <child>
-                  <widget class="GtkButton" id="button4">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkButton" id="button7">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkButton" id="button10">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkButton" id="button13">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="padding">5</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkVBox" id="center">
-                <property name="visible">True</property>
-                <property name="spacing">5</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <widget class="GtkButton" id="button2">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                </child>
-                <child>
-                  <widget class="GtkButton" id="button5">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkButton" id="button8">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkButton" id="button11">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkButton" id="button14">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="padding">10</property>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkVBox" id="right">
+              <widget class="GtkImage" id="logo-fila">
                 <property name="visible">True</property>
-                <property name="spacing">5</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <widget class="GtkButton" id="button3">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                </child>
-                <child>
-                  <widget class="GtkButton" id="button6">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkButton" id="button9">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkButton" id="button12">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkButton" id="button15">
-                    <property name="border_width">5</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_button_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
+                <property name="pixbuf">header-logo-fila-publica.png</property>
               </widget>
               <packing>
-                <property name="padding">5</property>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="padding">3</property>
                 <property name="position">2</property>
               </packing>
             </child>
           </widget>
           <packing>
-            <property name="padding">5</property>
+            <property name="expand">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkImage" id="image1">
+            <property name="width_request">800</property>
+            <property name="height_request">600</property>
+            <property name="visible">True</property>
+            <property name="pixbuf">background-fila.png</property>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -287,12 +77,647 @@
             <property name="width_request">1004</property>
             <property name="visible">True</property>
             <property name="sensitive">False</property>
-            <property name="label" translatable="yes">	</property>
+            <property name="label">Aguardando inicialização</property>
             <property name="justify">GTK_JUSTIFY_CENTER</property>
             <property name="wrap">True</property>
             <property name="wrap_mode">PANGO_WRAP_WORD_CHAR</property>
           </widget>
           <packing>
+            <property name="expand">False</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkLabel" id="copyright">
+            <property name="visible">True</property>
+            <property name="label">FIla - Sistema de Atendimento (1.4.2) © Oktiva http://www.oktiva.com.br</property>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="GtkWindow" id="w1x10">
+    <property name="width_request">800</property>
+    <property name="height_request">600</property>
+    <property name="border_width">5</property>
+    <property name="type">GTK_WINDOW_POPUP</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
+    <property name="window_position">GTK_WIN_POS_CENTER_ALWAYS</property>
+    <property name="default_width">880</property>
+    <property name="default_height">660</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="skip_pager_hint">True</property>
+    <property name="decorated">False</property>
+    <child>
+      <widget class="GtkVBox" id="vbox2">
+        <property name="visible">True</property>
+        <child>
+          <widget class="GtkVBox" id="vbox3">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkLabel" id="w1x10_header">
+                <property name="visible">True</property>
+                <property name="xalign">0.0099999997764825821</property>
+                <property name="xpad">3</property>
+                <property name="ypad">3</property>
+                <property name="label">Selecione o atendimento desejado</property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="padding">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="w1x10_caminho">
+                <property name="visible">True</property>
+                <property name="xalign">0.0099999997764825821</property>
+                <property name="xpad">3</property>
+                <property name="ypad">3</property>
+                <property name="wrap">True</property>
+              </widget>
+              <packing>
+                <property name="padding">3</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkVBox" id="GridCategoria">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkButton" id="c1">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">1</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_TabCatButton_clicked"/>
+              </widget>
+            </child>
+            <child>
+              <widget class="GtkButton" id="c2">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">2</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_TabCatButton_clicked"/>
+              </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="c3">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">3</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_TabCatButton_clicked"/>
+              </widget>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="c4">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">4</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_TabCatButton_clicked"/>
+              </widget>
+              <packing>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="c5">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">5</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_TabCatButton_clicked"/>
+              </widget>
+              <packing>
+                <property name="position">4</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="c6">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">6</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_TabCatButton_clicked"/>
+              </widget>
+              <packing>
+                <property name="position">5</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="c7">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">7</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_TabCatButton_clicked"/>
+              </widget>
+              <packing>
+                <property name="position">6</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="c8">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">8</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_TabCatButton_clicked"/>
+              </widget>
+              <packing>
+                <property name="position">7</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="c9">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">9</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_TabCatButton_clicked"/>
+              </widget>
+              <packing>
+                <property name="position">8</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="c10">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">10</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_TabCatButton_clicked"/>
+              </widget>
+              <packing>
+                <property name="position">9</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="padding">3</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkHBox" id="hbox1">
+            <property name="visible">True</property>
+            <property name="homogeneous">True</property>
+            <child>
+              <widget class="GtkButton" id="w1x10_cancelar">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">5</property>
+                <property name="label">Cancelar</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="inicio"/>
+              </widget>
+              <packing>
+                <property name="padding">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="w1x10_voltar">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">5</property>
+                <property name="label">Voltar</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_w1x10_voltar_clicked"/>
+              </widget>
+              <packing>
+                <property name="padding">3</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="GtkWindow" id="identificacao">
+    <property name="width_request">800</property>
+    <property name="height_request">600</property>
+    <property name="border_width">5</property>
+    <property name="type">GTK_WINDOW_POPUP</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
+    <property name="window_position">GTK_WIN_POS_CENTER_ALWAYS</property>
+    <property name="default_width">640</property>
+    <property name="default_height">480</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="skip_pager_hint">True</property>
+    <property name="decorated">False</property>
+    <child>
+      <widget class="GtkVBox" id="vbox4">
+        <property name="visible">True</property>
+        <property name="border_width">3</property>
+        <property name="spacing">3</property>
+        <child>
+          <widget class="GtkLabel" id="identificacao_header">
+            <property name="visible">True</property>
+            <property name="label">Passe o cartão pela leitora</property>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkEntry" id="identificacao_entry">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="has_focus">True</property>
+            <property name="is_focus">True</property>
+            <property name="activates_default">True</property>
+            <property name="width_chars">20</property>
+            <property name="xalign">0.5</property>
+            <property name="shadow_type">GTK_SHADOW_NONE</property>
+          </widget>
+          <packing>
+            <property name="padding">3</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkTable" id="table1">
+            <property name="visible">True</property>
+            <property name="n_rows">4</property>
+            <property name="n_columns">3</property>
+            <child>
+              <widget class="GtkButton" id="d1">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label">1</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_identificacao_digit_clicked"/>
+              </widget>
+            </child>
+            <child>
+              <widget class="GtkButton" id="d2">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label">2</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_identificacao_digit_clicked"/>
+              </widget>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="d3">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label">3</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_identificacao_digit_clicked"/>
+              </widget>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="right_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="d4">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label">4</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_identificacao_digit_clicked"/>
+              </widget>
+              <packing>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="d5">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label">5</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_identificacao_digit_clicked"/>
+              </widget>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="d6">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label">6</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_identificacao_digit_clicked"/>
+              </widget>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="right_attach">3</property>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="d7">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label">7</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_identificacao_digit_clicked"/>
+              </widget>
+              <packing>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="d8">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label">8</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_identificacao_digit_clicked"/>
+              </widget>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="d9">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label">9</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_identificacao_digit_clicked"/>
+              </widget>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="right_attach">3</property>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="d0">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label">0</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_identificacao_digit_clicked"/>
+              </widget>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">3</property>
+                <property name="bottom_attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="identificacao_limpar">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label">Limpar</property>
+                <property name="response_id">0</property>
+              </widget>
+              <packing>
+                <property name="top_attach">3</property>
+                <property name="bottom_attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="identificacao_apagar">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label">Apagar</property>
+                <property name="response_id">0</property>
+              </widget>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="right_attach">3</property>
+                <property name="top_attach">3</property>
+                <property name="bottom_attach">4</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkHBox" id="hbox2">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkButton" id="identificacao_cancelar">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">Cancelar</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="inicio"/>
+              </widget>
+              <packing>
+                <property name="padding">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="identificacao_ok">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="has_default">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">OK</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_identificacao_ok_clicked"/>
+              </widget>
+              <packing>
+                <property name="padding">3</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="GtkWindow" id="horario">
+    <property name="width_request">800</property>
+    <property name="height_request">600</property>
+    <property name="border_width">5</property>
+    <property name="type">GTK_WINDOW_POPUP</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
+    <property name="window_position">GTK_WIN_POS_CENTER_ALWAYS</property>
+    <property name="default_width">640</property>
+    <property name="default_height">240</property>
+    <property name="urgency_hint">True</property>
+    <property name="opacity">0.90000000000000002</property>
+    <child>
+      <widget class="GtkVBox" id="vbox5">
+        <property name="visible">True</property>
+        <child>
+          <widget class="GtkLabel" id="horario_header">
+            <property name="visible">True</property>
+            <property name="label">Chamar a partir de</property>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkHBox" id="hbox5">
+            <property name="visible">True</property>
+            <property name="homogeneous">True</property>
+            <child>
+              <widget class="GtkSpinButton" id="hora">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="max_length">2</property>
+                <property name="xalign">1</property>
+                <property name="shadow_type">GTK_SHADOW_NONE</property>
+                <property name="adjustment">0 0 23 1 10 10</property>
+                <property name="numeric">True</property>
+                <property name="wrap">True</property>
+              </widget>
+              <packing>
+                <property name="padding">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkSpinButton" id="minuto">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="max_length">2</property>
+                <property name="width_chars">2</property>
+                <property name="xalign">1</property>
+                <property name="shadow_type">GTK_SHADOW_NONE</property>
+                <property name="adjustment">0 0 59 1 10 10</property>
+                <property name="numeric">True</property>
+                <property name="wrap">True</property>
+              </widget>
+              <packing>
+                <property name="padding">3</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="padding">3</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkHBox" id="hbox4">
+            <property name="visible">True</property>
+            <property name="homogeneous">True</property>
+            <child>
+              <widget class="GtkButton" id="horario_cancelar">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">Cancelar</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="inicio"/>
+              </widget>
+              <packing>
+                <property name="padding">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="horario_ok">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="has_default">True</property>
+                <property name="receives_default">True</property>
+                <property name="border_width">3</property>
+                <property name="label">OK</property>
+                <property name="response_id">0</property>
+                <signal name="clicked" handler="on_horario_ok_clicked"/>
+              </widget>
+              <packing>
+                <property name="padding">3</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
             <property name="position">2</property>
           </packing>
         </child>

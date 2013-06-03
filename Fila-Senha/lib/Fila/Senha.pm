@@ -1,6 +1,8 @@
 package Fila::Senha;
 use utf8;
 use 5.010;
+BEGIN { $ENV{LC_ALL} = "pt_BR"; }
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -38,157 +40,355 @@ our $porta_emissor;
 our $categorias;
 
 {
-	my $portas = __PACKAGE__->config->{portas};
-	die 'Porta da impressora nao configurada' unless
-		$porta_impressora = $portas->{impressora};
+    my $portas = __PACKAGE__->config->{portas};
+    die 'Porta da impressora nao configurada'
+      unless $porta_impressora = $portas->{impressora};
 
-	die 'Porta do emissor nao configurada' unless
-		$porta_emissor = $portas->{emissor};
+    die 'Porta do emissor nao configurada'
+      unless $porta_emissor = $portas->{emissor};
 
-	$categorias = __PACKAGE__->config->{categorias}
-	or die 'Categorias nao configuradas.';
+    $categorias = __PACKAGE__->config->{categorias}
+      or die 'Categorias nao configuradas.';
 
+    $Fila::Senha::horario       = __PACKAGE__->config->{horario}       || 0;
+    $Fila::Senha::identificacao = __PACKAGE__->config->{identificacao} || 0;
+    $Fila::Senha::font_face = __PACKAGE__->config->{font_face}  || 'Arial';
+    $Fila::Senha::fg_color  = __PACKAGE__->config->{'fg_color'} || '#000000';
+    $Fila::Senha::bg_color  = __PACKAGE__->config->{'bg_color'} || '#FFFFFF';
 }
 
-$::gladexml         = undef;
-$::window           = undef;
-$::chamar           = undef;
-@::categorias_nomes = ();
-@::categorias_ids   = ();
+$::gladexml      = undef;
+$::chamar        = undef;
+$::current_modal = undef;
+
+# %::window;
+# %::entry;
+# %::label;
+# %::button;
+# %::spin;
 
 {
     $::gladexml =
       Gtk2::GladeXML->new('/usr/share/fila/Fila-Senha/script/Fila-Senha.glade')
       or die 'died: ' . $!;
     $::gladexml->signal_autoconnect_from_package(__PACKAGE__);
-    $::window = $::gladexml->get_widget('window1');
-    $::window->resize( 1024, 768 );
 
-    my $back_pixbuf = Gtk2::Gdk::Pixbuf->new_from_file(
-        '/usr/share/fila/Fila-Senha/Fila-Senha-Emissor-Gtk2-Cejam.png');
-    my ( $pixmap, $mask ) = $back_pixbuf->render_pixmap_and_mask(255);
-    my $style = $::window->get_style();
-    $style = $style->copy();
-    $style->bg_pixmap( "normal", $pixmap );
-    $::window->set_style($style);
+    foreach my $w (qw/ window1 w1x10 horario identificacao /) {
+        $::window{$w} = $::gladexml->get_widget($w);
 
-    $::window->modify_bg( $::window->state,
-        Gtk2::Gdk::Color->parse("#000000") );
-    $::header  = $::gladexml->get_widget('header');
-    $::horario = $::gladexml->get_widget('horario');
+        if ( $w eq 'window1' ) {
+            $::window{$w}->resize( 1024, 768 );
+        }
+        else {
+            $::window{$w}->resize( 880, 660 );
+        }
 
-    $::hora   = $::gladexml->get_widget('hora')   or warn $!;
-    $::minuto = $::gladexml->get_widget('minuto') or warn $!;
+        my $f = "/usr/share/fila/Fila-Senha/bg-" . $w . ".png";
 
-    if ($::hora) {
-        $::hora->modify_font(
-            Gtk2::Pango::FontDescription->from_string("Arial 50") );
-        $::hora->modify_fg( $::header->state,
-            Gtk2::Gdk::Color->parse("#FFFFFF") );
-        $::hora->modify_bg( $::header->state,
-            Gtk2::Gdk::Color->parse("#000000") );
-    }
-    if ($::minuto) {
-        $::minuto->modify_font(
-            Gtk2::Pango::FontDescription->from_string("Arial 50") );
-        $::minuto->modify_fg( $::header->state,
-            Gtk2::Gdk::Color->parse("#FFFFFF") );
-        $::minuto->modify_bg( $::header->state,
-            Gtk2::Gdk::Color->parse("#000000") );
+        if ( -f $f ) {
+            my $back_pixbuf = Gtk2::Gdk::Pixbuf->new_from_file($f);
+            my ( $pixmap, $mask ) = $back_pixbuf->render_pixmap_and_mask(255);
+            my $style = $::window{$w}->get_style;
+            $style = $style->copy;
+            $style->bg_pixmap( "normal", $pixmap );
+            $::window{$w}->set_style($style);
+        }
+
+        $::window{$w}->modify_bg( $::window{$w}->state,
+          Gtk2::Gdk::Color->parse($Fila::Senha::background_color) );
+        $::window{$w}->set_opacity(0.9);
     }
 
-    $::horario->modify_font(
-        Gtk2::Pango::FontDescription->from_string("Arial 20") );
-    $::horario->modify_fg( $::header->state,
-        Gtk2::Gdk::Color->parse("#FFFFFF") );
-    $::horario->modify_bg( $::header->state,
-        Gtk2::Gdk::Color->parse("#000000") );
+    foreach my $l (
+        qw /
+        header footer copyright horario_header identificacao_header
+        w1x10_header w1x10_caminho
+        /
+      )
+    {
+        $::label{$l} = $::gladexml->get_widget($l);
+        $::label{$l}->modify_font(
+            Gtk2::Pango::FontDescription->from_string(
+                $Fila::Senha::font_face . " 10"
+            )
+        );
+        $::label{$l}->modify_fg( $::label{$l}->state,
+            Gtk2::Gdk::Color->parse($Fila::Senha::fg_color) );
+        $::label{$l}->modify_bg( $::label{$l}->state,
+            Gtk2::Gdk::Color->parse($Fila::Senha::bg_color) );
+    }
 
-    $::header->modify_font(
-        Gtk2::Pango::FontDescription->from_string("Arial 20") );
-    $::header->modify_fg( $::header->state,
-        Gtk2::Gdk::Color->parse("#FFFFFF") );
-    $::header->modify_bg( $::header->state,
-        Gtk2::Gdk::Color->parse("#000000") );
-    $::header->set_label('AGUARDE');
-    $::footer = $::gladexml->get_widget('footer');
-    $::footer->modify_font(
-        Gtk2::Pango::FontDescription->from_string("Arial 20") );
-    $::footer->modify_fg( $::footer->state,
-        Gtk2::Gdk::Color->parse("#FFFFFF") );
-    $::footer->modify_bg( $::footer->state,
-        Gtk2::Gdk::Color->parse("#000000") );
-    $::header->set_label('AGUARDE');
-    $::footer->set_label('...');
-    Gtk2::Window::fullscreen($::window);
-    $::window->fullscreen;
-    $::window->set_opacity(0.9);
-    $::window->show_all;
+    foreach my $l (qw/ w1x10_caminho copyright / ) {
+        $::label{$l}->modify_font(
+            Gtk2::Pango::FontDescription->from_string(
+                $Fila::Senha::font_face . " 7"
+            )
+        );
+    }
+
+    foreach my $e (qw / identificacao_entry /) {
+        $::entry{$e} = $::gladexml->get_widget($e) or die $!;
+        $::entry{$e}->modify_font(
+            Gtk2::Pango::FontDescription->from_string(
+                $Fila::Senha::font_face . " 40"
+            )
+        );
+        $::entry{$e}->modify_fg( $::entry{$e}->state,
+            Gtk2::Gdk::Color->parse($Fila::Senha::fg_color) );
+        $::entry{$e}->modify_bg( $::entry{$e}->state,
+            Gtk2::Gdk::Color->parse($Fila::Senha::bg_color) );
+    }
+
+    foreach my $b (
+        qw /
+        d0 d1 d2 d3 d4 d5 d6 d7 d8 d9 d0
+        c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 
+        /
+      )
+    {
+        $::button{$b} = $::gladexml->get_widget($b) or die $b;
+        $::button{$b}->child->modify_font(
+            Gtk2::Pango::FontDescription->from_string(
+                $Fila::Senha::font_face . " 20"
+            )
+        );
+    }
+
+    foreach my $b (
+        qw /
+        horario_cancelar horario_ok identificacao_cancelar identificacao_ok w1x10_cancelar w1x10_voltar
+        /
+      )
+    {
+        $::button{$b} = $::gladexml->get_widget($b) or die $b;
+        $::button{$b}->child->modify_font(
+            Gtk2::Pango::FontDescription->from_string(
+                $Fila::Senha::font_face . " 10"
+            )
+        );
+    }
+
+# Os widgets de horário devem ser inicializados mesmo que não se permita agendar
+
+    foreach my $s (qw / hora minuto/) {
+        $::spin{$s} = $::gladexml->get_widget($s) or die $!;
+        $::spin{$s}->modify_font(
+            Gtk2::Pango::FontDescription->from_string(
+                $Fila::Senha::font_face . " 40"
+            )
+        );
+        $::spin{$s}->modify_fg( $::spin{$s}->state,
+            Gtk2::Gdk::Color->parse($Fila::Senha::fg_color) );
+        $::spin{$s}->modify_bg( $::spin{$s}->state,
+            Gtk2::Gdk::Color->parse($Fila::Senha::bg_color) );
+    }
+    Gtk2::Window::fullscreen( $::window{'window1'} );
+
+    $::label{'header'}->set_label($Fila::Senha::header);
+    $::label{'footer'}->set_label($Fila::Senha::footer);
+    $::window{'window1'}->fullscreen;
+    $::window{'window1'}->set_opacity(0.9);
+    $::window{'window1'}->show_all;
+    &inicio;
+}
+
+sub inicio {
+    $::last = time;
+    $::entry{'identificacao_entry'}->set_text('');
+    $::label{'w1x10_caminho'}->set_label('');
+    if ($Fila::Senha::identificacao) {
+        &identificacao;
+    }
+    elsif ($Fila::Senha::horario) {
+        &horario;
+    }
+    else {
+        &layout;
+    }
+}
+
+sub layout {
+    $::last = time; 
+    if ( $Fila::Senha::layout eq 'w1x10' ) {
+        &w1x10;
+    }
+    else {
+        &w1x10;
+    }
+}
+
+sub identificacao {
+    $::last = time;
+    $::current_modal->hide
+      if defined $::current_modal
+          and $::current_modal->get_name ne 'identificacao';
+    $::current_modal = $::window{'identificacao'};
+    $::current_modal->show;
+}
+
+sub on_identificacao_digit_clicked {
+    my $self = shift;
+    $::last = time;
+    my $n    = $self->get_name;
+    my $e    = $::entry{'identificacao_entry'}->get_text;
+    $n =~ s/\D//g;
+    $::entry{'identificacao_entry'}->set_text( $e . $n );
+    $::entry{'identificacao_entry'}->show;
+}
+
+sub on_identificacao_ok_clicked {
+    $::last = time;
+    $::current_modal->hide;
+    if ($Fila::Senha::horario) {
+        &horario;
+    }
+    else {
+        &layout;
+    }
+}
+
+sub horario {
+    $::last = time;
+    $::current_modal->hide if $::current_modal->get_name ne 'horario';
+    $::current_modal = $::window{'horario'};
+    $::current_modal->show;
+}
+
+sub on_horario_ok_clicked {
+    $::last = time;
+    $::current_modal->hide;
+    &layout;
+}
+
+sub w1x10 {
+    $::current_modal->hide
+      if defined $::current_modal && $::current_modal->get_name ne 'w1x10';
+    $::current_modal = $::window{'w1x10'};
+    my $l = $::label{'w1x10_caminho'}->get_label;
+    $l = '' unless defined $l;
+    my @b;
+    if ($l) {
+        @b = sort { lc($a) cmp lc($b) } grep { /^$l\// } keys %::categorias_ordem;
+    }
+    else {
+        @b = sort { lc($a) cmp lc($b) } keys %::categorias_ordem;
+    }
+    $::current_modal->show;
+    my @o;
+    foreach my $b (@b) {
+        my $n = $b;
+        unless ( defined $n && $n =~ /\// ) {
+            $o[ $::categorias_ordem{$b} ] = $n if defined $n;
+        }
+    }
+    my %diff;
+    @diff{@b} = 1;
+    if ( keys %diff ) {
+        delete @diff{ grep { defined $_ } @o };
+    }
+    my @diff;
+    @diff = sort { lc($a) cmp lc($b)} keys %diff;
+    foreach my $i ( 1 .. 10 ) {
+        while ((!defined($o[$i])) and (my $n = shift @diff)) {
+            if (defined $n && $n ne '') {
+                if ( defined $n && defined $l && $l ne '' && $n =~ /^$l/ ) {
+                    $n =~ s/^$l\/([^\/]+).*$/$1/;
+                }
+                elsif ( defined $n && $n && $n =~ /\// ) {
+                    $n =~ s/^([^\/]+)\/.*$/$1/;
+                }
+		my $check = 0;
+                foreach my $o (@o) {
+		    $check = 1 if (defined $o) && ($n eq $o);
+                    last if $check;
+	        }
+		unless ($check) {
+                    $o[$i] = $n;
+                }
+            }
+       }
+    }
+    foreach my $i ( 1 .. 10 ) {
+        if ( defined $o[$i] ) {
+            my $n = $o[$i];
+            $::button{ 'c' . $i }->set_label($n);
+            $::button{ 'c' . $i }->show;
+        }
+        else {
+            $::button{ 'c' . $i }->hide;
+        }
+    }
+    $::current_modal->show;
+}
+
+sub on_TabCatButton_clicked {
+    my $self = shift;
+    $::last = time;
+    my $path = $::label{'w1x10_caminho'}->get_label;
+    my $c;
+    if ( $path ne '' ) {
+        $c = $::label{'w1x10_caminho'}->get_label . '/' . $self->get_label;
+    }
+    else {
+        $c = $self->get_label;
+    }
+    if ( exists $::categorias_id{$c} ) {
+	$::current_modal->hide;
+        $::chamar = $::categorias_id{$c};
+    }
+    else {
+        $::label{'w1x10_caminho'}->set_label($c);
+        &layout;
+    }
+}
+
+sub on_w1x10_voltar_clicked {
+    $::current_modal->hide;
+    $::last = time;
+    my $l = $::label{w1x10_caminho}->get_label;
+    if ( $l =~ s/^(.*)(\/[^\/]+)$/$1/ ) {
+        $::label{w1x10_caminho}->set_label($l);
+        &layout;
+    }
+    else {
+        $::label{w1x10_caminho}->set_label('');
+        &layout;
+    }
 }
 
 sub atualizar_categorias {
     my $i = 0;
-    my @button;
-    my $counter;
-    unless ( $::connection && $::connection->is_connected ) {
-        warn 'no connection';
+    $::atualizar_categorias = EV::timer( 30, 0, \&atualizar_categorias );
+    return &inicio unless defined $::current_modal;
+    my $modal_name = $::current_modal->get_name if defined $::current_modal;
+    my $now = time;
+    my $last = $::last;
+    if (($last + 60) < $now) {
+	&inicio;
     }
-    if ( scalar @::categorias_nomes ) {
-        $::header->set_label("AGUARDE ORIENTAÇÃO");
-        $::footer->set_label('AMA Especialidades Vera Cruz');
-    }
-    else {
-        warn "Bloqueado";
-        $::header->set_label('AGUARDE ');
-        $::footer->set_label('...');
-        $::atualizar_categorias = EV::timer( 10, 0, \&atualizar_categorias );
-    }
-    while ( $i < 15 ) {
-        my $button = $i + 1;
-        $button[$i] = $::gladexml->get_widget( 'button' . $button );
-        if ( defined $::categorias_nomes[$i] ) {
-            $button[$i]->set_label( $::categorias_nomes[$i] );
-            $button[$i]->child->modify_font(
-                Gtk2::Pango::FontDescription->from_string("Arial Bold 20") );
-            $button[$i]->show;
-        }
-        else {
-            $button[$i]->hide;
-        }
-    }
-    continue {
-        $i++;
+    return if $modal_name eq 'horario' or $modal_name eq 'identificacao';
+    my $caminho = $::label{'w1x10_caminho'}->get_label;
+    if ( $caminho eq '' ) {
+        &w1x10;
     }
     return 1;
 }
 
-sub on_button_clicked {
-    my $self = shift;
-    return () unless $::connection->is_connected;
-    my $o = $self->get_name;
-    $o =~ s/button//gi;
-    Fila::Senha->model('Emissor')->bloquear;
-    $::chamar = $::categorias_ids[ $o - 1 ];
-    &atualizar_categorias if $::connection->is_connected;
-    $self->leave;
-}
-
 sub imprimir_senha {
     if ( $::connection->is_connected && defined $::chamar ) {
-
-        my $hora   = sprintf( '%02s', $::hora->get_value_as_int );
-        my $minuto = sprintf( '%02s', $::minuto->get_value_as_int );
-
+        my $hora   = sprintf( '%02s', $::spin{'hora'}->get_value_as_int );
+        my $minuto = sprintf( '%02s', $::spin{'minuto'}->get_value_as_int );
+        warn $hora . $minuto;
         my $dt = DateTime->now(
-                time_zone => 'local',
+            time_zone => 'local',
 
-	);
-	$dt->set(hour      => $hora,
-                minute       => $minuto,
+        );
+        $dt->set(
+            hour   => $hora,
+            minute => $minuto,
 
         );
 
-        warn DateTime::Format::XSD->format_datetime($dt);
 
         my $dados = Fila::Senha->model('SOAP::Senha')->solicitar_senha(
             {
@@ -198,17 +398,17 @@ sub imprimir_senha {
                 }
             }
         );
+
         if ( $dados->{Fault} ) {
             warn 'Erro ao pedir senha. ' . $dados->{Fault}{faultstring};
             &limpar_senha;
-            $::chamar = undef;
         }
         else {
-            warn 'Imprimir senha';
-            $::footer->set_label( $dados->{atendimento}{senha} );
+            $::label{'footer'}->set_label( $dados->{atendimento}{senha} );
             Fila::Senha->model('Impressora')->imprimir_senha($dados);
             $::chamar = undef;
             $::senha_timer = EV::timer( 3, 0, \&limpar_senha );
+	    &inicio;
         }
     }
     else {
@@ -225,21 +425,18 @@ sub escalonar_senha {
         if ( $dados->{Fault} ) {
             warn 'Erro ao escalonar senha. ' . $dados->{Fault}{faultstring};
         }
-        else {
-            warn 'Escalonar senha';
-        }
     }
     my ( $hora, $minuto ) = (localtime)[ 2, 1 ];
-    my $h = $::hora->get_value_as_int;
-    my $m = $::minuto->get_value_as_int;
+    my $h = $::spin{'hora'}->get_value_as_int;
+    my $m = $::spin{'minuto'}->get_value_as_int;
     if ( $hora == $h ) {
         if ( $minuto > $m ) {
-            $::minuto->set_value($minuto);
+            $::spin{'minuto'}->set_value($minuto);
         }
     }
     elsif ( $hora > $h ) {
-        $::hora->set_value($hora);
-        $::minuto->set_value($minuto);
+        $::spin{'hora'}->set_value($hora);
+        $::spin{'minuto'}->set_value($minuto);
     }
 }
 
@@ -255,6 +452,9 @@ sub limpar_senha {
         else {
             Fila::Senha->model('Emissor')->abrir;
         }
+	if ($::chamar && $::current_modal->get_name eq 'w1x10') {
+		$::label{'w1x10_caminho'}->set_label('');	
+	}
         &atualizar_categorias;
     }
     else {
@@ -290,7 +490,6 @@ $::connection->reg_cb(
         warn 'disconnected ' . localtime();
         $::connection->connect;
     },
-
     stream_error => sub {
         warn 'Connection error.';
         EV::unloop(EV::UNLOOP_ALL);
@@ -321,9 +520,9 @@ $::connection->reg_cb(
             warn 'Abrindo para senhas';
             Fila::Senha->model('Emissor')->abrir;
         }
-        $::imprimir_senha       = EV::timer( 1, 1,  \&imprimir_senha );
-        $::escalonar_timer      = EV::timer( 1, 30, \&escalonar_senha );
-        $::atualizar_categorias = EV::timer( 1, 0,  \&atualizar_categorias );
+        $::imprimir_senha       = EV::timer( 10, 2, \&imprimir_senha );
+        $::escalonar_timer      = EV::timer( 10, 10, \&escalonar_senha );
+        $::atualizar_categorias = EV::timer( 10, 0,  \&atualizar_categorias );
         eval { Fila::Senha->run(); };
         if ($@) {
             warn 'Error running application: ' . $@;

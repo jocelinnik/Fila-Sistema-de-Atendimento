@@ -141,6 +141,7 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
 
     my $id_categoria = $query->{atendimento}{id_categoria};
     my $vt_ini = $query->{atendimento}{vt_ini};
+    my $now = $c->stash->{now};
     unless ($id_categoria) {
         die $c->stash->{soap}->fault(
             {
@@ -151,8 +152,9 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
             }
         );
     }
+    
 
-    my $now = $c->stash->{now};
+    warn "id categoria: $id_categoria";
 
     my $categoria =
       $c->stash->{local}->configuracoes_categoria_atual->search(
@@ -169,7 +171,7 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
             }
         );
     }
-
+    warn "categoria $categoria";
     my $estados =
       $c->stash->{local}->estado_atual->search( {}, { 'prefetch' => 'estado' } )
       ->first;
@@ -185,26 +187,28 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
     }
 
     my $abertura = $estados->vt_ini;
+    warn "abertura $abertura";
 
     # encontrar o atendimento mais recente desde que o local foi
     # aberto ou a partir do horário de solicitação.
 
     my $codigo_senha_atual = 0;
 
-    my $inicio = $abertura;
+    my $inicio = $now;
 
     $inicio = DateTime::Format::ISO8601->parse_datetime($vt_ini) if $vt_ini;
-
+    warn "inicio: $inicio";
+   
     my $recente;
-
-    $codigo_senha_atual = int( ( int($inicio->epoch / 60) - int($abertura->epoch / 60) ) % 999 );
-
-    unless ($codigo_senha_atual) {
+    my $cmp = DateTime->compare_ignore_floating($inicio, $now);
+    warn "inicio $inicio $cmp abertura $abertura";
+    $codigo_senha_atual = int( ( int($inicio->epoch / 60) - int($abertura->epoch / 60) ) % 9999 );
+    warn 'senha calculada: '.$codigo_senha_atual;
+    if ($codigo_senha_atual < 1 || !$vt_ini) {
         $inicio  = $now;
         $recente = $c->stash->{local}->atendimentos->search(
             {
                 'vt_ini'                 => { '>=', $abertura },
-                'vt_ini'                 => { '<=', $now },
                 'categoria.id_categoria' => $id_categoria
             },
             {
@@ -213,26 +217,32 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
                 'rows'     => 1
             }
 	);
-            $codigo_senha_atual = $recente->senha->codigo;
+        warn "searched";
+        if ($recente->first) {
+        	$codigo_senha_atual = $recente->first->senha->codigo if defined $recente->first;
+        } else {
+                $codigo_senha_atual = 0;
+        }
+        warn "codigo_senha_atual: $codigo_senha_atual";
     }
-
+    warn $codigo_senha_atual;
     # se a senha gerada estiver alocada a um atendimento corrente,
     # tentar a proxima, até encontrar uma senha válida.
 
     my $started_at = $codigo_senha_atual;
     my $recicled   = 0;
-
+    warn "CHECARSENHA: $codigo_senha_atual";
   CHECARSENHA:
     do {
-        if ($codigo_senha_atual >= 999) {
+        if ($codigo_senha_atual >= 9999) {
             # as senhas acabaram, vamos reiniciar.
             $codigo_senha_atual = 0;
             $recicled++;
         }
-
+        
         $codigo_senha_atual++;
-
-        if ($recicled > 1)
+        warn "codigo_senha_atual: $codigo_senha_atual";
+        if ($recicled > 9)
         {
             die $c->stash->{soap}->fault(
                 {
@@ -244,7 +254,7 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
         }
 
         # verificar se a senha está disponível.
-
+        
         my $verificar = $c->model('DB::Senha')->search(
             {
                 'me.id_categoria'       => $id_categoria,
@@ -254,7 +264,7 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
             },
             { join => 'atendimentos' }
         );
-
+        warn "verificar: $verificar";
         if ( $verificar->first ) {
             goto CHECARSENHA;
         }
@@ -267,7 +277,10 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
             'me.codigo'       => $codigo_senha_atual
         }
     );
+
+    warn "senha: $senha";
     unless ($senha) {
+        
         die $c->stash->{soap}->fault(
             {
                 code   => 'Server',
@@ -289,7 +302,7 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
             }
         );
     }
-
+    
     # Criar um atendimento novo, associado a essa senha, a categoria
     # dessa senha e esse local, com o estado "espera".
     my $atendimento = $c->model('DB::Atendimento')->create(
@@ -327,7 +340,7 @@ sub solicitar_senha :WSDLPort('GestaoSenha') :DBICTransaction('DB') :MI {
                 id_local       => $c->stash->{local}->id_local,
                 id_senha       => $senha->id_senha,
                 id_categoria   => $senha->id_categoria,
-                senha          => sprintf( '%s%03d',
+                senha          => sprintf( '%s%04d',
                     $categoria->categoria->codigo,
                     $codigo_senha_atual ),
                 estado => 'espera'

@@ -305,3 +305,20 @@
 	[% END %]
 
     $('header2').replace("[% bloco_senha | js %]"); 
+
+
+        [% IF status_guiche.guiche.estado == 'concluido' %]
+          [% IF status_guiche.guiche.timeout_concluido %]
+          set_timeout([% status_guiche.guiche.timeout_concluido %],'disponivel',function() {
+             new Ajax.Request('/cb/atendente/disponivel', { asynchronous: 1 });
+          });
+          [% END %]
+        [% ELSIF status_guiche.guiche.estado == 'chamando' %]
+          [% IF status_guiche.guiche.timeout_chamando %]
+          set_timeout([% status_guiche.guiche.timeout_chamando %],'chamando',function() {
+             new Ajax.Request('/cb/atendente/registrar_no_show', { asynchronous: 1 });
+          });
+          [% END %]
+        [% ELSE %]
+          set_timeout(0,'',null);
+        [% END %]

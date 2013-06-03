@@ -52,7 +52,7 @@ sub criar :Chained('/locais/preload') :PathPart('categoria/criar') :Args(0) {
 
         # vamos também certificar que existem as senhas para essa
         # categoria nesse local.
-        for my $cod (1..999) {
+        for my $cod (1..9999) {
             $c->stash->{local}->senhas->create
               ({ id_categoria => $c->req->param('id_categoria'),
                  codigo => $cod })

@@ -16,10 +16,15 @@
 # título "LICENCA.txt", junto com este programa, se não, escreva para a
 # Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor,
 %]
-        </DIV>
-        <DIV id="footer">
-            <P>Interface de Agendamento</P>
-        </DIV>
-    
+
+<br/>
+      </div><!-- /main-wrapper -->
+
+        <div id="footer-inner" class="footer-inner inner clearfix">
+          <div class="content clearfix">
+            <address>R. Ata&iacute;de Pimenta de Morais, 528 - Centro, Nova Igua&ccedil;u - RJ, 26210-190 &nbsp;&nbsp;&nbsp;&nbsp; 
+		Telefone:(21)2667-3973</address>
+          </div><!-- /footer-inner -->
+       
     </BODY>
-</HTML>        
+</HTML>

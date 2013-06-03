@@ -16,18 +16,16 @@
 # título "LICENCA.txt", junto com este programa, se não, escreva para a
 # Fundação do Software Livre(FSF) Inc., 51 Franklin St, Fifth Floor,
 %]
-Informações de Atendimento
+Informações sobre o agendamento
 
 Imprima este email, ele é o seu comprovante do agendamento. O
 agendamento é pessoal e intransferível.
 
-Praça:         [% atendimento.local.nome %]
+Local:         [% atendimento.local.nome %]
 Senha:         [% atendimento.senha %]
 Data e Hora:   [% atendimento.data.strftime('%d/%m/%Y %H:%M') %]
 Nome: 	       [% atendimento.nome %]
 CPF/CNPJ:      [% atendimento.cnpjf %]
 Email: 	       [% atendimento.email %]
 
-
 Sistema de Atendimento
-Prefeitura de Fortaleza

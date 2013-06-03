@@ -18,6 +18,8 @@
 
 $ENV{CATALYST_ENGINE} = 'XMPP2';
 
+use utf8;
+binmode(STDOUT, ":utf8");
 use strict;
 use warnings;
 use Getopt::Long;

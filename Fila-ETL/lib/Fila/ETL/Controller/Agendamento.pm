@@ -44,8 +44,9 @@ sub agendar :Chained('agendamento') :PathPart :Args(0) {
       ({ -and => [{ data => { '>'  => $c->stash->{last_vt_base} }},
 		  { data => { '<=' => $c->stash->{vt_base}      }}  ]});
 
-
+    my %local;
     while (my $agendamento = $agendamentos->next) {
+      $local{$agendamento->id_local} = 1;
       eval {
 	my $categoria = $c->model('Federado')->target
 	  ($c, $agendamento->id_local, 'Categoria')->find
@@ -77,10 +78,14 @@ sub agendar :Chained('agendamento') :PathPart :Args(0) {
       }
     }
 
+    foreach my $id_local (keys %local) {
     $c->model('DB::ActivityLog')->create
-      ({ activity_type => '/agendamento/agendar',
+      ({ 
+         id_local => $id_local,
+         activity_type => '/agendamento/agendar',
          vt_base => $c->stash->{vt_base},
          vt_ini => $c->stash->{now} });
+    }
 
 }
 

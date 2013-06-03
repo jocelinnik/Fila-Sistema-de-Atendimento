@@ -1,14 +1,15 @@
 ---
 name: Fila::Agendamento
+quantidade_por_intervalo: 10
 Model::DB:
     schema_class: 'Fila::Agendamento::DB'
     connect_info:
-        - 'dbi:Pg:host=localhost;database=agendamento;user=postgres;password=123'
+        - 'dbi:Pg:host=localhost;database=agendamento;user=fila;password=senha'
 View::Email:
     sender:
-        mailer: IO
+        mailer: SMTP
     default:
         content_type: text/plain
         charset: utf8
         view: TT
-        from: agendamento@atendimento.fortaleza.ce.gov.br
+        from: cac@novaiguacu.rj.gov.br

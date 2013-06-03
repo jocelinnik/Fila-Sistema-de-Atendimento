@@ -20,11 +20,13 @@ use strict;
 use warnings;
 use Business::BR::Ids qw( test_id canon_id );
 use parent 'Catalyst::Controller';
+use Data::Dumper;
 
 __PACKAGE__->config->{namespace} = '';
 
 sub index : Path Args(0) {
     my ($self, $c) = @_;
+    $c->reset_session_expires ;
     # No primeiro passo vai mostrar o formulário para preencher os
     # dados pessoais e para escolher o local.
     $c->stash->{local} = $c->model('DB::Local')->search;
@@ -36,14 +38,16 @@ my %names =
     tipopessoa => 'pessoa f&iacute;sica ou jur&iacute;dica',
     cnpjf => 'CPF/CNPJ',
     id_local => 'pra&ccedil;a de atendimento',
-    email => 'endere&ccedil;o de email' );
+    email => 'endere&ccedil;o de email', 
+    telefone => 'telefone de contato' );
 
 sub passo0 : Local Args(0) {
     my ($self, $c) = @_;
+    $c->reset_session_expires ;
     # guardar os dados na sessao, e redirecionar para a escolha do local
     # data e hora.
     my @missing;
-    for (qw(nome tipopessoa cnpjf id_local email)) {
+    for (qw(nome tipopessoa cnpjf id_local email telefone )) {
         push @missing, $_ unless $c->req->param($_);
         $c->session->{$_} = $c->req->param($_);
         $c->stash->{$_} = $c->req->param($_);
@@ -76,15 +80,17 @@ sub preload :Chained :PathPart('') :CaptureArgs(1) {
 
 sub passo1 :Chained('preload') :Args(0) {
     my ($self, $c) = @_;
+    $c->reset_session_expires  ;
     $c->stash->{error} = $c->flash->{error};
 }
 
 sub passo2 :Chained('preload') :Args(2) {
     my ($self, $c, $date, $time) = @_;
-
+    $c->reset_session_expires ;
     # vamos então criar o atendimento
     my ($ano, $mes, $dia) = split /-/, $date;
     my ($hora, $minuto) = split /:/, $time;
+
     my $dt = DateTime->new
       ( year => $ano,
         month => $mes,
@@ -92,9 +98,11 @@ sub passo2 :Chained('preload') :Args(2) {
         hour => $hora,
         minute => $minuto,
         time_zone => 'local' );
-    my $senha = 'A'.$hora.(int($minuto / 15));
+
+    my $senha = 'A' . sprintf ( "%02d", int ( $hora * 2 + ( int ( $minuto / 30 ) ) ) );
 
     my $dt_day_ini = $dt->clone();
+
     $dt_day_ini->set
       ( hour => 0,
         minute => 0,
@@ -109,13 +117,13 @@ sub passo2 :Chained('preload') :Args(2) {
     $c->model('DB')->schema->txn_do
       (sub {
            my $at =
-             $c->stash->{local}->atendimentos->find({ data => $dt });
+             $c->stash->{local}->atendimentos->count({ data => $dt });
            my $at2 =
              $c->stash->{local}->atendimentos->search
                ({ cnpjf => $c->session->{cnpjf},
                   -and => [ { data => { '>=' => $dt_day_ini } },
                             { data => { '<=' => $dt_day_fim } } ] })->first;
-           if ($at) {
+           if ($at > $Fila::Agendamento::quantidade_por_intervalo) {
                $c->flash->{error} = '<P>Agendamento n&atilde;o realizado, hor&aacute;rio n&atilde;o dispon&iacute;vel.</P>';
                $c->res->redirect($c->uri_for('/'.$c->stash->{local}->id_local.'/passo1'));
            } if ($at2) {
@@ -126,31 +134,36 @@ sub passo2 :Chained('preload') :Args(2) {
            } else {
                $at = $c->stash->{local}->atendimentos->create
                  ({ ( map { $_ => $c->session->{$_} }
-                      qw(nome tipopessoa cnpjf email)),
+                      qw(nome tipopessoa cnpjf email telefone)),
                     data => $dt,
-                    senha => $senha });
+                    senha => $senha.sprintf("%02d", $at) });
                $c->session->{id_atendimento} = $at->id_atendimento;
                $c->res->redirect($c->uri_for('/atendimento/'));
            }
        });
-
 }
 
 sub atendimento :Local :Args(0) {
     my ($self, $c) = @_;
+
+    $c->reset_session_expires ;
+
     my $id_atendimento = $c->session->{id_atendimento};
     $c->stash->{error} = $c->flash->{error};
     $c->stash->{atendimento} =
       $c->model('DB::Atendimento')->find
         ({ id_atendimento => $id_atendimento },
          { prefetch => 'local' });
-
     $c->stash->{email} =
-      { to => $c->stash->{atendimento}->email,
-        subject => 'Informações do seu agendamento',
+      { to => $c->stash->{atendimento}->{email},
+        from => 'agendamento@fila',
+        subject => 'Confirmação do agendamento',
         template => 'email_atendimento.tt' };
-    $c->forward($c->view('Email'));
+    warn "View::Email";
+    #$c->forward($c->view('Email'));
+    warn "View::TT";
     $c->forward($c->view('TT'));
+    warn "End";
 }
 
 sub end :ActionClass('RenderView') {}

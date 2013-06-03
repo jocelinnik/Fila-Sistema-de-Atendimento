@@ -41,38 +41,26 @@ my $r = $t->translate
 print $r;
 
 print <<SQL;
-
 DROP TABLE intervalos;
-DROP VIEW intervalos;
 
 CREATE VIEW intervalos AS
- SELECT inicio, inicio + interval '15 minutes' AS fim
+ SELECT inicio, inicio + interval '30 minutes' AS fim
  FROM (
-    SELECT (DATE_TRUNC('day',NOW()) + dias * INTERVAL '1 day' + hora * INTERVAL '1 hour' + atend * INTERVAL '15 minutes') AS inicio
+    SELECT (DATE_TRUNC('day',NOW()) + dias * INTERVAL '1 day' + hora * INTERVAL '1 hour' + atend * INTERVAL '30 minutes') AS inicio
     FROM
-    GENERATE_SERIES(0,14) dias,
+    GENERATE_SERIES(0,29) dias,
     GENERATE_SERIES(0,23) hora,
-    GENERATE_SERIES(0, 3) atend
+    GENERATE_SERIES(0, 1) atend
     ORDER BY inicio
  ) AS t(inicio)
- WHERE t.inicio >= NOW() + interval '1 hour';
+ WHERE t.inicio >= NOW() + interval '4 hour';
 
 INSERT INTO local VALUES (1, '2008-01-01 00:00:00+0000', 'Infinity', 'Local de Teste');
-INSERT INTO local VALUES (2, '2008-01-01 00:00:00+0000', 'Infinity', 'Outro Local');
-INSERT INTO expediente VALUES (1, 1, 1, 8, 17);
-INSERT INTO expediente VALUES (2, 1, 2, 8, 17);
-INSERT INTO expediente VALUES (3, 1, 3, 8, 17);
-INSERT INTO expediente VALUES (4, 1, 4, 8, 17);
-INSERT INTO expediente VALUES (5, 1, 5, 8, 17);
-INSERT INTO expediente VALUES (7, 2, 1, 8, 17);
-INSERT INTO expediente VALUES (8, 2, 2, 8, 17);
-INSERT INTO expediente VALUES (9, 2, 3, 8, 17);
-INSERT INTO expediente VALUES (10, 2, 4, 8, 17);
-INSERT INTO expediente VALUES (11, 2, 5, 8, 17);
-INSERT INTO feriado VALUES (1, '2008-06-24', 'Dia do trabalhador');
-INSERT INTO feriado VALUES (1, '2008-06-25', 'Nao e um feriado');
-INSERT INTO feriado VALUES (2, '2008-06-26', 'Dia do trabalhador');
-INSERT INTO feriado VALUES (2, '2008-06-27', 'Nao e um feriado');
+INSERT INTO expediente VALUES (1, 1, 1, 8, 20);
+INSERT INTO expediente VALUES (2, 1, 2, 8, 20);
+INSERT INTO expediente VALUES (3, 1, 3, 8, 20);
+INSERT INTO expediente VALUES (4, 1, 4, 8, 20);
+INSERT INTO expediente VALUES (5, 1, 5, 8, 20);
 
 
 SQL

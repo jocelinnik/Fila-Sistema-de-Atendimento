@@ -92,7 +92,7 @@ sub criar :Chained('/locais/preload') :PathPart('guiche/criar') :Args(0) {
 	             vt_fim => 'Infinity',
 	             pular_opiniometro => 0,
 	             ( map { $_ => $c->req->param($_) }
-	               qw(identificador jid_opiniometro timeout_chamando timeout_concluido) ) });
+	               qw(identificador jid_opiniometro) ) });
 		   $guiche->estados->create
     	      ({ vt_ini => DateTime->now(time_zone => 'local'),
     	         vt_fim => 'Infinity',

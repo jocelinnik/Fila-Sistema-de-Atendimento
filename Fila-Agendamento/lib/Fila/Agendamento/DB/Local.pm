@@ -76,7 +76,7 @@ LEFT JOIN atendimento a
 ON (a.id_local = l.id_local
     AND a.data >= i.inicio
     AND a.data < i.fim)
-WHERE i.inicio < DATE_TRUNC('day',NOW()) + interval '10 days'
+WHERE i.inicio < DATE_TRUNC('day',NOW()) + interval '29 days'
 GROUP BY l.id_local, l.nome, i.inicio
 ORDER BY hora, dia;
 EOF
@@ -94,7 +94,7 @@ EOF
         $grid ||=
           { dias => {},
             horas => {} };
-        my $info = $exp ? ( $at ? 'Ocupado' : 'Livre' ) : 'Indisp';
+        my $info = $exp ? ( $at > $Fila::Agendamento::quantidade_por_intervalo - 1 ? 'Ocupado' : 'Livre' ) : 'Indisp';
         $grid->{dias}{$dia}{$hora} = $info;
         $grid->{horas}{$hora}{$dia} = $info;
     }

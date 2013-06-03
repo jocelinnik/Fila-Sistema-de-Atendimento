@@ -30,6 +30,12 @@ __PACKAGE__->config( name => 'Fila::Agendamento' );
 __PACKAGE__->setup(qw/ ConfigLoader Static::Simple Session
       Session::Store::FastMmap Session::State::Cookie Unicode/);
 
+{
+    $Fila::Agendamento::quantidade_por_intervalo       = __PACKAGE__->config->{quantidade_por_intervalo}       || 10;
+}
+
+
+
 1;
 
 __END__

@@ -39,29 +39,23 @@ sub imprimir_senha {
     $date->set_time_zone('local');
 
     my $a = encode('CP850',
-		    "\eH\e\x0f".
-#		    "                    Prefeitura de São Paulo      \n".
-#		    "                 Secretaria Municipal de Saúde   \n".
-		    "           Secretaria Municipal de Saúde de São Paulo  \n".
-		    "              Coordenadoria Regional de Saúde - Sul  \n".
-		    "               Supervisão Técnica de Campo Limpo   \n".
-		    "\n".
-                    "\x1b\x2b\x30\x06\x06\x06".
-		    "  ".$dados->{atendimento}{senha}.
-		    "\eH\e\x0f".
-                    "\n".
-		    #"                        ".$date->strftime('%F %H:%M').
-		    "                            ".$date->strftime('%F').
-                    "\n\n".
-		    "              AMA Especilidades Jardim Pirajussara  \n".
-          	    "         Av. Amadeu da Silva Samelo, 423 - CEP 05760-140\n".
-		    "                         (11) 5843-6257            \n".
-                    "\n".
-		    "\x0e".
-                    "          CEJAM\n" .
+		    "\eH\e\x0f\x0e".
+		    "         CABESP     \n".
+                    "\eH\e\x0f\x0e".
+		    "     0800-722-2636  \n".
                     "\eH\e\x0f".
-                    "          Centro de Estudos e Pesquisas Dr. João Amorim\n".
-                    "                     http://www.cejam.org.br           \n".
+                    "\n".
+	            "\x1b\x2b\x30\x06\x06\x06".
+		    " ".$dados->{atendimento}{senha}.
+		    "\eH\e\x0f".
+		    "\n".
+		    "                        ".$date->strftime('%F %H:%M').
+		    #"                            ".$date->strftime('%F').
+                    "\n".
+          	    "             R. Boa Vista, 293 - 7º andar - Centro  \n".
+                    "\x0e".
+		    "   www.cabesp.com.br  \n".
+                    "\eH\e\x0f".
 		    "\x11"
 		  );
 
