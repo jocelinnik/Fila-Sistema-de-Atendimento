@@ -187,7 +187,7 @@ sub status_guiche : WSDLPort('GestaoAtendente') : DBICTransaction('DB') : MI {
     my $servicos_internos = $c->stash->{guiche}->servico_atual->search(
       {},
       {
-        'join'   => [ 'servico' ],
+        'join'   => ['servico'],
         'select' => [
           'me.id_servico', 'servico.id_classe',
           'servico.nome',  'me.informacoes'
@@ -238,7 +238,7 @@ sub status_guiche : WSDLPort('GestaoAtendente') : DBICTransaction('DB') : MI {
     my $servicos_internos = $atendimento->servico_atual->search(
       {},
       {
-        'join'   => [ 'servico' ],
+        'join'   => ['servico'],
         'select' => [
           'me.id_servico', 'servico.id_classe',
           'servico.nome',  'me.informacoes'
