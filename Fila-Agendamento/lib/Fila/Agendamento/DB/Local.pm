@@ -93,9 +93,11 @@ EOF
     };
     my $info =
         $exp
-        ? ( $at > $Fila::Agendamento::quantidade_por_intervalo - 1
+        ? (
+      $at > $Fila::Agendamento::quantidade_por_intervalo - 1
       ? 'Ocupado'
-      : 'Livre' )
+      : 'Livre'
+        )
         : 'Indisp';
     $grid->{dias}{$dia}{$hora}  = $info;
     $grid->{horas}{$hora}{$dia} = $info;
