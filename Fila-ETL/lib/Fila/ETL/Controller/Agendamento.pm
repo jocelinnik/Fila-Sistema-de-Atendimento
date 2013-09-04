@@ -1,4 +1,5 @@
 package Fila::ETL::Controller::Agendamento;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,75 +21,101 @@ use strict;
 use warnings;
 use base qw(Catalyst::Controller);
 
-sub agendamento :Chained('/base') :PathPart :CaptureArgs(0) {
-    my ($self, $c) = @_;
-    my $vt_base = $c->stash->{now}->clone();
-    $vt_base->add( hours => 1 );
-    $c->stash->{vt_base} = $vt_base;
+sub agendamento : Chained('/base') : PathPart : CaptureArgs(0) {
+  my ( $self, $c ) = @_;
+  my $vt_base = $c->stash->{now}->clone();
+  $vt_base->add( hours => 1 );
+  $c->stash->{vt_base} = $vt_base;
 }
 
-sub agendar :Chained('agendamento') :PathPart :Args(0) {
-    my ($self, $c) = @_;
+sub agendar : Chained('agendamento') : PathPart : Args(0) {
+  my ( $self, $c ) = @_;
 
-    my $result = $c->model('DB::ActivityLog')->search
-      ({ activity_type => '/agendamento/agendar' },
-       { order_by => 'vt_base DESC' });
+  my $result =
+      $c->model('DB::ActivityLog')
+      ->search( { activity_type => '/agendamento/agendar' },
+    { order_by => 'vt_base DESC' } );
 
-    if (my $last = $result->first) {
-      $c->stash->{last_vt_base} = $last->vt_base;
-    } else {
-      $c->stash->{last_vt_base} = '-Infinity';
+  if ( my $last = $result->first ) {
+    $c->stash->{last_vt_base} = $last->vt_base;
+  }
+  else {
+    $c->stash->{last_vt_base} = '-Infinity';
+  }
+
+  my $agendamentos = $c->model('DBAgendamento::Atendimento')->search(
+    {
+      -and => [
+        { data => { '>'  => $c->stash->{last_vt_base} } },
+        { data => { '<=' => $c->stash->{vt_base} } }
+      ]
     }
+  );
 
-    my $agendamentos = $c->model('DBAgendamento::Atendimento')->search
-      ({ -and => [{ data => { '>'  => $c->stash->{last_vt_base} }},
-		  { data => { '<=' => $c->stash->{vt_base}      }}  ]});
+  my %local;
+  while ( my $agendamento = $agendamentos->next ) {
+    $local{ $agendamento->id_local } = 1;
+    eval {
+      my $categoria =
+          $c->model('Federado')
+          ->target( $c, $agendamento->id_local, 'Categoria' )
+          ->find( { codigo => 'A' } );
+      my $estado_espera =
+          $c->model('Federado')
+          ->target( $c, $agendamento->id_local, 'TipoEstadoAtendimento' )
+          ->find( { nome => 'espera' } );
+      my $senha =
+          $c->model('Federado')->target( $c, $agendamento->id_local, 'Senha' )
+          ->find(
+        {
+          id_categoria => $categoria->id_categoria,
+          codigo       => substr( $agendamento->senha, 1 )
+        }
+          );
+      my $atendimento =
+          $c->model('Federado')
+          ->target( $c, $agendamento->id_local, 'Atendimento' )->create(
+        {
+          id_senha => $senha->id_senha,
+          id_local => $agendamento->id_local,
+          vt_ini   => $agendamento->data,
+          vt_fim   => 'Infinity',
+          estados  => [
+            {
+              id_estado => $estado_espera->id_estado,
+              vt_ini    => $agendamento->data,
+              vt_fim    => 'Infinity'
+            }
+          ],
+          categorias => [
+            {
+              id_categoria => $categoria->id_categoria,
+              vt_ini       => $agendamento->data,
+              vt_fim       => 'Infinity'
+            }
+          ]
+        }
+          );
+    };
+    if ($@) {
+      warn 'Erro ao realizar Agendamento ('
+          . $agendamento->id_atendimento . '): '
+          . $@;
+    }
+  }
 
-    my %local;
-    while (my $agendamento = $agendamentos->next) {
-      $local{$agendamento->id_local} = 1;
-      eval {
-	my $categoria = $c->model('Federado')->target
-	  ($c, $agendamento->id_local, 'Categoria')->find
-	    ({ codigo => 'A' });
-	my $estado_espera = $c->model('Federado')->target
-	  ($c, $agendamento->id_local, 'TipoEstadoAtendimento')->find
-	    ({ nome => 'espera' });
-	my $senha = $c->model('Federado')->target
-	  ($c, $agendamento->id_local, 'Senha')->find
-	    ({ id_categoria => $categoria->id_categoria,
-	       codigo => substr($agendamento->senha, 1) });
-	my $atendimento = $c->model('Federado')->target
-	  ($c, $agendamento->id_local, 'Atendimento')->create
-	    ({ id_senha => $senha->id_senha,
-	       id_local => $agendamento->id_local,
-	       vt_ini => $agendamento->data,
-	       vt_fim => 'Infinity',
-	       estados =>
-	       [{ id_estado => $estado_espera->id_estado,
-		  vt_ini => $agendamento->data,
-		  vt_fim => 'Infinity' }],
-	       categorias =>
-	       [{ id_categoria => $categoria->id_categoria,
-		  vt_ini => $agendamento->data,
-		  vt_fim => 'Infinity' }]});
-      };
-      if ($@) {
-	warn 'Erro ao realizar Agendamento ('.$agendamento->id_atendimento.'): '.$@;
+  foreach my $id_local ( keys %local ) {
+    $c->model('DB::ActivityLog')->create(
+      {
+        id_local      => $id_local,
+        activity_type => '/agendamento/agendar',
+        vt_base       => $c->stash->{vt_base},
+        vt_ini        => $c->stash->{now}
       }
-    }
-
-    foreach my $id_local (keys %local) {
-    $c->model('DB::ActivityLog')->create
-      ({ 
-         id_local => $id_local,
-         activity_type => '/agendamento/agendar',
-         vt_base => $c->stash->{vt_base},
-         vt_ini => $c->stash->{now} });
-    }
+    );
+  }
 
 }
-
 
 1;
 

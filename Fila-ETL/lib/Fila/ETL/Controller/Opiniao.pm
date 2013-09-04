@@ -1,4 +1,5 @@
 package Fila::ETL::Controller::Opiniao;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,34 +21,40 @@ use strict;
 use warnings;
 use base qw(Catalyst::Controller);
 
-sub opiniao :Chained('/base') :PathPart :CaptureArgs(0) {
-  my ($self, $c) = @_;
+sub opiniao : Chained('/base') : PathPart : CaptureArgs(0) {
+  my ( $self, $c ) = @_;
   $c->stash->{vt_base} = $c->stash->{now};
 }
 
-sub avaliacao :Chained('opiniao') :PathPart :Args(0) {
-  my ($self, $c) = @_;
+sub avaliacao : Chained('opiniao') : PathPart : Args(0) {
+  my ( $self, $c ) = @_;
 
-  $c->model('Federado')->doeach
-    ($c, sub {
-       my $id = shift;
-       my $min = 'minute';
+  $c->model('Federado')->doeach(
+    $c,
+    sub {
+      my $id  = shift;
+      my $min = 'minute';
 
-       my $result = $c->model('DB::ActivityLog')->search
-         ({ activity_type => '/opiniao/avaliacao',
-            id_local => $id },
-          { order_by => 'vt_base DESC' });
+      my $result = $c->model('DB::ActivityLog')->search(
+        {
+          activity_type => '/opiniao/avaliacao',
+          id_local      => $id
+        },
+        { order_by => 'vt_base DESC' }
+      );
 
-       if (my $last = $result->first) {
-         $c->stash->{last_vt_base} = $last->vt_base;
-       } else {
-         $c->stash->{last_vt_base} = '-Infinity';
-       }
+      if ( my $last = $result->first ) {
+        $c->stash->{last_vt_base} = $last->vt_base;
+      }
+      else {
+        $c->stash->{last_vt_base} = '-Infinity';
+      }
 
-       my $local = $c->model('Federado')->target($c, $id, 'Local')->find
-	 ({ id_local => $id });
+      my $local =
+          $c->model('Federado')->target( $c, $id, 'Local' )
+          ->find( { id_local => $id } );
 
-       my $sql = q#
+      my $sql = q#
 
 SELECT DATE_TRUNC('minute', resposta_avaliacao.vt_fac) AS datahora, COUNT(*) AS
  quantidade, resposta, categoria.nome, categoria.codigo,
@@ -86,80 +93,87 @@ GROUP BY DATE_TRUNC('minute', resposta_avaliacao.vt_fac), resposta,
 
 #;
 
-       my $storage = $c->model('Federado')->storage($c, $id);
-       $storage->ensure_connected;
-       my $dbi = $storage->dbh;
+      my $storage = $c->model('Federado')->storage( $c, $id );
+      $storage->ensure_connected;
+      my $dbi = $storage->dbh;
 
-       my $sth = $dbi->prepare($sql);
-       $sth->execute( $id,
-                      $c->stash->{last_vt_base}, $c->stash->{vt_base},
-                    );
+      my $sth = $dbi->prepare($sql);
+      $sth->execute( $id, $c->stash->{last_vt_base}, $c->stash->{vt_base}, );
 
-       my $dlocal = $c->model('DB::DLocal')->get_dimension($local);
-       my $func_cache = {};
-       my $cate_cache = {};
-       my $guic_cache = {};
-       my $perg_cache = {};
-       my $resp_cache = {};
+      my $dlocal     = $c->model('DB::DLocal')->get_dimension($local);
+      my $func_cache = {};
+      my $cate_cache = {};
+      my $guic_cache = {};
+      my $perg_cache = {};
+      my $resp_cache = {};
 
-       while (my $item = $sth->fetchrow_hashref) {
-         my $datahora = $item->{datahora};
-         my $datahora_dt = DateTime::Format::Pg->parse_datetime($datahora);
-         my $data = $c->model('DB::DData')->get_dimension($datahora_dt);
-         my $horario = $c->model('DB::DHorario')->get_dimension($datahora_dt);
+      while ( my $item = $sth->fetchrow_hashref ) {
+        my $datahora    = $item->{datahora};
+        my $datahora_dt = DateTime::Format::Pg->parse_datetime($datahora);
+        my $data        = $c->model('DB::DData')->get_dimension($datahora_dt);
+        my $horario = $c->model('DB::DHorario')->get_dimension($datahora_dt);
 
-         unless (exists $func_cache->{$item->{jid}}) {
-           $func_cache->{$item->{jid}} = $c->model('DB::DAtendente')
-             ->get_dimension({ nome => $item->{nome_func}, jid => $item->{jid}});
-         }
-         my $func = $func_cache->{$item->{jid}};
+        unless ( exists $func_cache->{ $item->{jid} } ) {
+          $func_cache->{ $item->{jid} } =
+              $c->model('DB::DAtendente')
+              ->get_dimension(
+            { nome => $item->{nome_func}, jid => $item->{jid} } );
+        }
+        my $func = $func_cache->{ $item->{jid} };
 
-         unless (exists $cate_cache->{$item->{id_categoria}}) {
-           $cate_cache->{$item->{id_categoria}} =
-             $c->model('DB::DCategoria')->get_dimension($item);
-         }
-         my $cate = $cate_cache->{$item->{id_categoria}};
+        unless ( exists $cate_cache->{ $item->{id_categoria} } ) {
+          $cate_cache->{ $item->{id_categoria} } =
+              $c->model('DB::DCategoria')->get_dimension($item);
+        }
+        my $cate = $cate_cache->{ $item->{id_categoria} };
 
-         unless (exists $guic_cache->{$item->{identificador}}) {
-           $guic_cache->{$item->{identificador}} =
-             $c->model('DB::DGuiche')->get_dimension($item->{identificador});
-         }
-         my $guic = $guic_cache->{$item->{identificador}};
+        unless ( exists $guic_cache->{ $item->{identificador} } ) {
+          $guic_cache->{ $item->{identificador} } =
+              $c->model('DB::DGuiche')
+              ->get_dimension( $item->{identificador} );
+        }
+        my $guic = $guic_cache->{ $item->{identificador} };
 
-         unless (exists $perg_cache->{$item->{pergunta}}) {
-           $perg_cache->{$item->{pergunta}} =
-             $c->model('DB::DPerguntaAvaliacao')->get_dimension($item->{pergunta});
-         }
-         my $perg = $perg_cache->{$item->{pergunta}};
+        unless ( exists $perg_cache->{ $item->{pergunta} } ) {
+          $perg_cache->{ $item->{pergunta} } =
+              $c->model('DB::DPerguntaAvaliacao')
+              ->get_dimension( $item->{pergunta} );
+        }
+        my $perg = $perg_cache->{ $item->{pergunta} };
 
-         unless (exists $resp_cache->{$item->{resposta}}) {
-           $resp_cache->{$item->{resposta}} =
-             $c->model('DB::DRespostaAvaliacao')->get_dimension($item->{resposta});
-         }
-         my $resp = $resp_cache->{$item->{resposta}};
+        unless ( exists $resp_cache->{ $item->{resposta} } ) {
+          $resp_cache->{ $item->{resposta} } =
+              $c->model('DB::DRespostaAvaliacao')
+              ->get_dimension( $item->{resposta} );
+        }
+        my $resp = $resp_cache->{ $item->{resposta} };
 
-         $c->model('DB::FAvaliacao')->create
-           ({ id_local => $dlocal,
-              data => $data,
-              horario => $horario,
-              id_guiche => $guic,
-              id_categoria => $cate,
-              id_atendente => $func,
-              id_pergunta => $perg,
-              id_resposta => $resp,
-              quantidade => $item->{quantidade}
-            });
-       }
+        $c->model('DB::FAvaliacao')->create(
+          {
+            id_local     => $dlocal,
+            data         => $data,
+            horario      => $horario,
+            id_guiche    => $guic,
+            id_categoria => $cate,
+            id_atendente => $func,
+            id_pergunta  => $perg,
+            id_resposta  => $resp,
+            quantidade   => $item->{quantidade}
+          }
+        );
+      }
 
+      $c->model('DB::ActivityLog')->create(
+        {
+          activity_type => '/opiniao/avaliacao',
+          vt_base       => $c->stash->{vt_base},
+          vt_ini        => $c->stash->{now},
+          id_local      => $id
+        }
+      );
 
-       $c->model('DB::ActivityLog')->create
-         ({ activity_type => '/opiniao/avaliacao',
-            vt_base => $c->stash->{vt_base},
-            vt_ini => $c->stash->{now},
-            id_local => $id });
-
-     });
-
+    }
+  );
 
 }
 

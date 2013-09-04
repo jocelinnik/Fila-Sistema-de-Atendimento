@@ -1,4 +1,5 @@
 package Fila::WebApp::Controller::CB::Guiche;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -21,36 +22,35 @@ use warnings;
 use base 'Catalyst::Controller::SOAP';
 
 __PACKAGE__->config->{wsdl} =
-  {wsdl => Fila::WebApp->path_to('schemas/FilaWeb.wsdl')};
-
+    { wsdl => Fila::WebApp->path_to('schemas/FilaWeb.wsdl') };
 
 sub abrir_guiche : WSDLPort('FilaWebGuicheCallback') {
-    my ($self, $c, $query) = @_;
+  my ( $self, $c, $query ) = @_;
 
-    my %params = map { $_->{name} => $_->{value} }
-      @{$query->{callback_request}{param}};
+  my %params =
+      map { $_->{name} => $_->{value} }
+      @{ $query->{callback_request}{param} };
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/guiche']);
-    $c->model('SOAP::Gestao::Guiche')
-      ->abrir_guiche({ guiche => \%params });
-    $::user_guiche = $params{identificador};
-    $c->forward('/render/atendente');
-    $c->forward($c->view());
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/guiche'] );
+  $c->model('SOAP::Gestao::Guiche')->abrir_guiche( { guiche => \%params } );
+  $::user_guiche = $params{identificador};
+  $c->forward('/render/atendente');
+  $c->forward( $c->view() );
 }
 
 sub abrir_user_guiche : Private {
-    my ($self, $c, $query) = @_;
+  my ( $self, $c, $query ) = @_;
 
-    my %params = (identificador => $::user_guiche);
+  my %params = ( identificador => $::user_guiche );
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/guiche']);
-    $c->model('SOAP::Gestao::Guiche')
-      ->abrir_guiche({ guiche => \%params });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/guiche'] );
+  $c->model('SOAP::Gestao::Guiche')->abrir_guiche( { guiche => \%params } );
 
-    $c->forward('/render/atendente');
-    $c->forward($c->view());
+  $c->forward('/render/atendente');
+  $c->forward( $c->view() );
 }
-
 
 1;
 

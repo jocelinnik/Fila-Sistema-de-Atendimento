@@ -1,4 +1,5 @@
 package Fila::ETL::Model::DBAgendamento;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -19,7 +20,6 @@ package Fila::ETL::Model::DBAgendamento;
 use strict;
 use warnings;
 use base 'Catalyst::Model::DBIC::Schema';
-
 
 1;
 

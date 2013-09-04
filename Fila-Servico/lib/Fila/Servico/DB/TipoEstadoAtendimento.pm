@@ -1,4 +1,5 @@
 package Fila::Servico::DB::TipoEstadoAtendimento;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,21 +21,19 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('tipo_estado_atendimento');
-__PACKAGE__->add_columns
-  (
-   id_estado =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_estado => {
+    data_type         => 'integer',
     is_auto_increment => 1,
-   },
-   nome =>
-   {
-    data_type => 'varchar',
-   },
-  );
+  },
+  nome => { data_type => 'varchar', },
+);
 __PACKAGE__->set_primary_key(qw(id_estado));
-__PACKAGE__->has_many('atendimentos', 'Fila::Servico::DB::EstadoAtendimento',
-                      {'foreign.id_estado' => 'self.id_estado'});
+__PACKAGE__->has_many(
+  'atendimentos',
+  'Fila::Servico::DB::EstadoAtendimento',
+  { 'foreign.id_estado' => 'self.id_estado' }
+);
 
 1;
 

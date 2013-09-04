@@ -1,4 +1,5 @@
 package Fila::ETL::DB::DPerguntaAvaliacao;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,19 +23,16 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(Core PK::Auto));
 __PACKAGE__->table('d_pergunta_avaliacao');
-__PACKAGE__->add_columns
-  (
-   id_pergunta =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_pergunta => {
+    data_type         => 'integer',
     is_auto_increment => 1
-   },
-   texto =>
-   {
-    data_type => 'varchar',
+  },
+  texto => {
+    data_type   => 'varchar',
     is_nullable => 1,
-   }
-  );
+  }
+);
 
 __PACKAGE__->set_primary_key('id_pergunta');
 __PACKAGE__->resultset_class('Fila::ETL::DB::DPerguntaAvaliacao::RS');
@@ -43,15 +41,15 @@ package Fila::ETL::DB::DPerguntaAvaliacao::RS;
 use base 'DBIx::Class::ResultSet';
 
 sub get_dimension {
-    my ($self, $pergunta) = @_;
-    my $texto = $pergunta->pergunta;
-    if (my $dim = $self->find({ texto => $texto })) {
-	return $dim->id_pergunta;
-    } else {
-	# TODO: Obter isso de um lugar mais inteligente;
-	return $self->create
-          ({ texto => $pergunta->pergunta })->id_pergunta;
-    }
+  my ( $self, $pergunta ) = @_;
+  my $texto = $pergunta->pergunta;
+  if ( my $dim = $self->find( { texto => $texto } ) ) {
+    return $dim->id_pergunta;
+  }
+  else {
+    # TODO: Obter isso de um lugar mais inteligente;
+    return $self->create( { texto => $pergunta->pergunta } )->id_pergunta;
+  }
 }
 
 1;

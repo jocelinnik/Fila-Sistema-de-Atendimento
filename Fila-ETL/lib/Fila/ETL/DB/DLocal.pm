@@ -1,4 +1,5 @@
 package Fila::ETL::DB::DLocal;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,19 +23,16 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(Core PK::Auto));
 __PACKAGE__->table('d_local');
-__PACKAGE__->add_columns
-  (
-   id_local =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_local => {
+    data_type         => 'integer',
     is_auto_increment => 1
-   },
-   nome =>
-   {
-    data_type => 'varchar',
+  },
+  nome => {
+    data_type   => 'varchar',
     is_nullable => 1,
-   }
-  );
+  }
+);
 
 __PACKAGE__->set_primary_key('id_local');
 __PACKAGE__->resultset_class('Fila::ETL::DB::DLocal::RS');
@@ -43,15 +41,16 @@ package Fila::ETL::DB::DLocal::RS;
 use base 'DBIx::Class::ResultSet';
 
 sub get_dimension {
-    my ($self, $local) = @_;
-    my $nome = $local->nome;
-    if (my $dim = $self->find({ nome => $nome })) {
-	return $dim->id_local;
-    } else {
-	# Aqui também precisaríamos de mais informações acerca da
-	# praça de atendimento...
-	return $self->create({ nome => $nome })->id_local;
-    }
+  my ( $self, $local ) = @_;
+  my $nome = $local->nome;
+  if ( my $dim = $self->find( { nome => $nome } ) ) {
+    return $dim->id_local;
+  }
+  else {
+    # Aqui também precisaríamos de mais informações acerca da
+    # praça de atendimento...
+    return $self->create( { nome => $nome } )->id_local;
+  }
 }
 
 1;

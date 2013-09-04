@@ -1,4 +1,5 @@
 package Fila::WebApp::Controller::CB::Atendente;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,394 +23,465 @@ use Encode;
 use base 'Catalyst::Controller::SOAP';
 
 __PACKAGE__->config->{wsdl} =
-  { wsdl => Fila::WebApp->path_to('schemas/FilaWeb.wsdl') };
+    { wsdl => Fila::WebApp->path_to('schemas/FilaWeb.wsdl') };
 __PACKAGE__->config->{pode_encaminhar_para_mesa} = 1;
 __PACKAGE__->mk_accessors('pode_encaminhar_para_mesa');
 
 sub registrar_pendente : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c) = @_;
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $registrar_pendente = $c->model('SOAP::Gestao::Atendente')
-          ->registrar_pendente({ atendimento => {} });
+  my ( $self, $c ) = @_;
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $registrar_pendente =
+      $c->model('SOAP::Gestao::Atendente')
+      ->registrar_pendente( { atendimento => {} } );
 }
 
 sub registrar_no_show : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c) = @_;
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $registrar_no_show = $c->model('SOAP::Gestao::Atendente')
-          ->registrar_no_show({ atendimento => {} });
+  my ( $self, $c ) = @_;
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $registrar_no_show =
+      $c->model('SOAP::Gestao::Atendente')
+      ->registrar_no_show( { atendimento => {} } );
 }
 
 sub listar_pendente : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $lista_pendente = $c->model('SOAP::Gestao::Atendente')
-          ->listar_pendente({ atendimento => {} });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $lista_pendente =
+      $c->model('SOAP::Gestao::Atendente')
+      ->listar_pendente( { atendimento => {} } );
 
-    if ($lista_pendente->{Fault}) {
-        $c->stash->{error_message} = $lista_pendente->{Fault}{faultstring};
-        return $c->forward('/render/error_message');
-    }
+  if ( $lista_pendente->{Fault} ) {
+    $c->stash->{error_message} = $lista_pendente->{Fault}{faultstring};
+    return $c->forward('/render/error_message');
+  }
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    $c->stash->{status_guiche} = $c->model('SOAP::Gestao::Atendente')
-          ->status_guiche({ guiche => {} });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  $c->stash->{status_guiche} =
+      $c->model('SOAP::Gestao::Atendente')->status_guiche( { guiche => {} } );
 
-    $c->stash->{lista_pendente} = $lista_pendente;
+  $c->stash->{lista_pendente} = $lista_pendente;
 
-    $c->stash->{template} = 'cb/atendente/refresh.tt';
-    $c->forward($c->view());
+  $c->stash->{template} = 'cb/atendente/refresh.tt';
+  $c->forward( $c->view() );
 }
 
 sub listar_no_show : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $lista_no_show = $c->model('SOAP::Gestao::Atendente')
-          ->listar_no_show({ atendimento => {} });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $lista_no_show =
+      $c->model('SOAP::Gestao::Atendente')
+      ->listar_no_show( { atendimento => {} } );
 
-    if ($lista_no_show->{Fault}) {
-        $c->stash->{error_message} = $lista_no_show->{Fault}{faultstring};
-        return $c->forward('/render/error_message');
-    }
+  if ( $lista_no_show->{Fault} ) {
+    $c->stash->{error_message} = $lista_no_show->{Fault}{faultstring};
+    return $c->forward('/render/error_message');
+  }
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    $c->stash->{status_guiche} = $c->model('SOAP::Gestao::Atendente')
-          ->status_guiche({ guiche => {} });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  $c->stash->{status_guiche} =
+      $c->model('SOAP::Gestao::Atendente')->status_guiche( { guiche => {} } );
 
-    $c->stash->{lista_no_show} = $lista_no_show;
+  $c->stash->{lista_no_show} = $lista_no_show;
 
-    $c->stash->{template} = 'cb/atendente/refresh.tt';
-    $c->forward($c->view());
+  $c->stash->{template} = 'cb/atendente/refresh.tt';
+  $c->forward( $c->view() );
 }
 
 sub listar_guiches_encaminhar : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    if ($self->pode_encaminhar_para_mesa) {
-        $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/guiche']);
-        my $lista_guiches = $c->model('SOAP::Gestao::Guiche')
-          ->listar_guiches({ local => {} });
+  if ( $self->pode_encaminhar_para_mesa ) {
+    $c->model('SOAP')
+        ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/guiche'] );
+    my $lista_guiches =
+        $c->model('SOAP::Gestao::Guiche')->listar_guiches( { local => {} } );
 
-        if ($lista_guiches->{Fault}) {
-            $c->stash->{error_message} = $lista_guiches->{Fault}{faultstring};
-            return $c->forward('/render/error_message');
-        }
-
-        $c->stash->{lista_guiches_encaminhar} = $lista_guiches;
+    if ( $lista_guiches->{Fault} ) {
+      $c->stash->{error_message} = $lista_guiches->{Fault}{faultstring};
+      return $c->forward('/render/error_message');
     }
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/guiche']);
-    my $lista_categorias = $c->model('SOAP::Gestao::Guiche')
-      ->listar_categorias({ local => {} });
+    $c->stash->{lista_guiches_encaminhar} = $lista_guiches;
+  }
 
-    if ($lista_categorias->{Fault}) {
-        $c->stash->{error_message} = $lista_categorias->{Fault}{faultstring};
-        return $c->forward('/render/error_message');
-    }
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/guiche'] );
+  my $lista_categorias =
+      $c->model('SOAP::Gestao::Guiche')->listar_categorias( { local => {} } );
 
-    $c->stash->{lista_categorias_encaminhar} = $lista_categorias;
+  if ( $lista_categorias->{Fault} ) {
+    $c->stash->{error_message} = $lista_categorias->{Fault}{faultstring};
+    return $c->forward('/render/error_message');
+  }
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    $c->stash->{status_guiche} = $c->model('SOAP::Gestao::Atendente')
-          ->status_guiche({ guiche => {} });
+  $c->stash->{lista_categorias_encaminhar} = $lista_categorias;
 
-    $c->stash->{template} = 'cb/atendente/refresh.tt';
-    $c->forward($c->view());
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  $c->stash->{status_guiche} =
+      $c->model('SOAP::Gestao::Atendente')->status_guiche( { guiche => {} } );
+
+  $c->stash->{template} = 'cb/atendente/refresh.tt';
+  $c->forward( $c->view() );
 
 }
 
 sub encaminhar_atendimento : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c,$query) = @_;
+  my ( $self, $c, $query ) = @_;
 
-    my $id_guiche = $query->{callback_request}{param}[0]{value};
-    my $motivo = $query->{callback_request}{param}[0]{name};
+  my $id_guiche = $query->{callback_request}{param}[0]{value};
+  my $motivo    = $query->{callback_request}{param}[0]{name};
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $encaminhar_atendimento = $c->model('SOAP::Gestao::Atendente')
-      ->encaminhar_atendimento({ encaminhamento => { id_guiche => $id_guiche, informacoes => $motivo } });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $encaminhar_atendimento =
+      $c->model('SOAP::Gestao::Atendente')
+      ->encaminhar_atendimento(
+    { encaminhamento => { id_guiche => $id_guiche, informacoes => $motivo } }
+      );
 }
 
 sub encaminhar_atendimento_categoria : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c,$query) = @_;
+  my ( $self, $c, $query ) = @_;
 
-    my $id_categoria = $query->{callback_request}{param}[0]{value};
-    my $motivo = $query->{callback_request}{param}[0]{name};
+  my $id_categoria = $query->{callback_request}{param}[0]{value};
+  my $motivo       = $query->{callback_request}{param}[0]{name};
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $encaminhar_atendimento = $c->model('SOAP::Gestao::Atendente')
-      ->encaminhar_atendimento({ encaminhamento => { id_categoria => $id_categoria, informacoes => $motivo } });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $encaminhar_atendimento =
+      $c->model('SOAP::Gestao::Atendente')->encaminhar_atendimento(
+    {
+      encaminhamento =>
+          { id_categoria => $id_categoria, informacoes => $motivo }
+    }
+      );
 }
 
 sub atender_pendente : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c,$query) = @_;
+  my ( $self, $c, $query ) = @_;
 
-    my %params = map { $_->{name} => $_->{value} } @{$query->{callback_request}{param}};
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $iniciar_atendimento = $c->model('SOAP::Gestao::Atendente')
-          ->atender_pendente({ atendimento => \%params });
+  my %params =
+      map { $_->{name} => $_->{value} }
+      @{ $query->{callback_request}{param} };
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $iniciar_atendimento =
+      $c->model('SOAP::Gestao::Atendente')
+      ->atender_pendente( { atendimento => \%params } );
 }
 
 sub atender_no_show : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c,$query) = @_;
+  my ( $self, $c, $query ) = @_;
 
-    my %params = map { $_->{name} => $_->{value} } @{$query->{callback_request}{param}};
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $iniciar_atendimento = $c->model('SOAP::Gestao::Atendente')
-          ->atender_no_show({ atendimento => \%params });
+  my %params =
+      map { $_->{name} => $_->{value} }
+      @{ $query->{callback_request}{param} };
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $iniciar_atendimento =
+      $c->model('SOAP::Gestao::Atendente')
+      ->atender_no_show( { atendimento => \%params } );
 }
 
 sub fechar_guiche : WSDLPort('FilaWebAtendenteCallback') {
 
-    #fechar_guiche irá disparar o mesmo evento no motor do sistema.
+  #fechar_guiche irá disparar o mesmo evento no motor do sistema.
 
-    my ($self, $c, $query) = @_;
+  my ( $self, $c, $query ) = @_;
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $fechar_guiche = $c->model('SOAP::Gestao::Atendente')
-          ->fechar_guiche({ guiche => {} });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $fechar_guiche =
+      $c->model('SOAP::Gestao::Atendente')->fechar_guiche( { guiche => {} } );
 
-    $c->stash->{template} = 'cb/atendente/fechar_guiche.tt';
-    $c->forward($c->view());
+  $c->stash->{template} = 'cb/atendente/fechar_guiche.tt';
+  $c->forward( $c->view() );
 }
 
 sub devolver_senha : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $iniciar_atendimento = $c->model('SOAP::Gestao::Atendente')
-          ->devolver_senha({ atendimento => {} });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $iniciar_atendimento =
+      $c->model('SOAP::Gestao::Atendente')
+      ->devolver_senha( { atendimento => {} } );
 }
 
 sub iniciar_atendimento : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $iniciar_atendimento = $c->model('SOAP::Gestao::Atendente')
-          ->iniciar_atendimento({ atendimento => {} });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $iniciar_atendimento =
+      $c->model('SOAP::Gestao::Atendente')
+      ->iniciar_atendimento( { atendimento => {} } );
 }
 
-sub concluir_atendimento : WSDLPort('FilaWebAtendenteCallback'){
-    my ($self, $c) = @_;
+sub concluir_atendimento : WSDLPort('FilaWebAtendenteCallback') {
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $concluir_atendimento = $c->model('SOAP::Gestao::Atendente')
-          ->concluir_atendimento({ atendimento => {} });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $concluir_atendimento =
+      $c->model('SOAP::Gestao::Atendente')
+      ->concluir_atendimento( { atendimento => {} } );
 }
 
-sub disponivel : WSDLPort('FilaWebAtendenteCallback'){
-    my ($self, $c) = @_;
+sub disponivel : WSDLPort('FilaWebAtendenteCallback') {
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $concluir_atendimento = $c->model('SOAP::Gestao::Atendente')
-          ->disponivel({ guiche => {} });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $concluir_atendimento =
+      $c->model('SOAP::Gestao::Atendente')->disponivel( { guiche => {} } );
 }
 
-sub setar_motivo_pausa :  WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c, $query) = @_;
+sub setar_motivo_pausa : WSDLPort('FilaWebAtendenteCallback') {
+  my ( $self, $c, $query ) = @_;
 
-    my $motivo = $query->{callback_request}{param}[0]{value};
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $setar_motivo_pausa = $c->model('SOAP::Gestao::Atendente')
-          ->setar_motivo_pausa({ guiche => { pausa_motivo => $motivo } });
+  my $motivo = $query->{callback_request}{param}[0]{value};
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $setar_motivo_pausa =
+      $c->model('SOAP::Gestao::Atendente')
+      ->setar_motivo_pausa( { guiche => { pausa_motivo => $motivo } } );
 
 }
 
-sub setar_info_interno :  WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c, $query) = @_;
+sub setar_info_interno : WSDLPort('FilaWebAtendenteCallback') {
+  my ( $self, $c, $query ) = @_;
 
-    my $informacoes = $query->{callback_request}{param}[0]{value};
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $setar_info_interno = $c->model('SOAP::Gestao::Atendente')
-          ->setar_info_interno({ servico => { informacoes => $informacoes } });
+  my $informacoes = $query->{callback_request}{param}[0]{value};
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $setar_info_interno =
+      $c->model('SOAP::Gestao::Atendente')
+      ->setar_info_interno( { servico => { informacoes => $informacoes } } );
 }
 
-sub enviar_chat :  WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c, $query) = @_;
-    #Enviar agora como pacote XMPP2
+sub enviar_chat : WSDLPort('FilaWebAtendenteCallback') {
+  my ( $self, $c, $query ) = @_;
 
-    #tem que procurar entre os funcionários quem eh gerente no momento, acho que essa busca deve ser feita no fila/web.
-    my $too = $query->{callback_request}{param}[0]{name};
-    $too .= '/cb/gerente/receber_chat';
-    #my $too = 'gerente@people.fila.vhost/cb/gerente/receber_chat';
-    my $texto = $query->{callback_request}{param}[0]{value};
+  #Enviar agora como pacote XMPP2
 
-    $c->stash->{texto} = $texto;
+#tem que procurar entre os funcionários quem eh gerente no momento, acho que essa busca deve ser feita no fila/web.
+  my $too = $query->{callback_request}{param}[0]{name};
+  $too .= '/cb/gerente/receber_chat';
 
-    $c->engine->send_message($c, $too, 'chat',
-        sub {
-            my $writer = shift;
-            $writer->startTag('Body');
-            $writer->characters($texto);
-            $writer->endTag('Body');
-        });
-    $c->stash->{now} = DateTime->now(time_zone => 'local')->strftime('%H:%M');
+  #my $too = 'gerente@people.fila.vhost/cb/gerente/receber_chat';
+  my $texto = $query->{callback_request}{param}[0]{value};
 
-    $c->stash->{template} = 'cb/atendente/enviar_chat.tt';
-    $c->forward($c->view());
+  $c->stash->{texto} = $texto;
+
+  $c->engine->send_message(
+    $c, $too, 'chat',
+    sub {
+      my $writer = shift;
+      $writer->startTag('Body');
+      $writer->characters($texto);
+      $writer->endTag('Body');
+    }
+  );
+  $c->stash->{now} = DateTime->now( time_zone => 'local' )->strftime('%H:%M');
+
+  $c->stash->{template} = 'cb/atendente/enviar_chat.tt';
+  $c->forward( $c->view() );
 }
 
 sub receber_chat : Local {
-    my ($self, $c) = @_;
-    #Recebido pacote de chat do gerente
+  my ( $self, $c ) = @_;
 
-    my $texto = $c->req->body . '';
-    $c->stash->{now} = DateTime->now(time_zone => 'local')->strftime('%H:%M');
+  #Recebido pacote de chat do gerente
 
-    return unless $texto =~ s/(^\<body\>|\<\/body\>$)//gi;
+  my $texto = $c->req->body . '';
+  $c->stash->{now} = DateTime->now( time_zone => 'local' )->strftime('%H:%M');
 
-    $c->stash->{texto} = $texto;
-    $c->stash->{template} = 'cb/atendente/receber_chat.tt';
-    $c->forward($c->view());
+  return unless $texto =~ s/(^\<body\>|\<\/body\>$)//gi;
+
+  $c->stash->{texto}    = $texto;
+  $c->stash->{template} = 'cb/atendente/receber_chat.tt';
+  $c->forward( $c->view() );
 }
 
-sub iniciar_pausa :  WSDLPort('FilaWebAtendenteCallback') {
+sub iniciar_pausa : WSDLPort('FilaWebAtendenteCallback') {
 
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $iniciar_pausa = $c->model('SOAP::Gestao::Atendente')
-          ->iniciar_pausa({ guiche => {} });
-
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $iniciar_pausa =
+      $c->model('SOAP::Gestao::Atendente')->iniciar_pausa( { guiche => {} } );
 
 }
 
-sub iniciar_servico_interno :  WSDLPort('FilaWebAtendenteCallback') {
+sub iniciar_servico_interno : WSDLPort('FilaWebAtendenteCallback') {
 
-    my ($self, $c, $query) = @_;
+  my ( $self, $c, $query ) = @_;
 
-    my $id_servico = $query->{callback_request}{param}[0]{value};
+  my $id_servico = $query->{callback_request}{param}[0]{value};
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $iniciar_servico_interno = $c->model('SOAP::Gestao::Atendente')
-          ->iniciar_servico_interno({ servico => { id_servico => $id_servico }  });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $iniciar_servico_interno =
+      $c->model('SOAP::Gestao::Atendente')
+      ->iniciar_servico_interno(
+    { servico => { id_servico => $id_servico } } );
 
 }
 
 sub listar_servicos : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $listar_servicos = $c->model('SOAP::Gestao::Atendente')
-          ->listar_servicos({ servico => {} });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $listar_servicos =
+      $c->model('SOAP::Gestao::Atendente')
+      ->listar_servicos( { servico => {} } );
 
-    if ($listar_servicos->{Fault}) {
-        $c->stash->{error_message} = $listar_servicos->{Fault}{faultstring};
-        return $c->forward('/render/error_message');
-    }
+  if ( $listar_servicos->{Fault} ) {
+    $c->stash->{error_message} = $listar_servicos->{Fault}{faultstring};
+    return $c->forward('/render/error_message');
+  }
 
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  $c->stash->{status_guiche} =
+      $c->model('SOAP::Gestao::Atendente')->status_guiche( { guiche => {} } );
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    $c->stash->{status_guiche} = $c->model('SOAP::Gestao::Atendente')
-          ->status_guiche({ guiche => {} });
+  $c->stash->{lista_servicos} = $listar_servicos;
 
-    $c->stash->{lista_servicos} = $listar_servicos;
-
-    $c->stash->{template} = 'cb/atendente/refresh.tt';
-    $c->forward($c->view());
-
+  $c->stash->{template} = 'cb/atendente/refresh.tt';
+  $c->forward( $c->view() );
 
 }
 
 sub listar_servicos_atendimento : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $listar_servicos_atendimento = $c->model('SOAP::Gestao::Atendente')
-          ->listar_servicos_atendimento({ servico => {} });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $listar_servicos_atendimento =
+      $c->model('SOAP::Gestao::Atendente')
+      ->listar_servicos_atendimento( { servico => {} } );
 
-    if ($listar_servicos_atendimento->{Fault}) {
-        $c->stash->{error_message} = $listar_servicos_atendimento->{Fault}{faultstring};
-        return $c->forward('/render/error_message');
-    }
+  if ( $listar_servicos_atendimento->{Fault} ) {
+    $c->stash->{error_message} =
+        $listar_servicos_atendimento->{Fault}{faultstring};
+    return $c->forward('/render/error_message');
+  }
 
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  $c->stash->{status_guiche} =
+      $c->model('SOAP::Gestao::Atendente')->status_guiche( { guiche => {} } );
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    $c->stash->{status_guiche} = $c->model('SOAP::Gestao::Atendente')
-          ->status_guiche({ guiche => {} });
+  $c->stash->{lista_servicos_atendimento} = $listar_servicos_atendimento;
 
-    $c->stash->{lista_servicos_atendimento} = $listar_servicos_atendimento;
-
-    $c->stash->{template} = 'cb/atendente/refresh.tt';
-    $c->forward($c->view());
-
+  $c->stash->{template} = 'cb/atendente/refresh.tt';
+  $c->forward( $c->view() );
 
 }
 
 sub fechar_servico_interno : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $fechar_servico_interno = $c->model('SOAP::Gestao::Atendente')
-          ->fechar_servico_interno({ servico => {} });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $fechar_servico_interno =
+      $c->model('SOAP::Gestao::Atendente')
+      ->fechar_servico_interno( { servico => {} } );
 
 }
 
-sub iniciar_servico_atendimento :  WSDLPort('FilaWebAtendenteCallback') {
+sub iniciar_servico_atendimento : WSDLPort('FilaWebAtendenteCallback') {
 
-    my ($self, $c, $query) = @_;
+  my ( $self, $c, $query ) = @_;
 
-    my $id_servico = $query->{callback_request}{param}[0]{value};
+  my $id_servico = $query->{callback_request}{param}[0]{value};
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $iniciar_servico_atendimento = $c->model('SOAP::Gestao::Atendente')
-          ->iniciar_servico_atendimento({ servico => { id_servico => $id_servico }  });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $iniciar_servico_atendimento =
+      $c->model('SOAP::Gestao::Atendente')
+      ->iniciar_servico_atendimento(
+    { servico => { id_servico => $id_servico } } );
 
 }
 
 sub fechar_servico_atendimento : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c, $query) = @_;
+  my ( $self, $c, $query ) = @_;
 
-    my $id_servico = $query->{callback_request}{param}[0]{value};
+  my $id_servico = $query->{callback_request}{param}[0]{value};
 
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $fechar_servico_atendimento = $c->model('SOAP::Gestao::Atendente')
-          ->fechar_servico_atendimento({ servico => { id_servico => $id_servico } });
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $fechar_servico_atendimento =
+      $c->model('SOAP::Gestao::Atendente')
+      ->fechar_servico_atendimento(
+    { servico => { id_servico => $id_servico } } );
 
 }
-sub setar_info_atendimento :  WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c, $query) = @_;
 
-    my $informacoes = $query->{callback_request}{param}[0]{value};
-    my $servico = $query->{callback_request}{param}[0]{name};
-    
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $setar_info_atendimento = $c->model('SOAP::Gestao::Atendente')
-          ->setar_info_atendimento({ servico => { informacoes => $informacoes, id_servico => $servico } });
+sub setar_info_atendimento : WSDLPort('FilaWebAtendenteCallback') {
+  my ( $self, $c, $query ) = @_;
+
+  my $informacoes = $query->{callback_request}{param}[0]{value};
+  my $servico     = $query->{callback_request}{param}[0]{name};
+
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $setar_info_atendimento =
+      $c->model('SOAP::Gestao::Atendente')
+      ->setar_info_atendimento(
+    { servico => { informacoes => $informacoes, id_servico => $servico } } );
 }
 
 sub retornar_pausa : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c) = @_;
-    
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $retornar_pausa = $c->model('SOAP::Gestao::Atendente')
-        ->retornar_pausa({ guiche => {} });
-        
+  my ( $self, $c ) = @_;
+
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $retornar_pausa =
+      $c->model('SOAP::Gestao::Atendente')
+      ->retornar_pausa( { guiche => {} } );
+
 }
 
 sub mudar_senha : WSDLPort('FilaWebAtendenteCallback') {
-    my ($self, $c, $query) = @_;
-    
-    my $senhaatual = $query->{callback_request}{param}[0]{value};
-    my $novasenha = $query->{callback_request}{param}[0]{name};
-    
-    $c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/atendente']);
-    my $mudar_senha = $c->model('SOAP::Gestao::Atendente')
-        ->mudar_senha({ guiche => { senha => $senhaatual, estado => $novasenha } });
-    
-    if ($mudar_senha->{guiche}{senha} eq 'Senha alterada com sucesso') {
-    	$c->stash->{error_message} = $mudar_senha->{guiche}{senha};
-    	#reload no atendente
-	    return $c->forward('/render/aviso');
-    } else { 
-	    $c->stash->{error_message} = $mudar_senha->{Fault}{faultstring};
-	    return $c->forward('/render/error_message');
-    }
-    
-        
-}
+  my ( $self, $c, $query ) = @_;
 
+  my $senhaatual = $query->{callback_request}{param}[0]{value};
+  my $novasenha  = $query->{callback_request}{param}[0]{name};
+
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/atendente'] );
+  my $mudar_senha =
+      $c->model('SOAP::Gestao::Atendente')
+      ->mudar_senha(
+    { guiche => { senha => $senhaatual, estado => $novasenha } } );
+
+  if ( $mudar_senha->{guiche}{senha} eq 'Senha alterada com sucesso' ) {
+    $c->stash->{error_message} = $mudar_senha->{guiche}{senha};
+
+    #reload no atendente
+    return $c->forward('/render/aviso');
+  }
+  else {
+    $c->stash->{error_message} = $mudar_senha->{Fault}{faultstring};
+    return $c->forward('/render/error_message');
+  }
+
+}
 
 1;
 

@@ -1,4 +1,5 @@
 package Fila::Administracao::Controller::Categorias;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,46 +21,44 @@ use strict;
 use warnings;
 use parent 'Catalyst::Controller';
 
-sub index :Path('') :Args(0) {
-    my ( $self, $c ) = @_;
-    $c->stash->{categorias} = $c->model('DB::Categoria')->search
-      ({},
-       { order_by => 'nome' });
+sub index : Path('') : Args(0) {
+  my ( $self, $c ) = @_;
+  $c->stash->{categorias} =
+      $c->model('DB::Categoria')->search( {}, { order_by => 'nome' } );
 }
 
-sub preload :Chained :PathPart('categorias') :CaptureArgs(1) {
-    my ($self, $c, $id_categoria) = @_;
-    $c->stash->{categoria} = $c->model('DB::Categoria')->find
-      ({ id_categoria => $id_categoria });
+sub preload : Chained : PathPart('categorias') : CaptureArgs(1) {
+  my ( $self, $c, $id_categoria ) = @_;
+  $c->stash->{categoria} =
+      $c->model('DB::Categoria')->find( { id_categoria => $id_categoria } );
 }
 
-sub ver :Chained('preload') :PathPart('') :Args(0) {
-    my ($self, $c) = @_;
+sub ver : Chained('preload') : PathPart('') : Args(0) {
+  my ( $self, $c ) = @_;
 
-    unless ($c->req->param('submitted')) {
-        $c->req->param($_,$c->stash->{categoria}->get_column($_))
-          for qw(nome codigo)
-    }
+  unless ( $c->req->param('submitted') ) {
+    $c->req->param( $_, $c->stash->{categoria}->get_column($_) )
+        for qw(nome codigo);
+  }
 }
 
-sub salvar :Chained('preload') :PathPart :Args(0) {
-    my ($self, $c) = @_;
-    if ($c->req->param('submitted')) {
-        $c->stash->{categoria}->update
-          ({ ( map { $_ => $c->req->param($_) }
-               qw(nome codigo) ) });
-        $c->res->redirect($c->uri_for('/categorias/'));
-    }
+sub salvar : Chained('preload') : PathPart : Args(0) {
+  my ( $self, $c ) = @_;
+  if ( $c->req->param('submitted') ) {
+    $c->stash->{categoria}
+        ->update( { ( map { $_ => $c->req->param($_) } qw(nome codigo) ) } );
+    $c->res->redirect( $c->uri_for('/categorias/') );
+  }
 }
 
-sub criar :Local :Args(0) {
-    my ($self, $c) = @_;
-    if ($c->req->param('submitted')) {
-        my $cat = $c->model('DB::Categoria')->create
-          ({ ( map { $_ => $c->req->param($_) }
-               qw(nome codigo) ) });
-        $c->res->redirect($c->uri_for('/categorias/'));
-    }
+sub criar : Local : Args(0) {
+  my ( $self, $c ) = @_;
+  if ( $c->req->param('submitted') ) {
+    my $cat =
+        $c->model('DB::Categoria')
+        ->create( { ( map { $_ => $c->req->param($_) } qw(nome codigo) ) } );
+    $c->res->redirect( $c->uri_for('/categorias/') );
+  }
 }
 
 1;

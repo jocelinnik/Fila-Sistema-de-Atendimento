@@ -1,4 +1,5 @@
 package Fila::Web;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,7 +23,7 @@ use warnings;
 use Catalyst::Runtime '5.70';
 
 use Catalyst qw/Unicode ConfigLoader Session
-      Session::Store::FastMmap Session::State::Cookie/;
+    Session::Store::FastMmap Session::State::Cookie/;
 
 our $VERSION = '0.01';
 
@@ -34,83 +35,86 @@ use EV;
 use AnyEvent;
 use Net::XMPP2::Connection;
 
-
 sub connect_xmpp {
-    warn "Starting Connection.";
+  warn "Starting Connection.";
 
-    $::connection = Net::XMPP2::Connection->new
-      ( username => 'apache',
-        password => 'password',
-        domain => 'gestao.fila.vhost',
-        resource => 'Fila::Web',
-        whitespace_ping_interval => 2,
-        override_host => 'localhost',
-        blocking_write => 1);
+  $::connection = Net::XMPP2::Connection->new(
+    username                 => 'apache',
+    password                 => 'password',
+    domain                   => 'gestao.fila.vhost',
+    resource                 => 'Fila::Web',
+    whitespace_ping_interval => 2,
+    override_host            => 'localhost',
+    blocking_write           => 1
+  );
 
-    Fila::Web::Model::SOAP->config->{transport}
-        ->connection($::connection);
+  Fila::Web::Model::SOAP->config->{transport}->connection($::connection);
 
-    my $die_on_unloop = 0;
-    my $once_connected = 0;
+  my $die_on_unloop  = 0;
+  my $once_connected = 0;
 
-    $::connection->reg_cb
-      ( stream_ready => sub {
-            $::connection->send_presence('available', sub {});
-            EV::unloop;
-        },
+  $::connection->reg_cb(
+    stream_ready => sub {
+      $::connection->send_presence( 'available', sub { } );
+      EV::unloop;
+    },
 
-        bind_error => sub {
-            $die_on_unloop = 1;
-            EV::unloop;
-        },
+    bind_error => sub {
+      $die_on_unloop = 1;
+      EV::unloop;
+    },
 
-        iq_auth_error => sub {
-            $die_on_unloop = 1;
-            EV::unloop;
-        },
+    iq_auth_error => sub {
+      $die_on_unloop = 1;
+      EV::unloop;
+    },
 
-        sasl_error => sub {
-            $die_on_unloop = 1;
-            EV::unloop;
-        },
+    sasl_error => sub {
+      $die_on_unloop = 1;
+      EV::unloop;
+    },
 
-        disconnect => sub {
-            if ($once_connected) {
-                warn 'Disconnected!.';
-                $die_on_unloop = 1;
-		exit;
-            } else {
-                warn 'Disconnected during Setup!';
-                sleep 1;
-                $die_on_unloop = 1;
-                EV::unloop;
-            }
-        },
+    disconnect => sub {
+      if ($once_connected) {
+        warn 'Disconnected!.';
+        $die_on_unloop = 1;
+        exit;
+      }
+      else {
+        warn 'Disconnected during Setup!';
+        sleep 1;
+        $die_on_unloop = 1;
+        EV::unloop;
+      }
+    },
 
-        stream_error => sub {
-            if ($once_connected) {
-                warn 'Stream Error! Will try to reconnect.';
-                $die_on_unloop = 1;
-                EV::unloop;
-            } else {
-                warn 'Stream Error during Setup!';
-                sleep 1;
-                $die_on_unloop = 1;
-                EV::unloop;
-            }
-        });
-
-    $::connection->connect() || die 'Could not connect to Jabber server';
-
-    EV::loop;
-
-    if ($die_on_unloop) {
-        warn 'Conection failed. Re-starting';
-	exit;
-    } else {
-        warn 'Connection established.';
-        $once_connected = 1;
+    stream_error => sub {
+      if ($once_connected) {
+        warn 'Stream Error! Will try to reconnect.';
+        $die_on_unloop = 1;
+        EV::unloop;
+      }
+      else {
+        warn 'Stream Error during Setup!';
+        sleep 1;
+        $die_on_unloop = 1;
+        EV::unloop;
+      }
     }
+  );
+
+  $::connection->connect() || die 'Could not connect to Jabber server';
+
+  EV::loop;
+
+  if ($die_on_unloop) {
+    warn 'Conection failed. Re-starting';
+    exit;
+  }
+  else {
+    warn 'Connection established.';
+    $once_connected = 1;
+  }
 }
 
 connect_xmpp();

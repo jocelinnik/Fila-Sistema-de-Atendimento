@@ -1,4 +1,5 @@
 package Fila::Painel::Controller::Callback;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -21,16 +22,17 @@ use warnings;
 use base 'Catalyst::Controller::SOAP';
 
 __PACKAGE__->config->{wsdl} =
-  {wsdl => Fila::Painel->path_to('schemas/FilaPainel.wsdl')};
+    { wsdl => Fila::Painel->path_to('schemas/FilaPainel.wsdl') };
 
-sub senhas_chamando :WSDLPort('FilaPainelCallback') {
-    my ($self, $c, $dados) = @_;
-    #warn 'senhas chamando';
-    my @senhas = map { [ $_->{senha}, $_->{guiche} ] }
-      @{$dados->{senhas_chamando}{senha}};
-    $c->model('Output')->salvar(\@senhas);
+sub senhas_chamando : WSDLPort('FilaPainelCallback') {
+  my ( $self, $c, $dados ) = @_;
+
+  #warn 'senhas chamando';
+  my @senhas =
+      map { [ $_->{senha}, $_->{guiche} ] }
+      @{ $dados->{senhas_chamando}{senha} };
+  $c->model('Output')->salvar( \@senhas );
 }
-
 
 1;
 

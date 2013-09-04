@@ -1,4 +1,5 @@
 package Fila::WebApp::Controller::CB::Emissor;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -23,59 +24,61 @@ use base 'Catalyst::Controller::SOAP';
 use DateTime::Format::XSD;
 
 __PACKAGE__->config->{wsdl} =
-  {wsdl => Fila::WebApp->path_to('schemas/FilaWeb.wsdl')};
-  
+    { wsdl => Fila::WebApp->path_to('schemas/FilaWeb.wsdl') };
+
 sub solicitar_senha : WSDLPort('FilaWebEmissorCallback') {
-	my ($self, $c, $query) = @_;
-	
-	my $id_categoria = $query->{callback_request}{param}[0]{value};
-	warn 'solicitar senha: '.$id_categoria;
-	$c->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/senha']);	
-        my $atendimento = $c->model('SOAP::Gestao::Senha')->solicitar_senha({ 
-    	atendimento => { 
-    	   				 id_categoria => $id_categoria 
-    				   } 
-    	}
-    	);
-	
-    if ($atendimento) {
-	    my $senha = $atendimento->{atendimento}{senha};
-	    warn 'solicitar senha: '. $senha;
-	    $c->stash->{senha} = $senha;
+  my ( $self, $c, $query ) = @_;
 
-	    my $vt_ini = (DateTime::Format::XSD->parse_datetime
-			    ($atendimento->{atendimento}{vt_ini})->strftime('%d/%m/%Y %H:%M'));
+  my $id_categoria = $query->{callback_request}{param}[0]{value};
+  warn 'solicitar senha: ' . $id_categoria;
+  $c->model('SOAP')
+      ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/senha'] );
+  my $atendimento =
+      $c->model('SOAP::Gestao::Senha')
+      ->solicitar_senha(
+    { atendimento => { id_categoria => $id_categoria } } );
 
-	    $c->stash->{vt_ini} = $vt_ini;
-	    my $id_atendimento = $atendimento->{atendimento}{id_atendimento};
-	    $c->stash->{id_atendimento} = $id_atendimento;
-	    eval {
-	    	#$c->model('Impressora')->imprimir_senha($atendimento);
-	    };
-	    if ($@) {
-		warn $@;
-            }
-	    warn 'view';
-	    $c->stash->{template} = 'render/emissor/receber_senha.tt';
-	    $c->forward($c->view());
-	} else {
-	    warn 'solicitar senha: '.$atendimento->{Fault}{faultstring};
-	    $c->stash->{error_message} = $atendimento->{Fault}{faultstring};
-	    return $c->forward('/render/error_message');
-	}
+  if ($atendimento) {
+    my $senha = $atendimento->{atendimento}{senha};
+    warn 'solicitar senha: ' . $senha;
+    $c->stash->{senha} = $senha;
+
+    my $vt_ini = (
+      DateTime::Format::XSD->parse_datetime(
+        $atendimento->{atendimento}{vt_ini}
+      )->strftime('%d/%m/%Y %H:%M')
+    );
+
+    $c->stash->{vt_ini} = $vt_ini;
+    my $id_atendimento = $atendimento->{atendimento}{id_atendimento};
+    $c->stash->{id_atendimento} = $id_atendimento;
+    eval {
+      #$c->model('Impressora')->imprimir_senha($atendimento);
+    };
+    if ($@) {
+      warn $@;
+    }
+    warn 'view';
+    $c->stash->{template} = 'render/emissor/receber_senha.tt';
+    $c->forward( $c->view() );
+  }
+  else {
+    warn 'solicitar senha: ' . $atendimento->{Fault}{faultstring};
+    $c->stash->{error_message} = $atendimento->{Fault}{faultstring};
+    return $c->forward('/render/error_message');
+  }
 }
 
-sub keep_alive: WSDLPort('FilaWebEmissorCallback') {
-    my ($self, $c, $query) = @_;
-    warn 'keep alive';
-    $c->forward('render/emissor');
+sub keep_alive : WSDLPort('FilaWebEmissorCallback') {
+  my ( $self, $c, $query ) = @_;
+  warn 'keep alive';
+  $c->forward('render/emissor');
 }
 
-sub sair: WSDLPort('FilaWebEmissorCallback') {
-    my ($self, $c, $query) = @_;
-    $::connection->disconnect();
+sub sair : WSDLPort('FilaWebEmissorCallback') {
+  my ( $self, $c, $query ) = @_;
+  $::connection->disconnect();
 }
-
 
 1;
 

@@ -1,4 +1,5 @@
 package Fila::Web::Model::SOAP;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -23,12 +24,15 @@ use base 'Catalyst::Model::SOAP';
 
 __PACKAGE__->config->{transport} = XML::CompileX::Transport::SOAPXMPP->new();
 
-__PACKAGE__->register_wsdl
-  ({ wsdl => Fila::Web->path_to('/schemas/FilaWeb.wsdl') },
-   { FilaWebGerenteCallback => 'Gerente',
-     FilaWebAtendenteCallback => 'Atendente',
-     FilaWebGuicheCallback => 'Guiche',
-     FilaWebEmissorCallback => 'Emissor' });
+__PACKAGE__->register_wsdl(
+  { wsdl => Fila::Web->path_to('/schemas/FilaWeb.wsdl') },
+  {
+    FilaWebGerenteCallback   => 'Gerente',
+    FilaWebAtendenteCallback => 'Atendente',
+    FilaWebGuicheCallback    => 'Guiche',
+    FilaWebEmissorCallback   => 'Emissor'
+  }
+);
 
 1;
 

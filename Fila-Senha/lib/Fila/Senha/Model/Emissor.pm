@@ -1,4 +1,5 @@
 package Fila::Senha::Model::Emissor;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -24,210 +25,235 @@ use IO::Handle;
 use POSIX qw(:termios_h);
 use base 'Catalyst::Model';
 
-__PACKAGE__->mk_accessors('fh', 'read_buffer', 'write_buffer', 'ids');
+__PACKAGE__->mk_accessors( 'fh', 'read_buffer', 'write_buffer', 'ids' );
 
-our ($read_watcher, $write_watcher);
+our ( $read_watcher, $write_watcher );
 
 sub bloquear {
-    my $self = shift;
-    $::local_aberto = 0;
-    if ($Fila::Senha::porta_emissor eq 'emulate') {
-        warn 'Emissor Bloqueado EMULATE!'.$/;
-    } elsif ($Fila::Senha::porta_emissor =~ /^\/dev\//) {
-        $self->push_write('@ESP0000.');
-    }
+  my $self = shift;
+  $::local_aberto = 0;
+  if ( $Fila::Senha::porta_emissor eq 'emulate' ) {
+    warn 'Emissor Bloqueado EMULATE!' . $/;
+  }
+  elsif ( $Fila::Senha::porta_emissor =~ /^\/dev\// ) {
+    $self->push_write('@ESP0000.');
+  }
 }
 use Encode qw(decode encode);
 my $cats;
+
 sub abrir {
-    my $self = shift;
-    $::local_aberto = 1;
-	$cats ||= Fila::Senha->model('SOAP::Senha')->listar_categorias ({ 
-			local => {} 
-			});
-	unless ($cats) {
-        die 'Erro buscando categorias.';
-	}
-    $self->ids({});
-    my $max_ordem = 0;
-    foreach my $tmp (@{$cats->{lista_categorias}{categoria}}) {
-	$self->ids->{$tmp->{ordem}} = $tmp->{id_categoria};
-        eval {
-          my $nome = decode("utf8", $tmp->{nome});
-	  $::categorias_ordem{ $nome } = $tmp->{ordem}; 
-	  $::categorias_id{ $nome } = $tmp->{id_categoria};
-	};
-	$max_ordem = $tmp->{ordem} if $tmp->{ordem} > $max_ordem;
-    }
-    my $categorias;
-    for (1..$max_ordem) {
-        $categorias .=
-          $self->ids->{$_} ? '1' : '0';
-    }
-    if ($Fila::Senha::porta_emissor eq 'emulate') {
-        $self->_check_emulate_watcher();
-    } elsif ($Fila::Senha::porta_emissor eq 'gtk') { 
-#        warn 'Emissor aberto '.$categorias.'!'.$/;
-    } else {
-        #warn 'Escrevendo categorias';
-        $self->push_write('@ESP'.$categorias.'.');
-    }
+  my $self = shift;
+  $::local_aberto = 1;
+  $cats ||= Fila::Senha->model('SOAP::Senha')
+      ->listar_categorias( { local => {} } );
+  unless ($cats) {
+    die 'Erro buscando categorias.';
+  }
+  $self->ids( {} );
+  my $max_ordem = 0;
+  foreach my $tmp ( @{ $cats->{lista_categorias}{categoria} } ) {
+    $self->ids->{ $tmp->{ordem} } = $tmp->{id_categoria};
+    eval {
+      my $nome = decode( "utf8", $tmp->{nome} );
+      $::categorias_ordem{$nome} = $tmp->{ordem};
+      $::categorias_id{$nome}    = $tmp->{id_categoria};
+    };
+    $max_ordem = $tmp->{ordem} if $tmp->{ordem} > $max_ordem;
+  }
+  my $categorias;
+  for ( 1 .. $max_ordem ) {
+    $categorias .= $self->ids->{$_} ? '1' : '0';
+  }
+  if ( $Fila::Senha::porta_emissor eq 'emulate' ) {
+    $self->_check_emulate_watcher();
+  }
+  elsif ( $Fila::Senha::porta_emissor eq 'gtk' ) {
+
+    #        warn 'Emissor aberto '.$categorias.'!'.$/;
+  }
+  else {
+    #warn 'Escrevendo categorias';
+    $self->push_write( '@ESP' . $categorias . '.' );
+  }
 }
 
 sub push_write {
-    #warn 'Iniciando push_write '.$_[1];
-    my ($self, $buf) = @_;
 
-    $self->write_buffer
-      (($self->write_buffer()||'').
-       $buf);
+  #warn 'Iniciando push_write '.$_[1];
+  my ( $self, $buf ) = @_;
 
-    $self->_check_fh;
-    $self->_check_wb;
+  $self->write_buffer( ( $self->write_buffer() || '' ) . $buf );
+
+  $self->_check_fh;
+  $self->_check_wb;
 }
 
 sub _check_fh {
-    my $self = shift;
+  my $self = shift;
 
-    return if $self->fh;
-    return if $Fila::Senha::porta_emissor eq 'emulate';
-    return if $Fila::Senha::porta_emissor eq 'gtk';
-	
-    open my $fh, '+<', $Fila::Senha::porta_emissor
+  return if $self->fh;
+  return if $Fila::Senha::porta_emissor eq 'emulate';
+  return if $Fila::Senha::porta_emissor eq 'gtk';
+
+  open my $fh, '+<', $Fila::Senha::porta_emissor
       or do {
-          #warn 'Erro abrindo porta do emissor: '.$!;
-          EV::unloop(EV::UNLOOP_ALL);
-          die 'Erro abrindo porta do emissor: '.$!;
+
+    #warn 'Erro abrindo porta do emissor: '.$!;
+    EV::unloop(EV::UNLOOP_ALL);
+    die 'Erro abrindo porta do emissor: ' . $!;
       };
 
-    $fh->blocking(0);
+  $fh->blocking(0);
 
-    my $term = POSIX::Termios->new;
-    $term->getattr(fileno($fh)) or die $!;
+  my $term = POSIX::Termios->new;
+  $term->getattr( fileno($fh) ) or die $!;
 
-    $term->setiflag( $term->getiflag & ( &POSIX::IGNBRK | &POSIX::IGNPAR & ~&POSIX::INPCK & ~ &POSIX::IXON & ~ &POSIX::IXOFF));
-    $term->setlflag( $term->getlflag & ~( &POSIX::ICANON | &POSIX::ECHO | &POSIX::ECHONL | &POSIX::ISIG | &POSIX::IEXTEN ));
-    $term->setcflag( $term->getcflag & ( &POSIX::CSIZE | &POSIX::CS8 & ~&POSIX::PARENB));
+  $term->setiflag(
+    $term->getiflag & (
+      &POSIX::IGNBRK | &POSIX::IGNPAR & ~&POSIX::INPCK & ~&POSIX::IXON
+          & ~&POSIX::IXOFF
+    )
+  );
+  $term->setlflag(
+    $term->getlflag & ~(
+      &POSIX::ICANON | &POSIX::ECHO | &POSIX::ECHONL | &POSIX::ISIG
+          | &POSIX::IEXTEN
+    )
+  );
+  $term->setcflag(
+    $term->getcflag & ( &POSIX::CSIZE | &POSIX::CS8 & ~&POSIX::PARENB ) );
 
-    $term->setospeed(&POSIX::B1200);
-    $term->setispeed(&POSIX::B1200);
+  $term->setospeed(&POSIX::B1200);
+  $term->setispeed(&POSIX::B1200);
 
-    $term->setattr(fileno($fh), &POSIX::TCSANOW) or die $!;
+  $term->setattr( fileno($fh), &POSIX::TCSANOW ) or die $!;
 
-    $self->fh($fh);
+  $self->fh($fh);
 }
 
 sub _check_readwatcher {
-	my $self = shift;
-    $read_watcher ||= EV::io $self->fh, EV::READ, sub {
-        my $buf;
-        my $ret;
-        while ($ret = $self->fh->sysread($buf, '100')) {
-            #warn 'sysread: '.$buf;
-            $self->push_read($buf);
-        }
-    };
+  my $self = shift;
+  $read_watcher ||= EV::io $self->fh, EV::READ, sub {
+    my $buf;
+    my $ret;
+    while ( $ret = $self->fh->sysread( $buf, '100' ) ) {
+
+      #warn 'sysread: '.$buf;
+      $self->push_read($buf);
+    }
+  };
 }
 
 sub _check_emulate_watcher {
-    my $self = shift;
-    STDIN->blocking(0);
-    $read_watcher = EV::io \*STDIN, EV::READ, sub {
-        my $buf;
-        while (my $ret = STDIN->sysread($buf, '100')) {
-            $self->push_read($buf);
-        }
-    };
+  my $self = shift;
+  STDIN->blocking(0);
+  $read_watcher = EV::io \*STDIN, EV::READ, sub {
+    my $buf;
+    while ( my $ret = STDIN->sysread( $buf, '100' ) ) {
+      $self->push_read($buf);
+    }
+  };
 }
 
 sub _check_wb {
-    my $self = shift;
+  my $self = shift;
 
-    return if $write_watcher || !$self->write_buffer;
-    return if $Fila::Senha::porta_emissor eq 'emulate';
+  return if $write_watcher || !$self->write_buffer;
+  return if $Fila::Senha::porta_emissor eq 'emulate';
 
-    $write_watcher = EV::io $self->fh, EV::WRITE, sub {
-        use bytes;
-        my $buf = $self->write_buffer;
-        my $len = length $buf;
-        my $wrt = $self->fh->syswrite($buf, $len);
-        my $wrote = substr($buf,0,$wrt,'');
-        $self->write_buffer($buf);
-        $write_watcher = undef;
-        $self->_check_readwatcher unless $buf; 
-    };
+  $write_watcher = EV::io $self->fh, EV::WRITE, sub {
+    use bytes;
+    my $buf   = $self->write_buffer;
+    my $len   = length $buf;
+    my $wrt   = $self->fh->syswrite( $buf, $len );
+    my $wrote = substr( $buf, 0, $wrt, '' );
+    $self->write_buffer($buf);
+    $write_watcher = undef;
+    $self->_check_readwatcher unless $buf;
+  };
 }
 
 sub push_read {
-    
-    my ($self, $buf) = @_;
 
-    $self->read_buffer
-      (($self->read_buffer()||'').
-       $buf);
+  my ( $self, $buf ) = @_;
 
-    $self->_check_rb;
+  $self->read_buffer( ( $self->read_buffer() || '' ) . $buf );
+
+  $self->_check_rb;
 }
 
 sub _check_rb {
-    my $self = shift;
+  my $self = shift;
 
-    my $buf = $self->read_buffer;
-    return unless $buf;
-    return unless length $buf >= 2;
+  my $buf = $self->read_buffer;
+  return unless $buf;
+  return unless length $buf >= 2;
 
-    while ($buf) {
-        if (substr($buf,0,1) ne '@') {
-            my $pos = index $buf, '@';
-            if ($pos < 0) {
-                $self->read_buffer('');
-                return;
-            } else {
-                my $bad = substr($buf,0,$pos,'');
-                #warn 'Discaring bad read buffer ('.$bad.')';
-            }
-            $self->read_buffer($buf); 
-        } elsif ($buf =~ s/^\@ESE.//) {
-            warn 'Device error.';
-            $self->read_buffer($buf); 
-        } elsif ($buf =~ s/^\@ESK.//) {
-            # ok...
-            warn 'Success sending command.';
-            $self->read_buffer($buf); 
-        } elsif ($buf =~ /^\@\d*$/) {
-            last;
-        } elsif ($buf =~ /^\@(\d+)\./) {
-            my $cmd = substr($buf,0,2+length($1),'');
-            $self->read_buffer($buf);
+  while ($buf) {
+    if ( substr( $buf, 0, 1 ) ne '@' ) {
+      my $pos = index $buf, '@';
+      if ( $pos < 0 ) {
+        $self->read_buffer('');
+        return;
+      }
+      else {
+        my $bad = substr( $buf, 0, $pos, '' );
 
-            $self->push_write('@ESK.');
-
-            my $posicao = index $cmd, '1';
-            warn $posicao;
-            my $id_categoria = $self->ids->{$posicao};
-
-            my $dados = Fila::Senha->model('SOAP::Senha')->solicitar_senha
-              ({ atendimento => { id_categoria => $id_categoria } });
-            if ($dados->{Fault}) {
-                warn 'Erro ao pedir senha. '.$dados->{Fault}{faultstring};
-            } else {
-                Fila::Senha->model('Impressora')->imprimir_senha($dados);
-            }
-
-            sleep 5;
-            $self->fh->close();
-            $self->fh(undef);
-
-            $self->abrir;
-        } elsif (length $buf < 5) {
-            last;
-        } else {
-            # bad command...
-            warn 'Discarding command header, watch for more output.';
-            substr($buf,0,1,'');
-            $self->read_buffer($buf); 
-        }
+        #warn 'Discaring bad read buffer ('.$bad.')';
+      }
+      $self->read_buffer($buf);
     }
+    elsif ( $buf =~ s/^\@ESE.// ) {
+      warn 'Device error.';
+      $self->read_buffer($buf);
+    }
+    elsif ( $buf =~ s/^\@ESK.// ) {
+
+      # ok...
+      warn 'Success sending command.';
+      $self->read_buffer($buf);
+    }
+    elsif ( $buf =~ /^\@\d*$/ ) {
+      last;
+    }
+    elsif ( $buf =~ /^\@(\d+)\./ ) {
+      my $cmd = substr( $buf, 0, 2 + length($1), '' );
+      $self->read_buffer($buf);
+
+      $self->push_write('@ESK.');
+
+      my $posicao = index $cmd, '1';
+      warn $posicao;
+      my $id_categoria = $self->ids->{$posicao};
+
+      my $dados =
+          Fila::Senha->model('SOAP::Senha')
+          ->solicitar_senha(
+        { atendimento => { id_categoria => $id_categoria } } );
+      if ( $dados->{Fault} ) {
+        warn 'Erro ao pedir senha. ' . $dados->{Fault}{faultstring};
+      }
+      else {
+        Fila::Senha->model('Impressora')->imprimir_senha($dados);
+      }
+
+      sleep 5;
+      $self->fh->close();
+      $self->fh(undef);
+
+      $self->abrir;
+    }
+    elsif ( length $buf < 5 ) {
+      last;
+    }
+    else {
+      # bad command...
+      warn 'Discarding command header, watch for more output.';
+      substr( $buf, 0, 1, '' );
+      $self->read_buffer($buf);
+    }
+  }
 }
 
 1;

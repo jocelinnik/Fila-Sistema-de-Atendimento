@@ -1,4 +1,5 @@
 package Fila::WebApp::Controller::Root;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -24,35 +25,42 @@ use base 'Catalyst::Controller';
 __PACKAGE__->config->{namespace} = '';
 
 sub auto : Private {
-    my ($self, $c) = @_;
-    $c->stash->{dtf} = DTFormatter->new;
-    return 0 if $c->req->header('XMPP_Stanza') &&
-      $c->req->header('XMPP_Stanza') eq 'presence';
-    return 1;
+  my ( $self, $c ) = @_;
+  $c->stash->{dtf} = DTFormatter->new;
+  return 0
+      if $c->req->header('XMPP_Stanza')
+      && $c->req->header('XMPP_Stanza') eq 'presence';
+  return 1;
 }
 
 sub end : Private {
-    my ($self, $c) = @_;
-    do {
-        $c->log->debug('No output being sent for action.');
-        return 1;
-    } if $c->stash->{no_output};
-    $c->forward($c->view());
+  my ( $self, $c ) = @_;
+  do {
+    $c->log->debug('No output being sent for action.');
+    return 1;
+  } if $c->stash->{no_output};
+  $c->forward( $c->view() );
 }
 
-{   package DTFormatter;
-    sub new { bless {}, 'DTFormatter' };
-    sub f {
-        my ($self, $dt) = @_;
-        if ($dt && ref($dt)) {
-            return $dt->set_time_zone('local')->strftime("%H:%M:%S");
-        } elsif ($dt) {
-            return DateTime::Format::XSD->parse_datetime($dt)->set_time_zone('local')->strftime("%H:%M:%S");
-        } else {
-            return ''
-        }
+{
 
+  package DTFormatter;
+  sub new { bless {}, 'DTFormatter' }
+
+  sub f {
+    my ( $self, $dt ) = @_;
+    if ( $dt && ref($dt) ) {
+      return $dt->set_time_zone('local')->strftime("%H:%M:%S");
     }
+    elsif ($dt) {
+      return DateTime::Format::XSD->parse_datetime($dt)
+          ->set_time_zone('local')->strftime("%H:%M:%S");
+    }
+    else {
+      return '';
+    }
+
+  }
 }
 1;
 

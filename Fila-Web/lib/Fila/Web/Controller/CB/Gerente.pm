@@ -1,4 +1,5 @@
 package Fila::Web::Controller::CB::Gerente;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -23,136 +24,195 @@ use base 'Catalyst::Controller';
 #recebe os eventos do navegador e os redireciona para filawebapp.
 
 sub enviar_chat : Local {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-    my $texto = $c->req->param('txtTexto');
+  my $texto = $c->req->param('txtTexto');
 
-    my $req = $c->model('SOAP::Gerente')->enviar_chat
-     ({ callback_request => 
-        { param =>
-          [ { name => $c->req->param('select_chat'),
-              value => $texto } ]}});
+  my $req = $c->model('SOAP::Gerente')->enviar_chat(
+    {
+      callback_request => {
+        param => [
+          {
+            name  => $c->req->param('select_chat'),
+            value => $texto
+          }
+        ]
+      }
+    }
+  );
 
 }
 
 sub encerrar_atendimento : Local {
-    my ($self, $c, $id) = @_;
+  my ( $self, $c, $id ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-
-    my $req = $c->model('SOAP::Gerente')->encerrar_atendimento
-     ({ callback_request => 
-        { param =>
-          [ { name => 'id_atendimento',
-              value => $id } ]}});
+  my $req = $c->model('SOAP::Gerente')->encerrar_atendimento(
+    {
+      callback_request => {
+        param => [
+          {
+            name  => 'id_atendimento',
+            value => $id
+          }
+        ]
+      }
+    }
+  );
 
 }
 
 sub devolver_senha : Local {
-    my ($self, $c, $id) = @_;
+  my ( $self, $c, $id ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-    my $req = $c->model('SOAP::Gerente')->devolver_senha
-     ({ callback_request =>
-        { param =>
-          [ { name => 'id_guiche',
-              value => $id } ]}});
+  my $req = $c->model('SOAP::Gerente')->devolver_senha(
+    {
+      callback_request => {
+        param => [
+          {
+            name  => 'id_guiche',
+            value => $id
+          }
+        ]
+      }
+    }
+  );
 
 }
 
-
 sub fechar_guiche : Local {
-    my ($self, $c, $id) = @_;
+  my ( $self, $c, $id ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-
-    my $req = $c->model('SOAP::Gerente')->fechar_guiche
-     ({ callback_request => 
-        { param =>
-          [ { name => 'id_guiche',
-              value => $id } ]}});
+  my $req = $c->model('SOAP::Gerente')->fechar_guiche(
+    {
+      callback_request => {
+        param => [
+          {
+            name  => 'id_guiche',
+            value => $id
+          }
+        ]
+      }
+    }
+  );
 
 }
 
 sub concluir_atendimento : Local {
-    my ($self, $c, $id) = @_;
+  my ( $self, $c, $id ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-
-    my $req = $c->model('SOAP::Gerente')->concluir_atendimento
-     ({ callback_request => 
-        { param =>
-          [ { name => 'id_guiche',
-              value => $id } ]}});
+  my $req = $c->model('SOAP::Gerente')->concluir_atendimento(
+    {
+      callback_request => {
+        param => [
+          {
+            name  => 'id_guiche',
+            value => $id
+          }
+        ]
+      }
+    }
+  );
 
 }
 
 sub pular_opiniometro : Local {
-    my ($self, $c, $valor,$id) = @_;
+  my ( $self, $c, $valor, $id ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-
-    my $req = $c->model('SOAP::Gerente')->pular_opiniometro
-     ({ callback_request => 
-        { param =>
-          [ { name => $id,
-              value => $valor } ]}});
+  my $req = $c->model('SOAP::Gerente')->pular_opiniometro(
+    {
+      callback_request => {
+        param => [
+          {
+            name  => $id,
+            value => $valor
+          }
+        ]
+      }
+    }
+  );
 
 }
 
 sub listar_encaminhamentos : Local {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-    my $req = $c->model('SOAP::Gerente')->listar_encaminhamentos
-     ({ callback_request => 
-        { param =>
-          [ { name => '',
-              value => '' } ]}});
+  my $req = $c->model('SOAP::Gerente')->listar_encaminhamentos(
+    {
+      callback_request => {
+        param => [
+          {
+            name  => '',
+            value => ''
+          }
+        ]
+      }
+    }
+  );
 
 }
+
 #minha modificação
-sub associar_gerente : Local{
-	my ($self, $c, $id) = @_;
+sub associar_gerente : Local {
+  my ( $self, $c, $id ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-    my $req = $c->model('SOAP::Gerente')->associar_gerente
-     ({ callback_request => 
-      { param =>
-        [ { name => 'id_funcionario',
-            value => $id } ]}});
-	
+  my $req = $c->model('SOAP::Gerente')->associar_gerente(
+    {
+      callback_request => {
+        param => [
+          {
+            name  => 'id_funcionario',
+            value => $id
+          }
+        ]
+      }
+    }
+  );
+
 }
 
-sub passar_gerencia : Local{
-	my ($self, $c) = @_;
+sub passar_gerencia : Local {
+  my ( $self, $c ) = @_;
 
-   $c->model('SOAP')->transport
-       ->addrs([$c->session->{user_jid}.'/cb/gerente']);
-	
-   my $req = $c->model('SOAP::Gerente')->passar_gerencia
-    ({ callback_request => 
-     { param =>
-       [ { name => '',
-           value => '' } ]}});
-	
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
+
+  my $req = $c->model('SOAP::Gerente')->passar_gerencia(
+    {
+      callback_request => {
+        param => [
+          {
+            name  => '',
+            value => ''
+          }
+        ]
+      }
+    }
+  );
+
 }
 
 1;

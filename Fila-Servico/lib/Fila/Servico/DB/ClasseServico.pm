@@ -1,4 +1,5 @@
 package Fila::Servico::DB::ClasseServico;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,21 +21,16 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('classe_servico');
-__PACKAGE__->add_columns
-  (
-   id_classe =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_classe => {
+    data_type         => 'integer',
     is_auto_increment => 1,
-   },
-   nome =>
-   {
-    data_type => 'varchar',
-   }
-  );
+  },
+  nome => { data_type => 'varchar', }
+);
 __PACKAGE__->set_primary_key(qw(id_classe));
-__PACKAGE__->has_many('servicos', 'Fila::Servico::DB::Servico',
-                      { 'foreign.id_classe' => 'self.id_classe' });
+__PACKAGE__->has_many( 'servicos', 'Fila::Servico::DB::Servico',
+  { 'foreign.id_classe' => 'self.id_classe' } );
 
 1;
 

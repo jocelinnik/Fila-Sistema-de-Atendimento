@@ -1,4 +1,5 @@
 package Fila::Servico::DB::GerenteLocal;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,30 +21,20 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('gerente_local');
-__PACKAGE__->add_columns
-  (
-   id_funcionario =>
-   {
-    data_type => 'integer',
-   },
-   id_local =>
-   {
-    data_type => 'integer',
-   },
-   vt_ini =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   vt_fim =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-  );
+__PACKAGE__->add_columns(
+  id_funcionario => { data_type => 'integer', },
+  id_local       => { data_type => 'integer', },
+  vt_ini         => { data_type => 'timestamp with time zone', },
+  vt_fim         => { data_type => 'timestamp with time zone', },
+);
 __PACKAGE__->set_primary_key(qw(id_funcionario id_local vt_ini vt_fim));
-__PACKAGE__->belongs_to('funcionario', 'Fila::Servico::DB::Funcionario',
-                        { 'foreign.id_funcionario' => 'self.id_funcionario' });
-__PACKAGE__->belongs_to('local', 'Fila::Servico::DB::Local',
-                        { 'foreign.id_local' => 'self.id_local' });
+__PACKAGE__->belongs_to(
+  'funcionario',
+  'Fila::Servico::DB::Funcionario',
+  { 'foreign.id_funcionario' => 'self.id_funcionario' }
+);
+__PACKAGE__->belongs_to( 'local', 'Fila::Servico::DB::Local',
+  { 'foreign.id_local' => 'self.id_local' } );
 
 1;
 

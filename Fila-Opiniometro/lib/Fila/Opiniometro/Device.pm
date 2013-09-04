@@ -1,4 +1,5 @@
 package Fila::Opiniometro::Model::Device;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -23,162 +24,174 @@ use IO::Handle;
 use POSIX qw(:termios_h);
 use base 'Catalyst::Model';
 
-__PACKAGE__->mk_accessors('fh', 'read_buffer', 'write_buffer');
+__PACKAGE__->mk_accessors( 'fh', 'read_buffer', 'write_buffer' );
 
-our ($read_watcher, $write_watcher);
+our ( $read_watcher, $write_watcher );
 
 sub encerrar {
-    my $self = shift;
+  my $self = shift;
 
-    if ($Fila::Opiniometro::porta_opiniometro eq 'emulate') {
-        warn 'Desligar Opiniometro!'.$/;
-        $self->_check_emulate_watcher();
-    } else {
-        $self->push_write('@OPC.');
-    }
+  if ( $Fila::Opiniometro::porta_opiniometro eq 'emulate' ) {
+    warn 'Desligar Opiniometro!' . $/;
+    $self->_check_emulate_watcher();
+  }
+  else {
+    $self->push_write('@OPC.');
+  }
 }
 
 sub iniciar {
-    my $self = shift;
+  my $self = shift;
 
-    if ($Fila::Opiniometro::porta_opiniometro eq 'emulate') {
-        warn 'Iniciar Opiniometro!'.$/;
-        $self->_check_emulate_watcher();
-    } else {
-        $self->push_write('@OPI'.$Fila::Opiniometro::timeout.'.');
-    }
+  if ( $Fila::Opiniometro::porta_opiniometro eq 'emulate' ) {
+    warn 'Iniciar Opiniometro!' . $/;
+    $self->_check_emulate_watcher();
+  }
+  else {
+    $self->push_write( '@OPI' . $Fila::Opiniometro::timeout . '.' );
+  }
 }
 
 sub push_write {
-    my ($self, $buf) = @_;
+  my ( $self, $buf ) = @_;
 
-    $self->write_buffer
-      (($self->write_buffer()||'').
-       $buf);
+  $self->write_buffer( ( $self->write_buffer() || '' ) . $buf );
 
-    $self->_check_fh;
-    $self->_check_wb;
+  $self->_check_fh;
+  $self->_check_wb;
 }
 
 sub _check_fh {
-    my $self = shift;
+  my $self = shift;
 
-    return if $self->fh;
+  return if $self->fh;
 
-    open my $fh, '+<', $Fila::Opiniometro::porta_opiniometro
+  open my $fh, '+<', $Fila::Opiniometro::porta_opiniometro
       or do {
-          warn 'Erro abrindo porta do emissor: '.$!;
-          EV::unloop(EV::UNLOOP_ALL);
-          die 'Erro abrindo porta do emissor: '.$!;
+    warn 'Erro abrindo porta do emissor: ' . $!;
+    EV::unloop(EV::UNLOOP_ALL);
+    die 'Erro abrindo porta do emissor: ' . $!;
       };
 
-    $fh->blocking(0);
+  $fh->blocking(0);
 
-    my $term = POSIX::Termios->new;
-    $term->getattr(fileno($fh)) or die $!;
-    $term->setospeed(&POSIX::B1200);
-    $term->setispeed(&POSIX::B1200);
-    $term->setiflag($term->getiflag ^ &POSIX::IXON ^ &POSIX::IXOFF | &POSIX::IGNBRK | &POSIX::BRKINT | &POSIX::IGNPAR);
-    $term->setcflag($term->getcflag | &POSIX::CSIZE | &POSIX::CS8);
-    $term->setattr(fileno($fh), &POSIX::TCSANOW) or die $!;
+  my $term = POSIX::Termios->new;
+  $term->getattr( fileno($fh) ) or die $!;
+  $term->setospeed(&POSIX::B1200);
+  $term->setispeed(&POSIX::B1200);
+  $term->setiflag(
+    $term->getiflag ^ &POSIX::IXON ^ &POSIX::IXOFF | &POSIX::IGNBRK
+        | &POSIX::BRKINT | &POSIX::IGNPAR );
+  $term->setcflag( $term->getcflag | &POSIX::CSIZE | &POSIX::CS8 );
+  $term->setattr( fileno($fh), &POSIX::TCSANOW ) or die $!;
 
-    $self->fh($fh);
+  $self->fh($fh);
 
-    $read_watcher = EV::io $fh, EV::READ, sub {
-        my $buf;
-        while (my $ret = $fh->sysread($buf, '100')) {
-            $self->push_read($buf);
-        }
-    };
+  $read_watcher = EV::io $fh, EV::READ, sub {
+    my $buf;
+    while ( my $ret = $fh->sysread( $buf, '100' ) ) {
+      $self->push_read($buf);
+    }
+  };
 }
 
 sub _check_emulate_watcher {
-    my $self = shift;
-    STDIN->blocking(0);
-    $read_watcher = EV::io \*STDIN, EV::READ, sub {
-        my $buf;
-        while (my $ret = STDIN->sysread($buf, '100')) {
-            $self->push_read($buf);
-        }
-    };
+  my $self = shift;
+  STDIN->blocking(0);
+  $read_watcher = EV::io \*STDIN, EV::READ, sub {
+    my $buf;
+    while ( my $ret = STDIN->sysread( $buf, '100' ) ) {
+      $self->push_read($buf);
+    }
+  };
 }
 
 sub _check_wb {
-    my $self = shift;
+  my $self = shift;
 
-    return if $write_watcher || !$self->write_buffer;
+  return if $write_watcher || !$self->write_buffer;
 
-    $write_watcher = EV::io $self->fh, EV::WRITE, sub {
-        use bytes;
-        my $buf = $self->write_buffer;
-        my $len = length $buf;
-        my $wrt = $self->fh->syswrite($buf, $len);
-        substr($buf,0,$wrt,'');
-        $self->write_buffer($buf);
-        $write_watcher = undef unless $buf;
-    };
+  $write_watcher = EV::io $self->fh, EV::WRITE, sub {
+    use bytes;
+    my $buf = $self->write_buffer;
+    my $len = length $buf;
+    my $wrt = $self->fh->syswrite( $buf, $len );
+    substr( $buf, 0, $wrt, '' );
+    $self->write_buffer($buf);
+    $write_watcher = undef unless $buf;
+  };
 }
 
 sub push_read {
-    my ($self, $buf) = @_;
-    
-    warn "antes";
-    $self->read_buffer
-      (($self->read_buffer()||'').
-       $buf);
-    warn "antes";
+  my ( $self, $buf ) = @_;
 
-    $self->_check_rb;
-    warn "antes";
+  warn "antes";
+  $self->read_buffer( ( $self->read_buffer() || '' ) . $buf );
+  warn "antes";
+
+  $self->_check_rb;
+  warn "antes";
 }
 
 sub _check_rb {
-    my $self = shift;
+  my $self = shift;
 
-    my $buf = $self->read_buffer;
-    return unless $buf;
-    return unless length $buf >= 5;
+  my $buf = $self->read_buffer;
+  return unless $buf;
+  return unless length $buf >= 5;
 
-    while ($buf) {
-        if (substr($buf,0,1) ne '@') {
-            my $pos = index $buf, '@';
-            if ($pos < 0) {
-                warn 'Disarding bad read buffer ('.$buf.')';
-                $self->read_buffer('');
-                return;
-            } else {
-                my $bad = substr($buf,0,$pos-1,'');
-                warn 'Discaring bad read buffer ('.$bad.')';
-            }
-        } elsif ($buf =~ s/^\@OPK.//) {
-            # ok...
-        } elsif ($buf =~ /^\@\d/) {
-            last if length $buf < 7;
-            my $cmd = substr($buf,0,7,'');
-            my $respostas =
-              [ map { { id_pergunta => $_->[0], resposta => $_->[1] } }
-                map { [ $Fila::Opiniometro::perguntas->[$_] => substr($cmd,1+$_,1) ] }
-                0..4 ];
-
-	        if ($::praca && $::praca == 1) {
-	            my $dados = Fila::Opiniometro->model('SOAP::Opiniometro')->registrar_avaliacao_praca
-	              ({ avaliacao_atendimento => { resposta => $respostas } });
-            } else {
-	            my $dados = Fila::Opiniometro->model('SOAP::Opiniometro')->registrar_avaliacao
-	              ({ avaliacao_atendimento => { resposta => $respostas } });
-			}
-            if ($dados->{Fault}) {
-                warn 'Erro ao enviar avaliacao. '.$dados->{Fault}{faultstring};
-            }
-            $self->encerrar;
-
-        } else {
-            substr $buf, 0, 1, '';
-            last;
-        }
+  while ($buf) {
+    if ( substr( $buf, 0, 1 ) ne '@' ) {
+      my $pos = index $buf, '@';
+      if ( $pos < 0 ) {
+        warn 'Disarding bad read buffer (' . $buf . ')';
+        $self->read_buffer('');
+        return;
+      }
+      else {
+        my $bad = substr( $buf, 0, $pos - 1, '' );
+        warn 'Discaring bad read buffer (' . $bad . ')';
+      }
     }
+    elsif ( $buf =~ s/^\@OPK.// ) {
 
-    $self->read_buffer($buf);
+      # ok...
+    }
+    elsif ( $buf =~ /^\@\d/ ) {
+      last if length $buf < 7;
+      my $cmd = substr( $buf, 0, 7, '' );
+      my $respostas = [
+        map { { id_pergunta => $_->[0], resposta => $_->[1] } }
+            map {
+          [ $Fila::Opiniometro::perguntas->[$_] => substr( $cmd, 1 + $_, 1 ) ]
+            } 0 .. 4
+      ];
+
+      if ( $::praca && $::praca == 1 ) {
+        my $dados =
+            Fila::Opiniometro->model('SOAP::Opiniometro')
+            ->registrar_avaliacao_praca(
+          { avaliacao_atendimento => { resposta => $respostas } } );
+      }
+      else {
+        my $dados =
+            Fila::Opiniometro->model('SOAP::Opiniometro')
+            ->registrar_avaliacao(
+          { avaliacao_atendimento => { resposta => $respostas } } );
+      }
+      if ( $dados->{Fault} ) {
+        warn 'Erro ao enviar avaliacao. ' . $dados->{Fault}{faultstring};
+      }
+      $self->encerrar;
+
+    }
+    else {
+      substr $buf, 0, 1, '';
+      last;
+    }
+  }
+
+  $self->read_buffer($buf);
 
 }
 

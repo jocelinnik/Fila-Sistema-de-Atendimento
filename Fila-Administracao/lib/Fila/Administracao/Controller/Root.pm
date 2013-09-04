@@ -1,4 +1,5 @@
 package Fila::Administracao::Controller::Root;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -23,20 +24,22 @@ use parent 'Catalyst::Controller';
 
 __PACKAGE__->config->{namespace} = '';
 
-sub auto :Private {
-    my ($self, $c) = @_;
-    $c->stash->{now} = DateTime->now(time_zone => 'local');
+sub auto : Private {
+  my ( $self, $c ) = @_;
+  $c->stash->{now} = DateTime->now( time_zone => 'local' );
 }
 
-sub index : Path Args(0) {}
+sub index : Path Args(0) {
+}
 
 sub default : Path {
-    my ( $self, $c ) = @_;
-    $c->response->body( 'Page not found' );
-    $c->response->status(404);
+  my ( $self, $c ) = @_;
+  $c->response->body('Page not found');
+  $c->response->status(404);
 }
 
-sub end : ActionClass('RenderView') {}
+sub end : ActionClass('RenderView') {
+}
 
 1;
 

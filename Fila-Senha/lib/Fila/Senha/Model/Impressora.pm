@@ -1,5 +1,7 @@
 use utf8;
+
 package Fila::Senha::Model::Impressora;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -30,63 +32,64 @@ use base 'Catalyst::Model';
 __PACKAGE__->mk_accessors('fh');
 
 sub imprimir_senha {
-    my ($self, $dados) = @_;
+  my ( $self, $dados ) = @_;
 
-    $self->_check_fh;
+  $self->_check_fh;
 
-    my $date = DateTime::Format::XSD->parse_datetime
-      ($dados->{atendimento}{vt_ini});
-    $date->set_time_zone('local');
+  my $date =
+      DateTime::Format::XSD->parse_datetime( $dados->{atendimento}{vt_ini} );
+  $date->set_time_zone('local');
 
-    my $a = encode('CP850',
-		    "\eH\e\x0f\x0e".
-		    "         CABESP     \n".
-                    "\eH\e\x0f\x0e".
-		    "     0800-722-2636  \n".
-                    "\eH\e\x0f".
-                    "\n".
-	            "\x1b\x2b\x30\x06\x06\x06".
-		    " ".$dados->{atendimento}{senha}.
-		    "\eH\e\x0f".
-		    "\n".
-		    "                        ".$date->strftime('%F %H:%M').
-		    #"                            ".$date->strftime('%F').
-                    "\n".
-          	    "             R. Boa Vista, 293 - 7º andar - Centro  \n".
-                    "\x0e".
-		    "   www.cabesp.com.br  \n".
-                    "\eH\e\x0f".
-		    "\x11"
-		  );
+  my $a = encode(
+    'CP850',
+    "\eH\e\x0f\x0e"
+        . "         CABESP     \n"
+        . "\eH\e\x0f\x0e"
+        . "     0800-722-2636  \n"
+        . "\eH\e\x0f" . "\n"
+        . "\x1b\x2b\x30\x06\x06\x06" . " "
+        . $dados->{atendimento}{senha}
+        . "\eH\e\x0f" . "\n"
+        . "                        "
+        . $date->strftime('%F %H:%M')
+        .
 
-    use bytes;
-    syswrite $self->fh, $a;
+        #"                            ".$date->strftime('%F').
+        "\n"
+        . "             R. Boa Vista, 293 - 7º andar - Centro  \n" . "\x0e"
+        . "   www.cabesp.com.br  \n"
+        . "\eH\e\x0f" . "\x11"
+  );
+
+  use bytes;
+  syswrite $self->fh, $a;
 
 }
 
 sub _check_fh {
-    my $self = shift;
+  my $self = shift;
 
-    return if $self->fh;
-    if ($Fila::Senha::porta_impressora eq 'emulate') {
-	$self->fh(\*STDOUT);
-	return;3
-    }
+  return if $self->fh;
+  if ( $Fila::Senha::porta_impressora eq 'emulate' ) {
+    $self->fh( \*STDOUT );
+    return;
+    3;
+  }
 
-    open my $fh, '>', $Fila::Senha::porta_impressora or die $!;
+  open my $fh, '>', $Fila::Senha::porta_impressora or die $!;
 
-    $fh->blocking(1);
+  $fh->blocking(1);
 
-    #my $term = POSIX::Termios->new;
-    #$term->getattr(fileno($fh)) or die $!;
-    #$term->setospeed(&POSIX::B9600);
-    #$term->setispeed(&POSIX::B9600);
-    #$term->setiflag((&POSIX::IXON | &POSIX::IXOFF | &POSIX::IGNPAR)&(~(&POSIX::IGNBRK | &POSIX::BRKINT)));
-    #$term->setlflag($term->getlflag & ~&POSIX::ECHO);
-    #$term->setcflag($term->getcflag | &POSIX::CSIZE | &POSIX::CS7);
-    #$term->setattr(fileno($fh), &POSIX::TCSANOW) or die $!;
+#my $term = POSIX::Termios->new;
+#$term->getattr(fileno($fh)) or die $!;
+#$term->setospeed(&POSIX::B9600);
+#$term->setispeed(&POSIX::B9600);
+#$term->setiflag((&POSIX::IXON | &POSIX::IXOFF | &POSIX::IGNPAR)&(~(&POSIX::IGNBRK | &POSIX::BRKINT)));
+#$term->setlflag($term->getlflag & ~&POSIX::ECHO);
+#$term->setcflag($term->getcflag | &POSIX::CSIZE | &POSIX::CS7);
+#$term->setattr(fileno($fh), &POSIX::TCSANOW) or die $!;
 
-    $self->fh($fh);
+  $self->fh($fh);
 }
 
 1;

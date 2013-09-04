@@ -1,4 +1,5 @@
 package Fila::Servico::Model::DB;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -21,15 +22,11 @@ use warnings;
 use base 'Catalyst::Model::DBIC::Schema';
 
 __PACKAGE__->config(
-    schema_class    => 'Fila::Servico::DB',
-    connect_info    => [
-        'dbi:Pg:host=127.0.0.1;database=fila;',
-        'fila',
-        'senha',
-        {
-            pg_enable_utf8 => 1,
-        },
-    ]
+  schema_class => 'Fila::Servico::DB',
+  connect_info => [
+    'dbi:Pg:host=127.0.0.1;database=fila;', 'fila',
+    'senha', { pg_enable_utf8 => 1, },
+  ]
 );
 1;
 

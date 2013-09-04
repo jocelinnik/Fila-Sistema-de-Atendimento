@@ -1,4 +1,5 @@
 package Fila::Servico::DB::Categoria;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,44 +21,52 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('categoria');
-__PACKAGE__->add_columns
-  (
-   id_categoria =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_categoria => {
+    data_type         => 'integer',
     is_auto_increment => 1,
-   },
-   nome =>
-   {
-    data_type => 'varchar',
-   },
-   codigo =>
-   {
-    data_type => 'varchar',
-   },
-  );
+  },
+  nome   => { data_type => 'varchar', },
+  codigo => { data_type => 'varchar', },
+);
 __PACKAGE__->set_primary_key(qw(id_categoria));
-__PACKAGE__->has_many('atendimentos', 'Fila::Servico::DB::CategoriaAtendimento',
-                      {'foreign.id_categoria' => 'self.id_categoria'},
-                      { join_type => 'left' });
+__PACKAGE__->has_many(
+  'atendimentos',
+  'Fila::Servico::DB::CategoriaAtendimento',
+  { 'foreign.id_categoria' => 'self.id_categoria' },
+  { join_type              => 'left' }
+);
 
-__PACKAGE__->has_many('atendimentos_atuais', 'Fila::Servico::DB::CategoriaAtendimento',
-                      {'foreign.id_categoria' => 'self.id_categoria',
-                       'foreign.vt_ini' => \"<= NOW()", #"
-                       'foreign.vt_fim' => \"> NOW()"}, #"
-                      { join_type => 'left' });
+__PACKAGE__->has_many(
+  'atendimentos_atuais',
+  'Fila::Servico::DB::CategoriaAtendimento',
+  {
+    'foreign.id_categoria' => 'self.id_categoria',
+    'foreign.vt_ini'       => \"<= NOW()",           #"
+    'foreign.vt_fim'       => \"> NOW()"
+  },    #"
+  { join_type => 'left' }
+);
 
-__PACKAGE__->has_many('senhas', 'Fila::Servico::DB::Senha',
-                      {'foreign.id_categoria' => 'self.id_categoria'});
+__PACKAGE__->has_many( 'senhas', 'Fila::Servico::DB::Senha',
+  { 'foreign.id_categoria' => 'self.id_categoria' } );
 
-__PACKAGE__->has_many('configuracoes', 'Fila::Servico::DB::ConfiguracaoCategoria',
-                      {'foreign.id_categoria' => 'self.id_categoria'});
+__PACKAGE__->has_many(
+  'configuracoes',
+  'Fila::Servico::DB::ConfiguracaoCategoria',
+  { 'foreign.id_categoria' => 'self.id_categoria' }
+);
 
-__PACKAGE__->has_many('configuracoes_atuais', 'Fila::Servico::DB::ConfiguracaoCategoria',
-                      {'foreign.id_categoria' => 'self.id_categoria',
-                       'foreign.vt_ini' => \"<= NOW()", #"
-                       'foreign.vt_fim' => \"> NOW()"}, #"
-                      { join_type => 'left' });
+__PACKAGE__->has_many(
+  'configuracoes_atuais',
+  'Fila::Servico::DB::ConfiguracaoCategoria',
+  {
+    'foreign.id_categoria' => 'self.id_categoria',
+    'foreign.vt_ini'       => \"<= NOW()",           #"
+    'foreign.vt_fim'       => \"> NOW()"
+  },    #"
+  { join_type => 'left' }
+);
 1;
 
 __END__

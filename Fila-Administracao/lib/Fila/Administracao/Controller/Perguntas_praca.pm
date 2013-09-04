@@ -1,4 +1,5 @@
 package Fila::Administracao::Controller::Perguntas_praca;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,72 +21,69 @@ use strict;
 use warnings;
 use parent 'Catalyst::Controller';
 
-sub index :Path('') :Args(0) {
-    my ($self, $c) = @_;
-    $c->stash->{perguntas_praca} = $c->model('DB::PerguntaAvaliacaoPraca')->search
-      ({},
-       { order_by => 'pergunta' });
+sub index : Path('') : Args(0) {
+  my ( $self, $c ) = @_;
+  $c->stash->{perguntas_praca} =
+      $c->model('DB::PerguntaAvaliacaoPraca')
+      ->search( {}, { order_by => 'pergunta' } );
 }
 
-sub preload :Chained :PathPart('perguntas_praca') :CaptureArgs(1) {
-    my ($self, $c, $id_pergunta) = @_;
-    $c->stash->{perguntas_praca} = $c->model('DB::PerguntaAvaliacaoPraca')->find
-      ({ id_pergunta => $id_pergunta });
+sub preload : Chained : PathPart('perguntas_praca') : CaptureArgs(1) {
+  my ( $self, $c, $id_pergunta ) = @_;
+  $c->stash->{perguntas_praca} =
+      $c->model('DB::PerguntaAvaliacaoPraca')
+      ->find( { id_pergunta => $id_pergunta } );
 }
 
-sub encerrar  :Chained('preload') :PathPart :Args(0) {
-    my ($self, $c) = @_;
+sub encerrar : Chained('preload') : PathPart : Args(0) {
+  my ( $self, $c ) = @_;
 
-    $c->stash->{perguntas_praca}->update(
-       {  
-        vt_fim => DateTime->now(time_zone => 'local') 
-       });
-    $c->res->redirect($c->uri_for('/perguntas_praca'));
+  $c->stash->{perguntas_praca}
+      ->update( { vt_fim => DateTime->now( time_zone => 'local' ) } );
+  $c->res->redirect( $c->uri_for('/perguntas_praca') );
 }
 
-sub reabrir :Chained('preload') :PathPart :Args(0) {
-    my ($self, $c) = @_;
+sub reabrir : Chained('preload') : PathPart : Args(0) {
+  my ( $self, $c ) = @_;
 
-    $c->stash->{perguntas_praca}->update(
-       {  
-        vt_fim => 'infinity' 
-       });
-    $c->res->redirect($c->uri_for('/perguntas_praca'));
+  $c->stash->{perguntas_praca}->update( { vt_fim => 'infinity' } );
+  $c->res->redirect( $c->uri_for('/perguntas_praca') );
 }
 
-sub salvar :Chained('preload') :PathPart :Args(0) {
-    my ($self, $c) = @_;
-    $c->stash->{perguntas_praca}->update
-      ({ map { $_ => $c->req->param($_) }
-         qw(pergunta ) });
-    $c->res->redirect($c->uri_for('/perguntas_praca'));
+sub salvar : Chained('preload') : PathPart : Args(0) {
+  my ( $self, $c ) = @_;
+  $c->stash->{perguntas_praca}
+      ->update( { map { $_ => $c->req->param($_) } qw(pergunta ) } );
+  $c->res->redirect( $c->uri_for('/perguntas_praca') );
 }
 
-sub ver :Chained('preload') :PathPart('') :Args(0) {
-    my ($self, $c) = @_;
+sub ver : Chained('preload') : PathPart('') : Args(0) {
+  my ( $self, $c ) = @_;
 
-    unless ($c->req->param('submitted')) {
-        $c->req->param($_,$c->stash->{perguntas_praca}->get_column($_))
-          for qw(id_pergunta pergunta )
-    }
+  unless ( $c->req->param('submitted') ) {
+    $c->req->param( $_, $c->stash->{perguntas_praca}->get_column($_) )
+        for qw(id_pergunta pergunta );
+  }
 
 }
 
-sub criar :Local :Args(0) {
-    my ($self, $c) = @_;
+sub criar : Local : Args(0) {
+  my ( $self, $c ) = @_;
 
-    $c->stash->{perguntas_praca} = $c->model('DB::PerguntaAvaliacaoPraca')->search({});
+  $c->stash->{perguntas_praca} =
+      $c->model('DB::PerguntaAvaliacaoPraca')->search( {} );
 
-    if ($c->req->param('submitted')) {
-        $c->stash->{perguntas_praca}->create
-          ({ vt_ini => DateTime->now(time_zone => 'local'),
-             vt_fim => 'Infinity',
-             ( map { $_ => $c->req->param($_) }
-               qw(pergunta ) ) });
-        $c->res->redirect($c->uri_for('/perguntas_praca'));
-    }
+  if ( $c->req->param('submitted') ) {
+    $c->stash->{perguntas_praca}->create(
+      {
+        vt_ini => DateTime->now( time_zone => 'local' ),
+        vt_fim => 'Infinity',
+        ( map { $_ => $c->req->param($_) } qw(pergunta ) )
+      }
+    );
+    $c->res->redirect( $c->uri_for('/perguntas_praca') );
+  }
 }
-
 
 1;
 

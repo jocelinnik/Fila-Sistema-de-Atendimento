@@ -1,4 +1,5 @@
 package Fila::Servico::DB::Funcionario;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,63 +21,81 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('funcionario');
-__PACKAGE__->add_columns
-  (
-   id_funcionario =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_funcionario => {
+    data_type         => 'integer',
     is_auto_increment => 1
-   },
-   nome =>
-   {
-    data_type => 'varchar',
-   },
-   jid =>
-   {
-    data_type => 'varchar',
-   },
-   password =>
-   {
-    data_type => 'varchar',
-   },
-  );
+  },
+  nome     => { data_type => 'varchar', },
+  jid      => { data_type => 'varchar', },
+  password => { data_type => 'varchar', },
+);
 __PACKAGE__->set_primary_key(qw(id_funcionario));
 
-__PACKAGE__->has_many('locais', 'Fila::Servico::DB::FuncionarioLocal',
-                      { 'foreign.id_funcionario' => 'self.id_funcionario' });
+__PACKAGE__->has_many(
+  'locais',
+  'Fila::Servico::DB::FuncionarioLocal',
+  { 'foreign.id_funcionario' => 'self.id_funcionario' }
+);
 
-__PACKAGE__->has_many('local_atual', 'Fila::Servico::DB::FuncionarioLocal',
-                      { 'foreign.id_funcionario' => 'self.id_funcionario',
-                       'foreign.vt_ini' => \"<= NOW()", #"
-                       'foreign.vt_fim' => \"> NOW()"}, #"
-                      { join_type => 'left' });
+__PACKAGE__->has_many(
+  'local_atual',
+  'Fila::Servico::DB::FuncionarioLocal',
+  {
+    'foreign.id_funcionario' => 'self.id_funcionario',
+    'foreign.vt_ini'         => \"<= NOW()",             #"
+    'foreign.vt_fim'         => \"> NOW()"
+  },    #"
+  { join_type => 'left' }
+);
 
-__PACKAGE__->has_many('gerentes', 'Fila::Servico::DB::GerenteLocal',
-                      { 'foreign.id_funcionario' => 'self.id_funcionario' });
+__PACKAGE__->has_many(
+  'gerentes',
+  'Fila::Servico::DB::GerenteLocal',
+  { 'foreign.id_funcionario' => 'self.id_funcionario' }
+);
 
-__PACKAGE__->has_many('gerente_atual', 'Fila::Servico::DB::GerenteLocal',
-                      { 'foreign.id_funcionario' => 'self.id_funcionario',
-                       'foreign.vt_ini' => \"<= NOW()", #"
-                       'foreign.vt_fim' => \"> NOW()"}, #"
-                      { join_type => 'left' });
+__PACKAGE__->has_many(
+  'gerente_atual',
+  'Fila::Servico::DB::GerenteLocal',
+  {
+    'foreign.id_funcionario' => 'self.id_funcionario',
+    'foreign.vt_ini'         => \"<= NOW()",             #"
+    'foreign.vt_fim'         => \"> NOW()"
+  },    #"
+  { join_type => 'left' }
+);
 
-__PACKAGE__->has_many('atendentes', 'Fila::Servico::DB::AtendenteGuiche',
-                      { 'foreign.id_funcionario' => 'self.id_funcionario' });
+__PACKAGE__->has_many(
+  'atendentes',
+  'Fila::Servico::DB::AtendenteGuiche',
+  { 'foreign.id_funcionario' => 'self.id_funcionario' }
+);
 
-__PACKAGE__->has_many('atendente_atual', 'Fila::Servico::DB::AtendenteGuiche',
-                      { 'foreign.id_funcionario' => 'self.id_funcionario',
-                       'foreign.vt_ini' => \"<= NOW()", #"
-                       'foreign.vt_fim' => \"> NOW()"}, #"
-                      { join_type => 'left' });
+__PACKAGE__->has_many(
+  'atendente_atual',
+  'Fila::Servico::DB::AtendenteGuiche',
+  {
+    'foreign.id_funcionario' => 'self.id_funcionario',
+    'foreign.vt_ini'         => \"<= NOW()",             #"
+    'foreign.vt_fim'         => \"> NOW()"
+  },    #"
+  { join_type => 'left' }
+);
 
-__PACKAGE__->has_many('pausas', 'Fila::Servico::DB::Pausa',
-                      { 'foreign.id_funcionario' => 'self.id_funcionario' });
+__PACKAGE__->has_many( 'pausas', 'Fila::Servico::DB::Pausa',
+  { 'foreign.id_funcionario' => 'self.id_funcionario' } );
 
-__PACKAGE__->has_many('pausa_atual', 'Fila::Servico::DB::Pausa',
-                      { 'foreign.id_funcionario' => 'self.id_funcionario',
-                       'foreign.vt_ini' => \"<= NOW()", #"
-                       'foreign.vt_fim' => \"> NOW()"}, #"
-                      { join_type => 'left' });
+__PACKAGE__->has_many(
+  'pausa_atual',
+  'Fila::Servico::DB::Pausa',
+  {
+    'foreign.id_funcionario' => 'self.id_funcionario',
+    'foreign.vt_ini'         => \"<= NOW()",             #"
+    'foreign.vt_fim'         => \"> NOW()"
+  },    #"
+  { join_type => 'left' }
+);
 
 1;
 

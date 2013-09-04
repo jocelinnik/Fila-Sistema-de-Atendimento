@@ -1,4 +1,5 @@
 package Fila::Servico::DB::ServicoGuiche;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,34 +21,21 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('servico_guiche');
-__PACKAGE__->add_columns
-  (
-   id_servico =>
-   {
-    data_type => 'integer',
-   },
-   id_guiche =>
-   {
-    data_type => 'integer',
-   },
-   vt_ini =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   vt_fim =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   informacoes =>
-   {
-    data_type => 'varchar',
-   }
-  );
+__PACKAGE__->add_columns(
+  id_servico  => { data_type => 'integer', },
+  id_guiche   => { data_type => 'integer', },
+  vt_ini      => { data_type => 'timestamp with time zone', },
+  vt_fim      => { data_type => 'timestamp with time zone', },
+  informacoes => { data_type => 'varchar', }
+);
 __PACKAGE__->set_primary_key(qw(id_servico id_guiche vt_ini vt_fim));
-__PACKAGE__->belongs_to('servico', 'Fila::Servico::DB::ServicoInterno',
-                        { 'foreign.id_servico' => 'self.id_servico' });
-__PACKAGE__->belongs_to('guiche', 'Fila::Servico::DB::Guiche',
-                        { 'foreign.id_guiche' => 'self.id_guiche' });
+__PACKAGE__->belongs_to(
+  'servico',
+  'Fila::Servico::DB::ServicoInterno',
+  { 'foreign.id_servico' => 'self.id_servico' }
+);
+__PACKAGE__->belongs_to( 'guiche', 'Fila::Servico::DB::Guiche',
+  { 'foreign.id_guiche' => 'self.id_guiche' } );
 
 1;
 

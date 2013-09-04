@@ -1,4 +1,5 @@
 package Fila::WebApp::Controller::Callback;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -21,22 +22,21 @@ use warnings;
 use base 'Catalyst::Controller::SOAP';
 
 __PACKAGE__->config->{wsdl} =
-  {wsdl => Fila::WebApp->path_to('schemas/FilaSenha.wsdl')};
+    { wsdl => Fila::WebApp->path_to('schemas/FilaSenha.wsdl') };
 
-sub local_aberto :WSDLPort('FilaSenhaCallback') {
-    my ($self, $c) = @_;
-    warn 'local aberto';
-    $c->forward('/render/emissor');
-    $c->forward($c->view());
+sub local_aberto : WSDLPort('FilaSenhaCallback') {
+  my ( $self, $c ) = @_;
+  warn 'local aberto';
+  $c->forward('/render/emissor');
+  $c->forward( $c->view() );
 }
 
-sub senhas_encerradas :WSDLPort('FilaSenhaCallback') {
-    my ($self, $c) = @_;
-    warn 'senhas_encerradas';
-    $c->forward('/render/emissor');
-    $c->forward($c->view());
+sub senhas_encerradas : WSDLPort('FilaSenhaCallback') {
+  my ( $self, $c ) = @_;
+  warn 'senhas_encerradas';
+  $c->forward('/render/emissor');
+  $c->forward( $c->view() );
 }
-
 
 1;
 

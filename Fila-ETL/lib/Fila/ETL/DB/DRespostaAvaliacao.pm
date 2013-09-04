@@ -1,4 +1,5 @@
 package Fila::ETL::DB::DRespostaAvaliacao;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,18 +23,13 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(Core PK::Auto));
 __PACKAGE__->table('d_resposta_avaliacao');
-__PACKAGE__->add_columns
-  (
-   id_resposta =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_resposta => {
+    data_type         => 'integer',
     is_auto_increment => 1
-   },
-   valor =>
-   {
-    data_type => "varchar"
-   }
-  );
+  },
+  valor => { data_type => "varchar" }
+);
 
 __PACKAGE__->set_primary_key('id_resposta');
 __PACKAGE__->resultset_class('Fila::ETL::DB::DRespostaAvaliacao::RS');
@@ -42,14 +38,15 @@ package Fila::ETL::DB::DRespostaAvaliacao::RS;
 use base 'DBIx::Class::ResultSet';
 
 sub get_dimension {
-    my ($self, $resposta) = @_;
-    my $valor = (qw(otimo bom regular ruim))[$resposta - 1];
-    if (my $dim = $self->find({ id_resposta => $resposta })) {
-	return $resposta;
-    } else {
-	return $self->create
-          ({ valor => $valor, id_resposta => $resposta })->id_resposta;
-    }
+  my ( $self, $resposta ) = @_;
+  my $valor = (qw(otimo bom regular ruim))[ $resposta - 1 ];
+  if ( my $dim = $self->find( { id_resposta => $resposta } ) ) {
+    return $resposta;
+  }
+  else {
+    return $self->create( { valor => $valor, id_resposta => $resposta } )
+        ->id_resposta;
+  }
 }
 
 1;

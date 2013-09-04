@@ -1,4 +1,5 @@
 package Fila::Administracao::Controller::Servicos;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,76 +21,70 @@ use strict;
 use warnings;
 use parent 'Catalyst::Controller';
 
-sub index :Path('') :Args(0) {
-    my ($self, $c) = @_;
-    $c->stash->{servicos} = $c->model('DB::Servico')->search
-      ({},
-       { order_by => 'nome' });
+sub index : Path('') : Args(0) {
+  my ( $self, $c ) = @_;
+  $c->stash->{servicos} =
+      $c->model('DB::Servico')->search( {}, { order_by => 'nome' } );
 }
 
-sub preload :Chained :PathPart('servicos') :CaptureArgs(1) {
-    my ($self, $c, $id_servico) = @_;
-    $c->stash->{servicos} = $c->model('DB::Servico')->find
-      ({ id_servico => $id_servico });
+sub preload : Chained : PathPart('servicos') : CaptureArgs(1) {
+  my ( $self, $c, $id_servico ) = @_;
+  $c->stash->{servicos} =
+      $c->model('DB::Servico')->find( { id_servico => $id_servico } );
 }
 
+sub encerrar : Chained('preload') : PathPart : Args(0) {
+  my ( $self, $c ) = @_;
 
-sub encerrar  :Chained('preload') :PathPart :Args(0) {
-    my ($self, $c) = @_;
-
-    $c->stash->{servicos}->update(
-       {  
-        vt_fim => DateTime->now(time_zone => 'local') 
-       });
-    $c->res->redirect($c->uri_for('/servicos'));
+  $c->stash->{servicos}
+      ->update( { vt_fim => DateTime->now( time_zone => 'local' ) } );
+  $c->res->redirect( $c->uri_for('/servicos') );
 }
 
-sub reabrir :Chained('preload') :PathPart :Args(0) {
-    my ($self, $c) = @_;
+sub reabrir : Chained('preload') : PathPart : Args(0) {
+  my ( $self, $c ) = @_;
 
-    $c->stash->{servicos}->update(
-       {  
-        vt_fim => 'infinity' 
-       });
-    $c->res->redirect($c->uri_for('/servicos'));
+  $c->stash->{servicos}->update( { vt_fim => 'infinity' } );
+  $c->res->redirect( $c->uri_for('/servicos') );
 }
 
-sub salvar :Chained('preload') :PathPart :Args(0) {
-    my ($self, $c) = @_;
-    $c->stash->{servicos}->update
-      ({ map { $_ => $c->req->param($_) }
-         qw(nome id_classe ) });
-    $c->res->redirect($c->uri_for('/servicos'));
+sub salvar : Chained('preload') : PathPart : Args(0) {
+  my ( $self, $c ) = @_;
+  $c->stash->{servicos}
+      ->update( { map { $_ => $c->req->param($_) } qw(nome id_classe ) } );
+  $c->res->redirect( $c->uri_for('/servicos') );
 }
 
-sub ver :Chained('preload') :PathPart('') :Args(0) {
-    my ($self, $c) = @_;
+sub ver : Chained('preload') : PathPart('') : Args(0) {
+  my ( $self, $c ) = @_;
 
-    unless ($c->req->param('submitted')) {
-        $c->req->param($_,$c->stash->{servicos}->get_column($_))
-          for qw(id_servico nome id_classe)
-    }
+  unless ( $c->req->param('submitted') ) {
+    $c->req->param( $_, $c->stash->{servicos}->get_column($_) )
+        for qw(id_servico nome id_classe);
+  }
 
-    $c->stash->{classes} = $c->model('DB::ClasseServico')->search
-      ({},{ order_by => 'id_classe' });
+  $c->stash->{classes} =
+      $c->model('DB::ClasseServico')
+      ->search( {}, { order_by => 'id_classe' } );
 
 }
 
-sub criar :Local :Args(0) {
-    my ($self, $c) = @_;
+sub criar : Local : Args(0) {
+  my ( $self, $c ) = @_;
 
-    $c->stash->{servicos} = $c->model('DB::Servico')->search({});
+  $c->stash->{servicos} = $c->model('DB::Servico')->search( {} );
 
-    if ($c->req->param('submitted')) {
-        $c->stash->{servicos}->create
-          ({ vt_ini => DateTime->now(time_zone => 'local'),
-             vt_fim => 'Infinity',
-             ( map { $_ => $c->req->param($_) }
-               qw(nome id_classe) ) });
-        $c->res->redirect($c->uri_for('/servicos'));
-    }
+  if ( $c->req->param('submitted') ) {
+    $c->stash->{servicos}->create(
+      {
+        vt_ini => DateTime->now( time_zone => 'local' ),
+        vt_fim => 'Infinity',
+        ( map { $_ => $c->req->param($_) } qw(nome id_classe) )
+      }
+    );
+    $c->res->redirect( $c->uri_for('/servicos') );
+  }
 }
-
 
 1;
 

@@ -1,4 +1,5 @@
 package Fila::ETL::DB::FAvaliacao;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,46 +23,17 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(Core));
 __PACKAGE__->table('f_avaliacao');
-__PACKAGE__->add_columns
-  (
-   id_local =>
-   {
-    data_type => 'integer',
-   },
-   id_guiche =>
-   {
-    data_type => 'integer',
-   },
-   id_atendente =>
-   {
-    data_type => 'integer',
-   },
-   id_categoria =>
-   {
-    data_type => 'integer',
-   },
-   id_pergunta =>
-   {
-    data_type => 'integer',
-   },
-   id_resposta =>
-   {
-    data_type => 'integer',
-   },
-   data =>
-   {
-    data_type => 'char(10)',
-   },
-   horario =>
-   {
-    data_type => 'char(5)',
-   },
-   quantidade =>
-   {
-    data_type => 'integer',
-   }
-  );
-
+__PACKAGE__->add_columns(
+  id_local     => { data_type => 'integer', },
+  id_guiche    => { data_type => 'integer', },
+  id_atendente => { data_type => 'integer', },
+  id_categoria => { data_type => 'integer', },
+  id_pergunta  => { data_type => 'integer', },
+  id_resposta  => { data_type => 'integer', },
+  data         => { data_type => 'char(10)', },
+  horario      => { data_type => 'char(5)', },
+  quantidade   => { data_type => 'integer', }
+);
 
 1;
 

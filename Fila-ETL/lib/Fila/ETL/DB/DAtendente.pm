@@ -1,4 +1,5 @@
 package Fila::ETL::DB::DAtendente;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,24 +23,20 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(Core PK::Auto));
 __PACKAGE__->table('d_atendente');
-__PACKAGE__->add_columns
-  (
-   id_atendente =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_atendente => {
+    data_type         => 'integer',
     is_auto_increment => 1
-   },
-   matricula =>
-   {
-    data_type => 'varchar',
+  },
+  matricula => {
+    data_type   => 'varchar',
     is_nullable => 1,
-   },
-   nome =>
-   {
-    data_type => 'varchar',
+  },
+  nome => {
+    data_type   => 'varchar',
     is_nullable => 1,
-   },
-  );
+  },
+);
 
 __PACKAGE__->set_primary_key('id_atendente');
 __PACKAGE__->resultset_class('Fila::ETL::DB::DAtendente::RS');
@@ -48,25 +45,30 @@ package Fila::ETL::DB::DAtendente::RS;
 use base 'DBIx::Class::ResultSet';
 
 sub get_dimension {
-    my ($self, $atendente) = @_;
-    my ($matricula, $nome);
-    if (ref $atendente ne 'HASH') {
-      $matricula = $atendente->jid;
-      $matricula =~ s/\@.+$//;
-      $nome = $atendente->nome;
-    } else {
-      $matricula = $atendente->{jid};
-      $matricula =~ s/\@.+$//;
-      $nome = $atendente->{nome};
-    }
-    if (my $dim = $self->find({ matricula => $matricula })) {
-	return $dim->id_atendente;
-    } else {
-	# TODO: Obter isso de um lugar mais inteligente;
-	return $self->create
-	    ({ matricula => $matricula ? $matricula : '',
-	       nome => $nome })->id_atendente;
-    }
+  my ( $self, $atendente ) = @_;
+  my ( $matricula, $nome );
+  if ( ref $atendente ne 'HASH' ) {
+    $matricula = $atendente->jid;
+    $matricula =~ s/\@.+$//;
+    $nome = $atendente->nome;
+  }
+  else {
+    $matricula = $atendente->{jid};
+    $matricula =~ s/\@.+$//;
+    $nome = $atendente->{nome};
+  }
+  if ( my $dim = $self->find( { matricula => $matricula } ) ) {
+    return $dim->id_atendente;
+  }
+  else {
+    # TODO: Obter isso de um lugar mais inteligente;
+    return $self->create(
+      {
+        matricula => $matricula ? $matricula : '',
+        nome => $nome
+      }
+    )->id_atendente;
+  }
 }
 
 1;

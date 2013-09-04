@@ -1,5 +1,7 @@
 use utf8;
+
 package Fila::WebApp::Model::Impressora;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -30,65 +32,60 @@ use base 'Catalyst::Model';
 __PACKAGE__->mk_accessors('fh');
 
 sub imprimir_senha {
-    my ($self, $dados) = @_;
-    return ();
-    $self->_check_fh;
+  my ( $self, $dados ) = @_;
+  return ();
+  $self->_check_fh;
 
-    my $date = DateTime::Format::XSD->parse_datetime
-      ($dados->{atendimento}{vt_ini});
-    $date->set_time_zone('local');
-    my $san = $dados->{atendimento}{id_atendimento};
-    $san = substr($san,	-9);
-    my $a = encode('CP850',
-		    "\eH\e\x0f".
-		    "\eA".
-		    "Organização\n".
-                    "\eB".
-                    "Departamento".
-		    "\n\n".
-                    "\eA\eC".
-		    "        ".$dados->{atendimento}{senha}.
-		    "\eB\eD".
-                    "\n\n".
-                    "Atendimento:\n".
-                    "\eA".
-                    sprintf('%09s',$san).
-		    " -- ".$date->strftime('%F').
-		    "\n".
-                    "\eB".
-		    "   http://www.website.com.br\n".
-                    "      Cidade - UF \n\n"
-		  );
+  my $date =
+      DateTime::Format::XSD->parse_datetime( $dados->{atendimento}{vt_ini} );
+  $date->set_time_zone('local');
+  my $san = $dados->{atendimento}{id_atendimento};
+  $san = substr( $san, -9 );
+  my $a = encode( 'CP850',
+          "\eH\e\x0f" . "\eA"
+        . "Organização\n" . "\eB"
+        . "Departamento" . "\n\n"
+        . "\eA\eC"
+        . "        "
+        . $dados->{atendimento}{senha}
+        . "\eB\eD" . "\n\n"
+        . "Atendimento:\n" . "\eA"
+        . sprintf( '%09s', $san ) . " -- "
+        . $date->strftime('%F') . "\n" . "\eB"
+        . "   http://www.website.com.br\n"
+        . "      Cidade - UF \n\n" );
 
-    use bytes;
-    warn encode('utf8',$a);
-    syswrite $self->fh, $a.encode('CP850'," - - - - -  2ª VIA DA SENHA  - - - - - \n\n\x11");
+  use bytes;
+  warn encode( 'utf8', $a );
+  syswrite $self->fh, $a
+      . encode( 'CP850', " - - - - -  2ª VIA DA SENHA  - - - - - \n\n\x11" );
 
 }
 
 sub _check_fh {
-    my $self = shift;
+  my $self = shift;
 
-    return if $self->fh;
-#    if ($Fila::WebApp::porta_impressora eq 'emulate') {
-#	$self->fh(\*STDOUT);
-#	return;
-#    }
+  return if $self->fh;
 
-    open my $fh, '>', '/dev/lp0'  or die $!;
+  #    if ($Fila::WebApp::porta_impressora eq 'emulate') {
+  #	$self->fh(\*STDOUT);
+  #	return;
+  #    }
 
-    $fh->blocking(1);
+  open my $fh, '>', '/dev/lp0' or die $!;
 
-    #my $term = POSIX::Termios->new;
-    #$term->getattr(fileno($fh)) or die $!;
-    #$term->setospeed(&POSIX::B9600);
-    #$term->setispeed(&POSIX::B9600);
-    #$term->setiflag((&POSIX::IXON | &POSIX::IXOFF | &POSIX::IGNPAR)&(~(&POSIX::IGNBRK | &POSIX::BRKINT)));
-    #$term->setlflag($term->getlflag & ~&POSIX::ECHO);
-    #$term->setcflag($term->getcflag | &POSIX::CSIZE | &POSIX::CS7);
-    #$term->setattr(fileno($fh), &POSIX::TCSANOW) or die $!;
+  $fh->blocking(1);
 
-    $self->fh($fh);
+#my $term = POSIX::Termios->new;
+#$term->getattr(fileno($fh)) or die $!;
+#$term->setospeed(&POSIX::B9600);
+#$term->setispeed(&POSIX::B9600);
+#$term->setiflag((&POSIX::IXON | &POSIX::IXOFF | &POSIX::IGNPAR)&(~(&POSIX::IGNBRK | &POSIX::BRKINT)));
+#$term->setlflag($term->getlflag & ~&POSIX::ECHO);
+#$term->setcflag($term->getcflag | &POSIX::CSIZE | &POSIX::CS7);
+#$term->setattr(fileno($fh), &POSIX::TCSANOW) or die $!;
+
+  $self->fh($fh);
 }
 
 1;

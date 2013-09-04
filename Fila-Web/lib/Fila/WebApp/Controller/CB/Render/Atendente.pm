@@ -1,4 +1,5 @@
 package Fila::WebApp::Controller::CB::Render::Atendente;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,26 +21,26 @@ use strict;
 use warnings;
 use base 'Catalyst::Controller::SOAP';
 
-__PACKAGE__->config->{wsdl} =
-  { wsdl => Fila::WebApp->path_to('schemas/FilaWebApp.wsdl'),
-    schema => Fila::WebApp->path_to('schemas/fila-servico.xsd') };
+__PACKAGE__->config->{wsdl} = {
+  wsdl   => Fila::WebApp->path_to('schemas/FilaWebApp.wsdl'),
+  schema => Fila::WebApp->path_to('schemas/fila-servico.xsd')
+};
 
+sub render_atendente : WSDLPort('render_atendente') {
+  my ( $self, $c, $dados ) = @_;
 
-sub render_atendente :WSDLPort('render_atendente') {
-    my ($self, $c, $dados) = @_;
+  $c->stash->{status_guiche} = $dados;
 
-    $c->stash->{status_guiche} = $dados;
-
-    if ($dados->{guiche}{estado} eq 'fechado') {
-        $c->stash->{template} = 'cb/atendente/fechar_guiche.tt';
-        $c->forward($c->view());
-        $::connection->disconnect();
-    } else {
-        $c->stash->{template} = 'cb/atendente/refresh.tt';
-        $c->forward($c->view());
-    }
+  if ( $dados->{guiche}{estado} eq 'fechado' ) {
+    $c->stash->{template} = 'cb/atendente/fechar_guiche.tt';
+    $c->forward( $c->view() );
+    $::connection->disconnect();
+  }
+  else {
+    $c->stash->{template} = 'cb/atendente/refresh.tt';
+    $c->forward( $c->view() );
+  }
 }
-
 
 1;
 

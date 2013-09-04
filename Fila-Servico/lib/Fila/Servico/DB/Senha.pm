@@ -1,4 +1,5 @@
 package Fila::Servico::DB::Senha;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,33 +21,28 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('senha');
-__PACKAGE__->add_columns
-  (
-   id_senha =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_senha => {
+    data_type         => 'integer',
     is_auto_increment => 1
-   },
-   id_categoria =>
-   {
-    data_type => 'integer',
-   },
-   id_local =>
-   {
-    data_type => 'integer',
-   },
-   codigo =>
-   {
-    data_type => 'integer',
-   },
-  );
+  },
+  id_categoria => { data_type => 'integer', },
+  id_local     => { data_type => 'integer', },
+  codigo       => { data_type => 'integer', },
+);
 __PACKAGE__->set_primary_key(qw(id_senha));
-__PACKAGE__->belongs_to('local', 'Fila::Servico::DB::Local',
-                        { 'foreign.id_local' => 'self.id_local' });
-__PACKAGE__->belongs_to('categoria', 'Fila::Servico::DB::Categoria',
-                        { 'foreign.id_categoria' => 'self.id_categoria' });
-__PACKAGE__->has_many('atendimentos', 'Fila::Servico::DB::Atendimento',
-                      { 'foreign.id_senha' => 'self.id_senha' });
+__PACKAGE__->belongs_to( 'local', 'Fila::Servico::DB::Local',
+  { 'foreign.id_local' => 'self.id_local' } );
+__PACKAGE__->belongs_to(
+  'categoria',
+  'Fila::Servico::DB::Categoria',
+  { 'foreign.id_categoria' => 'self.id_categoria' }
+);
+__PACKAGE__->has_many(
+  'atendimentos',
+  'Fila::Servico::DB::Atendimento',
+  { 'foreign.id_senha' => 'self.id_senha' }
+);
 
 1;
 

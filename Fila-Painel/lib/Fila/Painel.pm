@@ -1,4 +1,5 @@
 package Fila::Painel;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -28,62 +29,60 @@ __PACKAGE__->setup;
 
 our $output;
 {
-    $output = __PACKAGE__->config->{output}
+  $output = __PACKAGE__->config->{output}
       or die 'Arquivo de saida nao configuradas.';
 }
-
 
 # Inicializar uma conexão principal de controle que ira fazer a
 # inicializacao
 
-$::connection = Net::XMPP2::Connection->new
-  (%{Fila::Painel->config->{'Engine::XMPP2'}},
-   resource => 'Main Connection');
+$::connection =
+    Net::XMPP2::Connection->new( %{ Fila::Painel->config->{'Engine::XMPP2'} },
+  resource => 'Main Connection' );
 
-$::connection->reg_cb
-  (bind_error => sub {
-       warn 'Error binding to resource';
-       EV::unloop(EV::UNLOOP_ALL);
-   },
+$::connection->reg_cb(
+  bind_error => sub {
+    warn 'Error binding to resource';
+    EV::unloop(EV::UNLOOP_ALL);
+  },
 
-   iq_auth_error => sub {
-       warn 'Authentication error';
-       EV::unloop(EV::UNLOOP_ALL);
-   },
+  iq_auth_error => sub {
+    warn 'Authentication error';
+    EV::unloop(EV::UNLOOP_ALL);
+  },
 
-   sasl_error => sub {
-       warn 'Authentication error';
-       EV::unloop(EV::UNLOOP_ALL);
-   },
+  sasl_error => sub {
+    warn 'Authentication error';
+    EV::unloop(EV::UNLOOP_ALL);
+  },
 
-   disconnect => sub {
-       warn 'Disconnecting.';
-       EV::unloop(EV::UNLOOP_ALL);
-   },
+  disconnect => sub {
+    warn 'Disconnecting.';
+    EV::unloop(EV::UNLOOP_ALL);
+  },
 
-   stream_error => sub {
-       warn 'Connection error.';
-       EV::unloop(EV::UNLOOP_ALL);
-   },
+  stream_error => sub {
+    warn 'Connection error.';
+    EV::unloop(EV::UNLOOP_ALL);
+  },
 
-   stream_ready => sub {
-       $::connection->send_presence('available', sub {});
+  stream_ready => sub {
+    $::connection->send_presence( 'available', sub { } );
 
-       eval {
-           Fila::Painel->run();
-       };
-       if ($@) {
-           warn 'Error running application: '.$@;
-           EV::unloop(EV::UNLOOP_ALL);
-       }
-   });
+    eval { Fila::Painel->run(); };
+    if ($@) {
+      warn 'Error running application: ' . $@;
+      EV::unloop(EV::UNLOOP_ALL);
+    }
+  }
+);
 
-unless ($::connection->connect) {
-    die 'Cannot connect to server';
-} else {
-    EV::loop;
+unless ( $::connection->connect ) {
+  die 'Cannot connect to server';
 }
-
+else {
+  EV::loop;
+}
 
 1;
 

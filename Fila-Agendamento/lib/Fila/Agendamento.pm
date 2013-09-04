@@ -1,4 +1,5 @@
 package Fila::Agendamento;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -27,14 +28,15 @@ our $VERSION = '0.01';
 
 __PACKAGE__->config( name => 'Fila::Agendamento' );
 
-__PACKAGE__->setup(qw/ ConfigLoader Static::Simple Session
-      Session::Store::FastMmap Session::State::Cookie Unicode/);
+__PACKAGE__->setup(
+  qw/ ConfigLoader Static::Simple Session
+      Session::Store::FastMmap Session::State::Cookie Unicode/
+);
 
 {
-    $Fila::Agendamento::quantidade_por_intervalo       = __PACKAGE__->config->{quantidade_por_intervalo}       || 10;
+  $Fila::Agendamento::quantidade_por_intervalo =
+      __PACKAGE__->config->{quantidade_por_intervalo} || 10;
 }
-
-
 
 1;
 

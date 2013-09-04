@@ -1,4 +1,5 @@
 package Fila::Servico::Controller::Root;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -30,10 +31,10 @@ use DateTime::Format::Pg;
 __PACKAGE__->config->{namespace} = '';
 
 sub auto : Private {
-    my ( $self, $c ) = @_;
-    my $now = DateTime->now(time_zone => 'local');
-    $now->set_formatter('DateTime::Format::Pg');
-    $c->stash->{now} = $now;
+  my ( $self, $c ) = @_;
+  my $now = DateTime->now( time_zone => 'local' );
+  $now->set_formatter('DateTime::Format::Pg');
+  $c->stash->{now} = $now;
 }
 
 1;

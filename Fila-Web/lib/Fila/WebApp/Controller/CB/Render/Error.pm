@@ -1,4 +1,5 @@
 package Fila::WebApp::Controller::CB::Render::Error;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -21,21 +22,21 @@ use warnings;
 use XML::Compile::SOAP;
 use base 'Catalyst::Controller::SOAP';
 
-__PACKAGE__->config->{wsdl} =
-  { wsdl => Fila::WebApp->path_to('schemas/FilaWebApp.wsdl'),
-    schema =>
-    [ Fila::WebApp->path_to('schemas/fila-servico.xsd'),
-      Fila::WebApp->path_to('schemas/soap-envelope.xsd') ]};
+__PACKAGE__->config->{wsdl} = {
+  wsdl   => Fila::WebApp->path_to('schemas/FilaWebApp.wsdl'),
+  schema => [
+    Fila::WebApp->path_to('schemas/fila-servico.xsd'),
+    Fila::WebApp->path_to('schemas/soap-envelope.xsd')
+  ]
+};
 
+sub render_error : WSDLPort('render_error') {
+  my ( $self, $c, $dados ) = @_;
 
-sub render_error :WSDLPort('render_error') {
-    my ($self, $c, $dados) = @_;
-
-    $c->stash->{error_message} = $dados->{Fault}{faultstring};
-    $c->stash->{template} = 'render/error_message.tt';
-    $c->forward($c->view());
+  $c->stash->{error_message} = $dados->{Fault}{faultstring};
+  $c->stash->{template}      = 'render/error_message.tt';
+  $c->forward( $c->view() );
 }
-
 
 1;
 

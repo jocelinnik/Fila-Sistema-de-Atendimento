@@ -1,4 +1,5 @@
 package Fila::Servico;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -28,7 +29,6 @@ our $VERSION = '0.01';
 __PACKAGE__->config( name => 'Fila::Servico' );
 
 __PACKAGE__->setup;
-
 
 1;
 

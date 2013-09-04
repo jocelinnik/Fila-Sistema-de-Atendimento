@@ -1,4 +1,5 @@
 package Fila::Web::Controller::CB::Guiche;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -23,16 +24,23 @@ use base 'Catalyst::Controller';
 #recebe os eventos do navegador e os redireciona para filawebapp.
 
 sub abrir : Local {
-    my ($self, $c, $id_guiche) = @_;
-    
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/guiche']);
-    
-    my $req = $c->model('SOAP::Guiche')->abrir_guiche
-     ({ callback_request =>
-        { param =>
-          [ { name => 'id_guiche',
-              value => $id_guiche  } ]}});
+  my ( $self, $c, $id_guiche ) = @_;
+
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/guiche' ] );
+
+  my $req = $c->model('SOAP::Guiche')->abrir_guiche(
+    {
+      callback_request => {
+        param => [
+          {
+            name  => 'id_guiche',
+            value => $id_guiche
+          }
+        ]
+      }
+    }
+  );
 
 }
 

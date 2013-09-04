@@ -1,4 +1,5 @@
 package Fila::ETL;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -24,9 +25,10 @@ our $VERSION = '0.01';
 use Catalyst::Runtime '5.70';
 use Catalyst qw( ConfigLoader );
 
-__PACKAGE__->config( name => 'Fila::ETL',
-		     'Plugin::ConfigLoader' => { file => 'fila_etl.yaml' }
-    );
+__PACKAGE__->config(
+  name                   => 'Fila::ETL',
+  'Plugin::ConfigLoader' => { file => 'fila_etl.yaml' }
+);
 __PACKAGE__->setup;
 
 1;

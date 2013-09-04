@@ -1,4 +1,5 @@
 package Fila::Administracao::Controller::Classes;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,51 +21,46 @@ use strict;
 use warnings;
 use parent 'Catalyst::Controller';
 
-sub index :Path('') :Args(0) {
-    my ($self, $c) = @_;
-    $c->stash->{classes} = $c->model('DB::ClasseServico')->search
-      ({},
-       { order_by => 'nome' });
+sub index : Path('') : Args(0) {
+  my ( $self, $c ) = @_;
+  $c->stash->{classes} =
+      $c->model('DB::ClasseServico')->search( {}, { order_by => 'nome' } );
 }
 
-sub preload :Chained :PathPart('classes') :CaptureArgs(1) {
-    my ($self, $c, $id_classe) = @_;
-    $c->stash->{classes} = $c->model('DB::ClasseServico')->find
-      ({ id_classe => $id_classe });
+sub preload : Chained : PathPart('classes') : CaptureArgs(1) {
+  my ( $self, $c, $id_classe ) = @_;
+  $c->stash->{classes} =
+      $c->model('DB::ClasseServico')->find( { id_classe => $id_classe } );
 }
 
-
-sub salvar :Chained('preload') :PathPart :Args(0) {
-    my ($self, $c) = @_;
-    $c->stash->{classes}->update
-      ({ map { $_ => $c->req->param($_) }
-         qw(nome ) });
-    $c->res->redirect($c->uri_for('/classes'));
+sub salvar : Chained('preload') : PathPart : Args(0) {
+  my ( $self, $c ) = @_;
+  $c->stash->{classes}
+      ->update( { map { $_ => $c->req->param($_) } qw(nome ) } );
+  $c->res->redirect( $c->uri_for('/classes') );
 }
 
-sub ver :Chained('preload') :PathPart('') :Args(0) {
-    my ($self, $c) = @_;
+sub ver : Chained('preload') : PathPart('') : Args(0) {
+  my ( $self, $c ) = @_;
 
-    unless ($c->req->param('submitted')) {
-        $c->req->param($_,$c->stash->{classes}->get_column($_))
-          for qw(id_classe nome)
-    }
+  unless ( $c->req->param('submitted') ) {
+    $c->req->param( $_, $c->stash->{classes}->get_column($_) )
+        for qw(id_classe nome);
+  }
 
 }
 
-sub criar :Local :Args(0) {
-    my ($self, $c) = @_;
+sub criar : Local : Args(0) {
+  my ( $self, $c ) = @_;
 
-    $c->stash->{classes} = $c->model('DB::ClasseServico')->search({});
+  $c->stash->{classes} = $c->model('DB::ClasseServico')->search( {} );
 
-    if ($c->req->param('submitted')) {
-        $c->stash->{classes}->create
-          ({ ( map { $_ => $c->req->param($_) }
-               qw(nome) ) });
-        $c->res->redirect($c->uri_for('/classes'));
-    }
+  if ( $c->req->param('submitted') ) {
+    $c->stash->{classes}
+        ->create( { ( map { $_ => $c->req->param($_) } qw(nome) ) } );
+    $c->res->redirect( $c->uri_for('/classes') );
+  }
 }
-
 
 1;
 

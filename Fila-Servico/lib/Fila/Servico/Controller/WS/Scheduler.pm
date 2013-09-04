@@ -1,4 +1,5 @@
 package Fila::Servico::Controller::WS::Scheduler;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -24,71 +25,77 @@ use DateTime::Format::Pg;
 use DateTime::Format::XSD;
 use Carp qw(croak);
 use base
-  'Fila::Servico::Controller',
-  'Catalyst::Controller::SOAP',
-  'Catalyst::Controller::DBIC::Transaction';
+    'Fila::Servico::Controller',
+    'Catalyst::Controller::SOAP',
+    'Catalyst::Controller::DBIC::Transaction';
 
-__PACKAGE__->config->{wsdl} =
-  { wsdl => '/usr/share/fila/Fila-Servico/schemas/FilaServico.wsdl',
-    schema => '/usr/share/fila/Fila-Servico/schemas/fila-servico.xsd',
-    wsdlservice => 'FilaServico' };
+__PACKAGE__->config->{wsdl} = {
+  wsdl        => '/usr/share/fila/Fila-Servico/schemas/FilaServico.wsdl',
+  schema      => '/usr/share/fila/Fila-Servico/schemas/fila-servico.xsd',
+  wsdlservice => 'FilaServico'
+};
 
-sub auto :Private {
-  my ($self, $c, $query) = @_;
-  if ($c->req->header('XMPP_Stanza') eq 'presence') {
+sub auto : Private {
+  my ( $self, $c, $query ) = @_;
+  if ( $c->req->header('XMPP_Stanza') eq 'presence' ) {
     return 0;
-  } else {
+  }
+  else {
     return 1;
   }
 }
 
 # todas essas operações são read-only, então não precisamos fazer
 # nenhuma checagem de autenticação.
-sub escalonar_senha :WSDLPort('Scheduler') :DBICTransaction('DB') :MI {
-  my ($self, $c, $query) = @_;
+sub escalonar_senha : WSDLPort('Scheduler') : DBICTransaction('DB') : MI {
+  my ( $self, $c, $query ) = @_;
   warn "Escalonar senha";
   my $id_local = $query->{local}{id_local};
-  $c->stash->{local} = $c->model('DB::Local')->find({ id_local => $id_local });
-  $c->stash->{gerente} = $c->stash->{local}->gerente_atual->first;
+  $c->stash->{local} =
+      $c->model('DB::Local')->find( { id_local => $id_local } );
+  $c->stash->{gerente}     = $c->stash->{local}->gerente_atual->first;
   $c->stash->{funcionario} = $c->stash->{gerente}->funcionario;
   $c->forward('/ws/gestao/local/escalonar_senha');
-  
+
   $c->stash->{soap}->compile_return(undef);
 }
 
-sub refresh_gerente :WSDLPort('Scheduler') :DBICTransaction('DB') :MI {
-  my ($self, $c, $query) = @_;
+sub refresh_gerente : WSDLPort('Scheduler') : DBICTransaction('DB') : MI {
+  my ( $self, $c, $query ) = @_;
 
   my $id_local = $query->{local}{id_local};
-  $c->stash->{local} = $c->model('DB::Local')->find({ id_local => $id_local });
-  $c->stash->{gerente} = $c->stash->{local}->gerente_atual->first;
+  $c->stash->{local} =
+      $c->model('DB::Local')->find( { id_local => $id_local } );
+  $c->stash->{gerente}     = $c->stash->{local}->gerente_atual->first;
   $c->stash->{funcionario} = $c->stash->{gerente}->funcionario;
   $c->forward('/ws/gestao/local/refresh_gerente');
 
   $c->stash->{soap}->compile_return(undef);
 }
 
-sub refresh_painel :WSDLPort('Scheduler') :DBICTransaction('DB') :MI {
-  my ($self, $c, $query) = @_;
+sub refresh_painel : WSDLPort('Scheduler') : DBICTransaction('DB') : MI {
+  my ( $self, $c, $query ) = @_;
 
   my $id_local = $query->{local}{id_local};
-  $c->stash->{local} = $c->model('DB::Local')->find({ id_local => $id_local });
-  $c->stash->{gerente} = $c->stash->{local}->gerente_atual->first;
+  $c->stash->{local} =
+      $c->model('DB::Local')->find( { id_local => $id_local } );
+  $c->stash->{gerente}     = $c->stash->{local}->gerente_atual->first;
   $c->stash->{funcionario} = $c->stash->{gerente}->funcionario;
   $c->forward('/ws/gestao/local/refresh_painel');
 
   $c->stash->{soap}->compile_return(undef);
 }
 
-sub refresh_guiche :WSDLPort('Scheduler') :DBICTransaction('DB') :MI {
-  my ($self, $c, $query) = @_;
+sub refresh_guiche : WSDLPort('Scheduler') : DBICTransaction('DB') : MI {
+  my ( $self, $c, $query ) = @_;
 
   my $id_guiche = $query->{guiche}{id_guiche};
-  $c->stash->{guiche} = $c->model('DB::Guiche')->find({ id_guiche => $id_guiche });
-  $c->stash->{atendente} = $c->stash->{guiche}->atendente_atual->first;
+  $c->stash->{guiche} =
+      $c->model('DB::Guiche')->find( { id_guiche => $id_guiche } );
+  $c->stash->{atendente}   = $c->stash->{guiche}->atendente_atual->first;
   $c->stash->{funcionario} = $c->stash->{atendente}->funcionario;
-  $c->stash->{local} = $c->stash->{guiche}->local;
-  $c->stash->{gerente} = $c->stash->{local}->gerente_atual->first;
+  $c->stash->{local}       = $c->stash->{guiche}->local;
+  $c->stash->{gerente}     = $c->stash->{local}->gerente_atual->first;
   $c->forward('/ws/gestao/atendente/refresh_atendente');
 
   $c->stash->{soap}->compile_return(undef);

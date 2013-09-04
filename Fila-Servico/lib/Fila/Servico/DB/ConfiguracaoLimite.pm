@@ -1,4 +1,5 @@
 package Fila::Servico::DB::ConfiguracaoLimite;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,35 +21,22 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('configuracao_limite');
-__PACKAGE__->add_columns
-  (
-   id_local =>
-   {
-    data_type => 'integer',
-   },
-   id_estado =>
-   {
-    data_type => 'integer',
-   },
-   vt_ini =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   vt_fim =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   segundos =>
-   {
-    data_type => 'integer'
-   },
-  );
+__PACKAGE__->add_columns(
+  id_local  => { data_type => 'integer', },
+  id_estado => { data_type => 'integer', },
+  vt_ini    => { data_type => 'timestamp with time zone', },
+  vt_fim    => { data_type => 'timestamp with time zone', },
+  segundos  => { data_type => 'integer' },
+);
 __PACKAGE__->set_primary_key(qw(id_local id_estado vt_ini vt_fim));
-__PACKAGE__->belongs_to('local', 'Fila::Servico::DB::Local',
-                        { 'foreign.id_local' => 'self.id_local' });
-__PACKAGE__->belongs_to('estado', 'Fila::Servico::DB::TipoEstadoGuiche',
-                        { 'foreign.id_estado' => 'self.id_estado' },
-				  	    { join_type => 'left' });
+__PACKAGE__->belongs_to( 'local', 'Fila::Servico::DB::Local',
+  { 'foreign.id_local' => 'self.id_local' } );
+__PACKAGE__->belongs_to(
+  'estado',
+  'Fila::Servico::DB::TipoEstadoGuiche',
+  { 'foreign.id_estado' => 'self.id_estado' },
+  { join_type           => 'left' }
+);
 
 1;
 

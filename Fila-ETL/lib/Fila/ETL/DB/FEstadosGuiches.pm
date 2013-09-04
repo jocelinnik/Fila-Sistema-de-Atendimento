@@ -1,4 +1,5 @@
 package Fila::ETL::DB::FEstadosGuiches;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,58 +23,20 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(Core));
 __PACKAGE__->table('f_estados_guiches');
-__PACKAGE__->add_columns
-  (
-   id_local =>
-   {
-    data_type => 'integer',
-   },
-   data =>
-   {
-    data_type => 'char(10)',
-   },
-   horario =>
-   {
-    data_type => 'char(5)',
-   },
-   quantidade_fechado =>
-   {
-    data_type => 'integer',
-   },
-   quantidade_publico =>
-   {
-    data_type => 'integer',
-   },
-   quantidade_pausa =>
-   {
-    data_type => 'integer',
-   },
-   quantidade_interno =>
-   {
-    data_type => 'integer',
-   },
-   quantidade_disponivel =>
-   {
-    data_type => 'integer',
-   },
-   quantidade_chamando =>
-   {
-    data_type => 'integer',
-   },
-   quantidade_atendimento =>
-   {
-    data_type => 'integer',
-   },
-   quantidade_avaliacao =>
-   {
-    data_type => 'integer',
-   },
-   quantidade_concluido =>
-   {
-    data_type => 'integer',
-   },
-  );
-
+__PACKAGE__->add_columns(
+  id_local               => { data_type => 'integer', },
+  data                   => { data_type => 'char(10)', },
+  horario                => { data_type => 'char(5)', },
+  quantidade_fechado     => { data_type => 'integer', },
+  quantidade_publico     => { data_type => 'integer', },
+  quantidade_pausa       => { data_type => 'integer', },
+  quantidade_interno     => { data_type => 'integer', },
+  quantidade_disponivel  => { data_type => 'integer', },
+  quantidade_chamando    => { data_type => 'integer', },
+  quantidade_atendimento => { data_type => 'integer', },
+  quantidade_avaliacao   => { data_type => 'integer', },
+  quantidade_concluido   => { data_type => 'integer', },
+);
 
 1;
 

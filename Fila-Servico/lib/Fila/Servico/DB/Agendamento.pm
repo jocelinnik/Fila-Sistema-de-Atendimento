@@ -1,4 +1,5 @@
 package Fila::Servico::DB::Agendamento;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,37 +21,21 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('agendamento');
-__PACKAGE__->add_columns
-  (
-   id_atendimento =>
-   {
-    data_type => 'integer',
-   },
-   id_agendamento =>
-   {
-    data_type => 'integer',
-   },
-   nome =>
-   {
-    data_type => 'varchar'
-   },
-   email =>
-   {
-    data_type => 'varchar'
-   },
-   tipopessoa =>
-   {
-    data_type => 'varchar',
-   },
-   cnpjf =>
-   {
-    data_type => 'varchar',
-   }
-  );
+__PACKAGE__->add_columns(
+  id_atendimento => { data_type => 'integer', },
+  id_agendamento => { data_type => 'integer', },
+  nome           => { data_type => 'varchar' },
+  email          => { data_type => 'varchar' },
+  tipopessoa     => { data_type => 'varchar', },
+  cnpjf          => { data_type => 'varchar', }
+);
 
 __PACKAGE__->set_primary_key(qw(id_atendimento));
-__PACKAGE__->belongs_to('atendimento', 'Fila::Servico::DB::Atendimento',
-                        { 'foreign.id_atendimento' => 'self.id_atendimento' });
+__PACKAGE__->belongs_to(
+  'atendimento',
+  'Fila::Servico::DB::Atendimento',
+  { 'foreign.id_atendimento' => 'self.id_atendimento' }
+);
 
 1;
 

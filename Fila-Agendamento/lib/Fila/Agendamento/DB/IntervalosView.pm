@@ -1,4 +1,5 @@
 package Fila::Agendamento::DB::IntervalosView;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,17 +21,10 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('intervalos');
-__PACKAGE__->add_columns
-  (
-   inicio =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   fim =>
-   {
-    data_type => 'timestamp with time zone'
-   }
-  );
+__PACKAGE__->add_columns(
+  inicio => { data_type => 'timestamp with time zone', },
+  fim    => { data_type => 'timestamp with time zone' }
+);
 
 1;
 __END__

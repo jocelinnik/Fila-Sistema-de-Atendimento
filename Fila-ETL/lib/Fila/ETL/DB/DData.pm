@@ -1,4 +1,5 @@
 package Fila::ETL::DB::DData;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,33 +23,25 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(Core PK::Auto));
 __PACKAGE__->table('d_data');
-__PACKAGE__->add_columns
-  (
-   data =>
-   {
-    data_type => 'char(10)',
-   },
-   ano =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  data => { data_type => 'char(10)', },
+  ano  => {
+    data_type   => 'integer',
     is_nullable => 1,
-   },
-   mes =>
-   {
-    data_type => 'integer',
+  },
+  mes => {
+    data_type   => 'integer',
     is_nullable => 1,
-   },
-   dia =>
-   {
-    data_type => 'integer',
+  },
+  dia => {
+    data_type   => 'integer',
     is_nullable => 1,
-   },
-   diasemana =>
-   {
-    data_type => 'integer',
+  },
+  diasemana => {
+    data_type   => 'integer',
     is_nullable => 1,
-   }
-  );
+  }
+);
 
 __PACKAGE__->set_primary_key('data');
 __PACKAGE__->resultset_class('Fila::ETL::DB::DData::RS');
@@ -56,22 +49,29 @@ __PACKAGE__->resultset_class('Fila::ETL::DB::DData::RS');
 package Fila::ETL::DB::DData::RS;
 use base 'DBIx::Class::ResultSet';
 
-
 sub get_dimension {
-    my ($self, $date) = @_;
-    my $result = $self->find({ ano => $date->year,
-			       mes => $date->month,
-			       dia => $date->day });
-    if ($result) {
-	return $result->data;
-    } else {
-	return $self->create
-	    ({ data => $date->strftime('%F'),
-	       ano => $date->year,
-	       mes => $date->month,
-	       dia => $date->day,
-	       diasemana => $date->day_of_week })->data;
+  my ( $self, $date ) = @_;
+  my $result = $self->find(
+    {
+      ano => $date->year,
+      mes => $date->month,
+      dia => $date->day
     }
+  );
+  if ($result) {
+    return $result->data;
+  }
+  else {
+    return $self->create(
+      {
+        data      => $date->strftime('%F'),
+        ano       => $date->year,
+        mes       => $date->month,
+        dia       => $date->day,
+        diasemana => $date->day_of_week
+      }
+    )->data;
+  }
 }
 
 1;

@@ -1,4 +1,5 @@
 package Fila::Agendamento::DB::Feriado;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,25 +21,18 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('feriado');
-__PACKAGE__->add_columns
-  (
-   id_local =>
-   {
-    data_type => 'integer',
-   },
-   data =>
-   {
-    data_type => 'date',
-   },
-   descricao =>
-   {
-    data_type => 'varchar',
-   }
-  );
+__PACKAGE__->add_columns(
+  id_local  => { data_type => 'integer', },
+  data      => { data_type => 'date', },
+  descricao => { data_type => 'varchar', }
+);
 __PACKAGE__->set_primary_key(qw(id_local data));
 
-__PACKAGE__->belongs_to('local', 'Fila::Agendamento::DB::Local',
-                        { 'foreign.id_local' => 'self.id_local' });
+__PACKAGE__->belongs_to(
+  'local',
+  'Fila::Agendamento::DB::Local',
+  { 'foreign.id_local' => 'self.id_local' }
+);
 
 1;
 

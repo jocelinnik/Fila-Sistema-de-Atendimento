@@ -1,4 +1,5 @@
 package Fila::Agendamento::DB::Expediente;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,34 +21,23 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('expediente');
-__PACKAGE__->add_columns
-  (
-   id_expediente =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_expediente => {
+    data_type        => 'integer',
     is_autoincrement => 1,
-   },
-   id_local =>
-   {
-    data_type => 'integer',
-   },
-   dia_semana =>
-   {
-    data_type => 'integer',
-   },
-   hora_inicio =>
-   {
-    data_type => 'integer',
-   },
-   hora_fim =>
-   {
-    data_type => 'integer',
-   }
-  );
+  },
+  id_local    => { data_type => 'integer', },
+  dia_semana  => { data_type => 'integer', },
+  hora_inicio => { data_type => 'integer', },
+  hora_fim    => { data_type => 'integer', }
+);
 __PACKAGE__->set_primary_key(qw(id_expediente));
 
-__PACKAGE__->belongs_to('local', 'Fila::Agendamento::DB::Local',
-                        { 'foreign.id_local' => 'self.id_local' });
+__PACKAGE__->belongs_to(
+  'local',
+  'Fila::Agendamento::DB::Local',
+  { 'foreign.id_local' => 'self.id_local' }
+);
 
 1;
 

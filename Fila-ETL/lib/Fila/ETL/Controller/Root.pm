@@ -1,4 +1,5 @@
 package Fila::ETL::Controller::Root;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -23,19 +24,19 @@ use DateTime::Format::Pg;
 
 __PACKAGE__->config->{namespace} = '';
 
-sub base :Chained('/') :PathPart('') :CaptureArgs(0) {
-    my ($self, $c) = @_;
-    my $now = DateTime->now(time_zone => 'local');
-    $now->set_formatter('DateTime::Format::Pg');
-    $c->stash->{now} = $now;
+sub base : Chained('/') : PathPart('') : CaptureArgs(0) {
+  my ( $self, $c ) = @_;
+  my $now = DateTime->now( time_zone => 'local' );
+  $now->set_formatter('DateTime::Format::Pg');
+  $c->stash->{now} = $now;
 }
 
-sub end :Private {
-    my ($self, $c) = @_;
-    if (my @err = @{$c->error}) {
-	$c->res->body(join '', @err);
-	$c->error(0);
-    }
+sub end : Private {
+  my ( $self, $c ) = @_;
+  if ( my @err = @{ $c->error } ) {
+    $c->res->body( join '', @err );
+    $c->error(0);
+  }
 }
 
 1;

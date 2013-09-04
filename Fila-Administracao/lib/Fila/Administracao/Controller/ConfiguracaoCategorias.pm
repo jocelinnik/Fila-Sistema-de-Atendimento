@@ -1,4 +1,5 @@
 package Fila::Administracao::Controller::ConfiguracaoCategorias;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,53 +21,75 @@ use strict;
 use warnings;
 use parent 'Catalyst::Controller';
 
-sub preload :Chained('/locais/preload') :PathPart('categoria') :CaptureArgs(1) {
-    my ($self, $c, $id_categoria) = @_;
-    $c->stash->{configuracao} = $c->stash->{local}->configuracoes_categoria->find
-      ({ id_categoria => $id_categoria,
-         vt_fim => 'Infinity' });
-}
-
-sub encerrar :Chained('preload') :PathPart :Args(0) {
-    my ($self, $c) = @_;
-    $c->stash->{configuracao}->update
-      ({ vt_fim => DateTime->now(time_zone => 'local') });
-    $c->res->redirect($c->uri_for('/locais/'.$c->stash->{local}->id_local));
-}
-
-sub criar :Chained('/locais/preload') :PathPart('categoria/criar') :Args(0) {
-    my ($self, $c) = @_;
-    if ($c->req->param('submitted')) {
-        # antes de criar, vamos certificar que as configuracoes
-        # anteriores dessa categoria para esse local sejam desativadas.
-        $c->stash->{local}->configuracoes_categoria->search
-          ({ id_categoria => $c->req->param('id_categoria'),
-             vt_fim => 'Infinity' })->update
-               ({ vt_fim => DateTime->now(time_zone => 'local')});
-
-        $c->stash->{local}->configuracoes_categoria->create
-          ({ vt_ini => DateTime->now(time_zone => 'local'),
-             vt_fim => 'Infinity',
-             ( map { $_ => $c->req->param($_) }
-               qw(id_categoria prioridade limite_tempo_espera limite_pessoas_espera ordem) ) });
-
-        # vamos também certificar que existem as senhas para essa
-        # categoria nesse local.
-        for my $cod (1..9999) {
-            $c->stash->{local}->senhas->create
-              ({ id_categoria => $c->req->param('id_categoria'),
-                 codigo => $cod })
-                unless $c->stash->{local}->senhas->find
-                  ({ id_categoria => $c->req->param('id_categoria'),
-                     codigo => $cod });
-        }
-
-        $c->res->redirect($c->uri_for('/locais/'.$c->stash->{local}->id_local));
-    } else {
-        $c->stash->{categorias} =
-          $c->model('DB::Categoria')->search({},
-                                             { order_by => 'nome' })
+sub preload : Chained('/locais/preload') : PathPart('categoria') :
+    CaptureArgs(1) {
+  my ( $self, $c, $id_categoria ) = @_;
+  $c->stash->{configuracao} =
+      $c->stash->{local}->configuracoes_categoria->find(
+    {
+      id_categoria => $id_categoria,
+      vt_fim       => 'Infinity'
     }
+      );
+}
+
+sub encerrar : Chained('preload') : PathPart : Args(0) {
+  my ( $self, $c ) = @_;
+  $c->stash->{configuracao}
+      ->update( { vt_fim => DateTime->now( time_zone => 'local' ) } );
+  $c->res->redirect(
+    $c->uri_for( '/locais/' . $c->stash->{local}->id_local ) );
+}
+
+sub criar : Chained('/locais/preload') : PathPart('categoria/criar') : Args(0)
+{
+  my ( $self, $c ) = @_;
+  if ( $c->req->param('submitted') ) {
+
+    # antes de criar, vamos certificar que as configuracoes
+    # anteriores dessa categoria para esse local sejam desativadas.
+    $c->stash->{local}->configuracoes_categoria->search(
+      {
+        id_categoria => $c->req->param('id_categoria'),
+        vt_fim       => 'Infinity'
+      }
+    )->update( { vt_fim => DateTime->now( time_zone => 'local' ) } );
+
+    $c->stash->{local}->configuracoes_categoria->create(
+      {
+        vt_ini => DateTime->now( time_zone => 'local' ),
+        vt_fim => 'Infinity',
+        (
+          map { $_ => $c->req->param($_) }
+              qw(id_categoria prioridade limite_tempo_espera limite_pessoas_espera ordem)
+        )
+      }
+    );
+
+    # vamos também certificar que existem as senhas para essa
+    # categoria nesse local.
+    for my $cod ( 1 .. 9999 ) {
+      $c->stash->{local}->senhas->create(
+        {
+          id_categoria => $c->req->param('id_categoria'),
+          codigo       => $cod
+        }
+          )
+          unless $c->stash->{local}->senhas->find(
+        {
+          id_categoria => $c->req->param('id_categoria'),
+          codigo       => $cod
+        }
+          );
+    }
+
+    $c->res->redirect(
+      $c->uri_for( '/locais/' . $c->stash->{local}->id_local ) );
+  }
+  else {
+    $c->stash->{categorias} =
+        $c->model('DB::Categoria')->search( {}, { order_by => 'nome' } );
+  }
 }
 
 1;

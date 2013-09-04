@@ -1,4 +1,5 @@
 package Fila::Senha::Model::SOAP;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -23,10 +24,13 @@ use base 'Catalyst::Model::SOAP';
 
 __PACKAGE__->config->{transport} = XML::CompileX::Transport::SOAPXMPP->new();
 
-__PACKAGE__->register_wsdl
-  ({ wsdl => Fila::Senha->path_to('/schemas/FilaServico.wsdl'),
-     schema => Fila::Senha->path_to('/schemas/fila-servico.xsd')},
-   { 'GestaoSenha' => 'Senha' });
+__PACKAGE__->register_wsdl(
+  {
+    wsdl   => Fila::Senha->path_to('/schemas/FilaServico.wsdl'),
+    schema => Fila::Senha->path_to('/schemas/fila-servico.xsd')
+  },
+  { 'GestaoSenha' => 'Senha' }
+);
 
 1;
 

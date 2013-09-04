@@ -1,4 +1,5 @@
 package Fila::ETL::DB::DHorario;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,23 +23,17 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(Core PK::Auto));
 __PACKAGE__->table('d_horario');
-__PACKAGE__->add_columns
-  (
-   horario =>
-   {
-    data_type => 'char(5)',
-   },
-   hora =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  horario => { data_type => 'char(5)', },
+  hora    => {
+    data_type   => 'integer',
     is_nullable => 1,
-   },
-   minuto =>
-   {
-    data_type => 'integer',
+  },
+  minuto => {
+    data_type   => 'integer',
     is_nullable => 1,
-   }
-  );
+  }
+);
 
 __PACKAGE__->set_primary_key('horario');
 __PACKAGE__->resultset_class('Fila::ETL::DB::DHorario::RS');
@@ -46,19 +41,26 @@ __PACKAGE__->resultset_class('Fila::ETL::DB::DHorario::RS');
 package Fila::ETL::DB::DHorario::RS;
 use base 'DBIx::Class::ResultSet';
 
-
 sub get_dimension {
-    my ($self, $date) = @_;
-    my $result = $self->find({ hora => $date->hour,
-			       minuto => $date->minute });
-    if ($result) {
-	return $result->horario;
-    } else {
-	return $self->create
-	    ({ horario => $date->strftime('%H:%M'),
-	       hora => $date->hour,
-	       minuto => $date->minute })->horario;
+  my ( $self, $date ) = @_;
+  my $result = $self->find(
+    {
+      hora   => $date->hour,
+      minuto => $date->minute
     }
+  );
+  if ($result) {
+    return $result->horario;
+  }
+  else {
+    return $self->create(
+      {
+        horario => $date->strftime('%H:%M'),
+        hora    => $date->hour,
+        minuto  => $date->minute
+      }
+    )->horario;
+  }
 }
 
 1;

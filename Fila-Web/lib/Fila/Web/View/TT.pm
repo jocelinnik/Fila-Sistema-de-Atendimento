@@ -1,4 +1,5 @@
 package Fila::Web::View::TT;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -21,8 +22,8 @@ use base 'Catalyst::View::TT';
 
 __PACKAGE__->config(
 
-TEMPLATE_EXTENSION => '.tt',
-DEFAULT_ENCODING   => 'utf-8',
+  TEMPLATE_EXTENSION => '.tt',
+  DEFAULT_ENCODING   => 'utf-8',
 
 );
 

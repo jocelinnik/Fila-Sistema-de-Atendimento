@@ -1,4 +1,5 @@
 package Fila::Agendamento::View::Email;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -19,9 +20,7 @@ package Fila::Agendamento::View::Email;
 use strict;
 use base 'Catalyst::View::Email::Template';
 
-__PACKAGE__->config(
-    stash_key => 'email'
-);
+__PACKAGE__->config( stash_key => 'email' );
 
 =head1 NAME
 

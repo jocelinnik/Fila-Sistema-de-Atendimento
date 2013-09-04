@@ -1,4 +1,5 @@
 package Fila::Opiniometro;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -28,7 +29,7 @@ warn 'Setting up application';
 __PACKAGE__->setup;
 
 if ($::username) {
-	__PACKAGE__->config->{'Engine::XMPP2'}{username} = $::username;
+  __PACKAGE__->config->{'Engine::XMPP2'}{username} = $::username;
 }
 
 # variavel para receber username
@@ -36,81 +37,82 @@ our $porta_opiniometro;
 our $perguntas;
 our $timeout;
 {
-    my $portas = __PACKAGE__->config->{portas};
+  my $portas = __PACKAGE__->config->{portas};
 
-    die 'Porta do dispositivo nao configurada' unless
-      $porta_opiniometro = $portas->{opiniometro};
+  die 'Porta do dispositivo nao configurada'
+      unless $porta_opiniometro = $portas->{opiniometro};
 
-    $perguntas = __PACKAGE__->config->{perguntas}
+  $perguntas = __PACKAGE__->config->{perguntas}
       or die 'Categorias nao configuradas.';
 
-    $timeout = __PACKAGE__->config->{timeout} || 5;
+  $timeout = __PACKAGE__->config->{timeout} || 5;
 }
-
 
 # Inicializar uma conexão principal de controle que ira fazer a
 # inicializacao
 
-$::connection = Net::XMPP2::Connection->new
-  (%{Fila::Opiniometro->config->{'Engine::XMPP2'}},
-   resource => 'Main Connection');
+$::connection = Net::XMPP2::Connection->new(
+  %{ Fila::Opiniometro->config->{'Engine::XMPP2'} },
+  resource => 'Main Connection' );
 
-$::connection->reg_cb
-  (bind_error => sub {
-       warn 'Error binding to resource';
-       EV::unloop(EV::UNLOOP_ALL);
-   },
+$::connection->reg_cb(
+  bind_error => sub {
+    warn 'Error binding to resource';
+    EV::unloop(EV::UNLOOP_ALL);
+  },
 
-   iq_auth_error => sub {
-       warn 'Authentication error';
-       EV::unloop(EV::UNLOOP_ALL);
-   },
+  iq_auth_error => sub {
+    warn 'Authentication error';
+    EV::unloop(EV::UNLOOP_ALL);
+  },
 
-   sasl_error => sub {
-       warn 'Authentication error';
-       EV::unloop(EV::UNLOOP_ALL);
-   },
+  sasl_error => sub {
+    warn 'Authentication error';
+    EV::unloop(EV::UNLOOP_ALL);
+  },
 
-   disconnect => sub {
-       warn 'Disconnecting.';
-       EV::unloop(EV::UNLOOP_ALL);
-   },
+  disconnect => sub {
+    warn 'Disconnecting.';
+    EV::unloop(EV::UNLOOP_ALL);
+  },
 
-   stream_error => sub {
-       warn 'Connection error.';
-       EV::unloop(EV::UNLOOP_ALL);
-   },
+  stream_error => sub {
+    warn 'Connection error.';
+    EV::unloop(EV::UNLOOP_ALL);
+  },
 
-   stream_ready => sub {
-       $::connection->send_presence('available', sub {});
+  stream_ready => sub {
+    $::connection->send_presence( 'available', sub { } );
 
-       warn 'Setting up connection...';
-       Fila::Opiniometro->model('SOAP')->transport->connection($::connection);
-       Fila::Opiniometro->model('SOAP')->transport->addrs(['motor@gestao.fila.vhost/ws/gestao/opiniometro']);
+    warn 'Setting up connection...';
+    Fila::Opiniometro->model('SOAP')->transport->connection($::connection);
+    Fila::Opiniometro->model('SOAP')
+        ->transport->addrs(
+      ['motor@gestao.fila.vhost/ws/gestao/opiniometro'] );
 
-       if ($::praca && $::praca == 1) {
-	       warn 'Iniciando Opiniometro..';
-	       Fila::Opiniometro->model('Device')->iniciar;
-       } else {
-	       warn 'Opiniometro sempre inicia desligado, e espera por eventos';
-	       Fila::Opiniometro->model('Device')->encerrar;
-	   }
-       eval {
-           Fila::Opiniometro->run();
-       };
-       if ($@) {
-           warn 'Error running application: '.$@;
-           EV::unloop(EV::UNLOOP_ALL);
-       }
-   });
+    if ( $::praca && $::praca == 1 ) {
+      warn 'Iniciando Opiniometro..';
+      Fila::Opiniometro->model('Device')->iniciar;
+    }
+    else {
+      warn 'Opiniometro sempre inicia desligado, e espera por eventos';
+      Fila::Opiniometro->model('Device')->encerrar;
+    }
+    eval { Fila::Opiniometro->run(); };
+    if ($@) {
+      warn 'Error running application: ' . $@;
+      EV::unloop(EV::UNLOOP_ALL);
+    }
+  }
+);
 
-unless ($::connection->connect) {
-    die 'Cannot connect to server';
-} else {
-    warn 'Connecting...';
-    EV::loop;
+unless ( $::connection->connect ) {
+  die 'Cannot connect to server';
 }
-
+else {
+  warn 'Connecting...';
+  EV::loop;
+}
 
 1;
 

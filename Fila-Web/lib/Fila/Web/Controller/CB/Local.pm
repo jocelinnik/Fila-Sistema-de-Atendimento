@@ -1,4 +1,5 @@
 package Fila::Web::Controller::CB::Local;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -23,74 +24,95 @@ use base 'Catalyst::Controller';
 #recebe os eventos do navegador e os redireciona para filawebapp.
 
 sub abrir : Local {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-    my $req = $c->model('SOAP::Gerente')->abrir_local
-     ({ callback_request =>
-        { param =>
-          [ map {( name => $_,
-                   value => $c->req->param($_) )}
-                keys %{$c->req->params} ]}});
+  my $req = $c->model('SOAP::Gerente')->abrir_local(
+    {
+      callback_request => {
+        param => [
+          map { ( name => $_, value => $c->req->param($_) ) }
+              keys %{ $c->req->params }
+        ]
+      }
+    }
+  );
 }
 
 sub fechar : Local {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-    my $req = $c->model('SOAP::Gerente')->fechar_local
-     ({ callback_request =>
-        { param =>
-          [ map {( name => $_,
-                   value => $c->req->param($_) )}
-                keys %{$c->req->params} ]}});
+  my $req = $c->model('SOAP::Gerente')->fechar_local(
+    {
+      callback_request => {
+        param => [
+          map { ( name => $_, value => $c->req->param($_) ) }
+              keys %{ $c->req->params }
+        ]
+      }
+    }
+  );
 }
 
 sub fechar_local_force : Local {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-    my $req = $c->model('SOAP::Gerente')->fechar_local_force
-     ({ callback_request =>
-        { param =>
-          [ map {( name => $_,
-                   value => $c->req->param($_) )}
-                keys %{$c->req->params} ]}});
+  my $req = $c->model('SOAP::Gerente')->fechar_local_force(
+    {
+      callback_request => {
+        param => [
+          map { ( name => $_, value => $c->req->param($_) ) }
+              keys %{ $c->req->params }
+        ]
+      }
+    }
+  );
 }
 
-
 sub encerrar_senhas : Local {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-    my $req = $c->model('SOAP::Gerente')->encerrar_senhas
-     ({ callback_request =>
-        { param =>
-          [ map {( name => $_,
-                   value => $c->req->param($_) )}
-                keys %{$c->req->params} ]}});
+  my $req = $c->model('SOAP::Gerente')->encerrar_senhas(
+    {
+      callback_request => {
+        param => [
+          map { ( name => $_, value => $c->req->param($_) ) }
+              keys %{ $c->req->params }
+        ]
+      }
+    }
+  );
 }
 
 sub fechar_todos : Local {
-    my ($self, $c) = @_;
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/gerente']);
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/gerente' ] );
 
-    my $req = $c->model('SOAP::Gerente')->fechar_todos
-     ({ callback_request =>
-        { param =>
-          [ { name => '',
-              value => '' } ]}});
-
+  my $req = $c->model('SOAP::Gerente')->fechar_todos(
+    {
+      callback_request => {
+        param => [
+          {
+            name  => '',
+            value => ''
+          }
+        ]
+      }
+    }
+  );
 
 }
 

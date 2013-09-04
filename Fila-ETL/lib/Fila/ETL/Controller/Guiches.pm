@@ -1,4 +1,5 @@
 package Fila::ETL::Controller::Guiches;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -21,33 +22,39 @@ use warnings;
 use List::Util qw(sum);
 use base qw(Catalyst::Controller);
 
-sub guiches :Chained('/base') :PathPart :CaptureArgs(0) {
-  my ($self, $c) = @_;
+sub guiches : Chained('/base') : PathPart : CaptureArgs(0) {
+  my ( $self, $c ) = @_;
   $c->stash->{vt_base} = $c->stash->{now};
 }
 
-sub estados :Chained('guiches') :PathPart :Args(0) {
-  my ($self, $c) = @_;
+sub estados : Chained('guiches') : PathPart : Args(0) {
+  my ( $self, $c ) = @_;
 
-  $c->model('Federado')->doeach
-    ($c, sub {
-       my $id = shift;
+  $c->model('Federado')->doeach(
+    $c,
+    sub {
+      my $id = shift;
 
-       my $result = $c->model('DB::ActivityLog')->search
-         ({ activity_type => '/guiches/estados',
-            id_local => $id },
-          { order_by => 'vt_base DESC' });
+      my $result = $c->model('DB::ActivityLog')->search(
+        {
+          activity_type => '/guiches/estados',
+          id_local      => $id
+        },
+        { order_by => 'vt_base DESC' }
+      );
 
-       if (my $last = $result->first) {
-         $c->stash->{last_vt_base} = $last->vt_base;
-       } else {
-         $c->stash->{last_vt_base} = '-Infinity';
-       }
+      if ( my $last = $result->first ) {
+        $c->stash->{last_vt_base} = $last->vt_base;
+      }
+      else {
+        $c->stash->{last_vt_base} = '-Infinity';
+      }
 
-       my $local = $c->model('Federado')->target($c, $id, 'Local')->find
-	 ({ id_local => $id });
+      my $local =
+          $c->model('Federado')->target( $c, $id, 'Local' )
+          ->find( { id_local => $id } );
 
-       my $sql_times = q{
+      my $sql_times = q{
 SELECT
  DISTINCT DATE_TRUNC('minute', estado_guiche.vt_ini) + '59.9999999 seconds' AS vt_fac
 FROM
@@ -61,7 +68,7 @@ WHERE
  estado_guiche.vt_ini < ?
 };
 
-         my $sql_estados = q{
+      my $sql_estados = q{
 SELECT
  COUNT(tipo_estado_guiche.*) as quantidade,
  tipo_estado_guiche.nome as nome_estado
@@ -83,65 +90,72 @@ GROUP BY
 
 };
 
-       my $storage = $c->model('Federado')->storage($c, $id);
-       $storage->ensure_connected;
-       my $dbi = $storage->dbh;
+      my $storage = $c->model('Federado')->storage( $c, $id );
+      $storage->ensure_connected;
+      my $dbi = $storage->dbh;
 
-       my $sth = $dbi->prepare($sql_times);
-       $sth->execute( $id,
-                      $c->stash->{last_vt_base}, $c->stash->{vt_base},
-                      $c->stash->{last_vt_base}, $c->stash->{vt_base},
-                    );
+      my $sth = $dbi->prepare($sql_times);
+      $sth->execute(
+        $id,
+        $c->stash->{last_vt_base},
+        $c->stash->{vt_base},
+        $c->stash->{last_vt_base},
+        $c->stash->{vt_base},
+      );
 
-       my $sth_inner = $dbi->prepare($sql_estados);
+      my $sth_inner = $dbi->prepare($sql_estados);
 
-       my $dlocal = $c->model('DB::DLocal')->get_dimension($local);
-       my $func_cache = {};
-       my $guic_cache = {};
+      my $dlocal     = $c->model('DB::DLocal')->get_dimension($local);
+      my $func_cache = {};
+      my $guic_cache = {};
 
-       while (my ($datahora) = $sth->fetchrow_array) {
-         my $datahora_dt = DateTime::Format::Pg->parse_datetime($datahora);
-         my $data = $c->model('DB::DData')->get_dimension($datahora_dt);
-         my $horario = $c->model('DB::DHorario')->get_dimension($datahora_dt);
-         my $counters = {};
+      while ( my ($datahora) = $sth->fetchrow_array ) {
+        my $datahora_dt = DateTime::Format::Pg->parse_datetime($datahora);
+        my $data        = $c->model('DB::DData')->get_dimension($datahora_dt);
+        my $horario  = $c->model('DB::DHorario')->get_dimension($datahora_dt);
+        my $counters = {};
 
-         $sth_inner->execute($datahora,$datahora,$id);
-         while (my $item = $sth_inner->fetchrow_hashref) {
-           $counters->{$item->{nome_estado}} = $item->{quantidade};
-         }
+        $sth_inner->execute( $datahora, $datahora, $id );
+        while ( my $item = $sth_inner->fetchrow_hashref ) {
+          $counters->{ $item->{nome_estado} } = $item->{quantidade};
+        }
 
-         $c->model('DB::FEstadosGuiches')->create
-           ({ id_local => $dlocal,
-              data => $data,
-              horario => $horario,
-              quantidade_publico =>
-              sum( map { $counters->{$_} || 0 }
-                   'disponivel',
-                   'chamando',
-                   'atendimento',
-                   'avaliacao',
-                   'concluido'
-                 ),
-              ( map { 'quantidade_'.$_ => ($counters->{$_} || 0) }
-                'fechado',
-                'pausa',
-                'interno',
-                'disponivel',
-                'chamando',
-                'atendimento',
-                'avaliacao',
-                'concluido'
-              )
-            });
-       }
+        $c->model('DB::FEstadosGuiches')->create(
+          {
+            id_local           => $dlocal,
+            data               => $data,
+            horario            => $horario,
+            quantidade_publico => sum(
+              map { $counters->{$_} || 0 } 'disponivel', 'chamando',
+              'atendimento', 'avaliacao',
+              'concluido'
+            ),
+            (
+              map { 'quantidade_' . $_ => ( $counters->{$_} || 0 ) }
+                  'fechado',
+              'pausa',
+              'interno',
+              'disponivel',
+              'chamando',
+              'atendimento',
+              'avaliacao',
+              'concluido'
+            )
+          }
+        );
+      }
 
-       $c->model('DB::ActivityLog')->create
-         ({ activity_type => '/guiches/estados',
-            id_local => $id,
-            vt_base => $c->stash->{vt_base},
-            vt_ini => $c->stash->{now} });
+      $c->model('DB::ActivityLog')->create(
+        {
+          activity_type => '/guiches/estados',
+          id_local      => $id,
+          vt_base       => $c->stash->{vt_base},
+          vt_ini        => $c->stash->{now}
+        }
+      );
 
-     });
+    }
+  );
 
 }
 1;

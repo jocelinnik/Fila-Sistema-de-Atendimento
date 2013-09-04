@@ -1,4 +1,5 @@
 package Fila::WebApp::Model::SOAP;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -21,16 +22,20 @@ use warnings;
 use XML::CompileX::Transport::SOAPXMPP;
 use base 'Catalyst::Model::SOAP';
 
-
 __PACKAGE__->config->{transport} = XML::CompileX::Transport::SOAPXMPP->new();
 
-__PACKAGE__->register_wsdl
-  ({ wsdl => Fila::WebApp->path_to('/schemas/FilaServico.wsdl'),
-     schema => Fila::WebApp->path_to('/schemas/fila-servico.xsd')},
-   { GestaoLocal => 'Gestao::Local',
-     GestaoGuiche => 'Gestao::Guiche',
-     GestaoAtendente => 'Gestao::Atendente',
-     GestaoSenha => 'Gestao::Senha' });
+__PACKAGE__->register_wsdl(
+  {
+    wsdl   => Fila::WebApp->path_to('/schemas/FilaServico.wsdl'),
+    schema => Fila::WebApp->path_to('/schemas/fila-servico.xsd')
+  },
+  {
+    GestaoLocal     => 'Gestao::Local',
+    GestaoGuiche    => 'Gestao::Guiche',
+    GestaoAtendente => 'Gestao::Atendente',
+    GestaoSenha     => 'Gestao::Senha'
+  }
+);
 
 1;
 

@@ -1,4 +1,5 @@
 package Fila::Servico::DB::Servico;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,35 +21,27 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('servico');
-__PACKAGE__->add_columns
-  (
-   id_servico =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_servico => {
+    data_type         => 'integer',
     is_auto_increment => 1,
-   },
-   id_classe =>
-   {
-    data_type => 'integer',
-   },
-   vt_ini =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   vt_fim =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   nome =>
-   {
-    data_type => 'varchar',
-   }
-  );
+  },
+  id_classe => { data_type => 'integer', },
+  vt_ini    => { data_type => 'timestamp with time zone', },
+  vt_fim    => { data_type => 'timestamp with time zone', },
+  nome      => { data_type => 'varchar', }
+);
 __PACKAGE__->set_primary_key(qw(id_servico));
-__PACKAGE__->belongs_to('classe', 'Fila::Servico::DB::ClasseServico',
-                        { 'foreign.id_classe' => 'self.id_classe' });
-__PACKAGE__->has_many('atendimentos', 'Fila::Servico::DB::ServicoAtendimento',
-                      { 'foreign.id_servico' => 'self.id_servico' });
+__PACKAGE__->belongs_to(
+  'classe',
+  'Fila::Servico::DB::ClasseServico',
+  { 'foreign.id_classe' => 'self.id_classe' }
+);
+__PACKAGE__->has_many(
+  'atendimentos',
+  'Fila::Servico::DB::ServicoAtendimento',
+  { 'foreign.id_servico' => 'self.id_servico' }
+);
 
 1;
 

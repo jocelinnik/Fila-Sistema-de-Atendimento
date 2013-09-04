@@ -1,4 +1,5 @@
 package Fila::Administracao::View::TT;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -19,7 +20,7 @@ package Fila::Administracao::View::TT;
 use strict;
 use base 'Catalyst::View::TT';
 
-__PACKAGE__->config(TEMPLATE_EXTENSION => '.tt');
+__PACKAGE__->config( TEMPLATE_EXTENSION => '.tt' );
 
 =head1 NAME
 

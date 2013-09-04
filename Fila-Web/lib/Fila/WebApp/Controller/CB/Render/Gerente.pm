@@ -1,4 +1,5 @@
 package Fila::WebApp::Controller::CB::Render::Gerente;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,26 +21,26 @@ use strict;
 use warnings;
 use base 'Catalyst::Controller::SOAP';
 
-__PACKAGE__->config->{wsdl} =
-  { wsdl => Fila::WebApp->path_to('schemas/FilaWebApp.wsdl'),
-    schema => Fila::WebApp->path_to('schemas/fila-servico.xsd') };
+__PACKAGE__->config->{wsdl} = {
+  wsdl   => Fila::WebApp->path_to('schemas/FilaWebApp.wsdl'),
+  schema => Fila::WebApp->path_to('schemas/fila-servico.xsd')
+};
 
+sub render_gerente : WSDLPort('render_gerente') {
+  my ( $self, $c, $dados ) = @_;
 
-sub render_gerente :WSDLPort('render_gerente') {
-    my ($self, $c, $dados) = @_;
-
-    $c->stash->{status_guiches} = $dados;
-    $c->stash->{status_local} = $dados;
-    $c->stash->{lista_encaminhamentos} = $dados;
-    $c->stash->{template} = 'render/refresh_guiches.tt';
-    $c->forward($c->view());
+  $c->stash->{status_guiches}        = $dados;
+  $c->stash->{status_local}          = $dados;
+  $c->stash->{lista_encaminhamentos} = $dados;
+  $c->stash->{template}              = 'render/refresh_guiches.tt';
+  $c->forward( $c->view() );
 }
 
-sub render_guiche_gerente :WSDLPort('render_guiche_gerente') {
-    my ($self, $c, $dados) = @_;
-    $c->stash->{guiche} = $dados->{guiche};
-    $c->stash->{template} = 'render/guiche_gerente.tt';
-    $c->forward($c->view());
+sub render_guiche_gerente : WSDLPort('render_guiche_gerente') {
+  my ( $self, $c, $dados ) = @_;
+  $c->stash->{guiche}   = $dados->{guiche};
+  $c->stash->{template} = 'render/guiche_gerente.tt';
+  $c->forward( $c->view() );
 }
 
 1;

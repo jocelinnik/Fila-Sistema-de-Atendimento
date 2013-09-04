@@ -1,4 +1,5 @@
 package Fila::WebApp::View::NPH;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -19,36 +20,36 @@ package Fila::WebApp::View::NPH;
 use strict;
 use base 'Catalyst::View::TT';
 
-__PACKAGE__->config(TEMPLATE_EXTENSION => '.tt',
-                    DEFAULT_ENCODING   => 'utf-8',
-                    INCLUDE_PATH => [ Fila::WebApp->path_to('root') ]);
-
+__PACKAGE__->config(
+  TEMPLATE_EXTENSION => '.tt',
+  DEFAULT_ENCODING   => 'utf-8',
+  INCLUDE_PATH       => [ Fila::WebApp->path_to('root') ]
+);
 
 # Override desse método para renderizar o template para o STDOUT.
 sub process {
-    my ( $self, $c ) = @_;
+  my ( $self, $c ) = @_;
 
-    my $template = $c->stash->{template}
-      ||  $c->action . $self->config->{TEMPLATE_EXTENSION};
+  my $template = $c->stash->{template}
+      || $c->action . $self->config->{TEMPLATE_EXTENSION};
 
-    unless (defined $template) {
-        $c->log->debug('No template specified for rendering') if $c->debug;
-        return 0;
-    }
+  unless ( defined $template ) {
+    $c->log->debug('No template specified for rendering') if $c->debug;
+    return 0;
+  }
 
-    my $output = $self->render($c, $template);
+  my $output = $self->render( $c, $template );
 
-    if (UNIVERSAL::isa($output, 'Template::Exception')) {
-        my $error = qq/Couldn't render template "$output"/;
-        $c->log->error($error);
-        return 0;
-    }
+  if ( UNIVERSAL::isa( $output, 'Template::Exception' ) ) {
+    my $error = qq/Couldn't render template "$output"/;
+    $c->log->error($error);
+    return 0;
+  }
 
-    print $output;
+  print $output;
 
-    return 1;
+  return 1;
 }
-
 
 1;
 

@@ -1,4 +1,5 @@
 package Fila::Web::Controller::Emissor;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,33 +23,40 @@ use Digest::MD5;
 use base 'Catalyst::Controller';
 
 sub solicitar_senha : Local {
-	my ($self, $c, $id_categoria) = @_;
-    
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/emissor']);
-    my $req = $c->model('SOAP::Emissor')->solicitar_senha
-        ({ callback_request =>
-            { param =>
-                [ { name => 'id_categoria',
-                    value => $id_categoria } ] } } );
-	warn "solicitar senha";
-}
+  my ( $self, $c, $id_categoria ) = @_;
 
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/emissor' ] );
+  my $req = $c->model('SOAP::Emissor')->solicitar_senha(
+    {
+      callback_request => {
+        param => [
+          {
+            name  => 'id_categoria',
+            value => $id_categoria
+          }
+        ]
+      }
+    }
+  );
+  warn "solicitar senha";
+}
 
 sub keep_alive : Local {
-        my ($self, $c) = @_;
-        $c->model('SOAP')->transport->addrs([$c->session->{user_jid}.'/cb/emissor']);
-        my $req = $c->model('SOAP::Emissor')->keep_alive({ callback_request => {} });
-        warn "keep alive";
+  my ( $self, $c ) = @_;
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/emissor' ] );
+  my $req =
+      $c->model('SOAP::Emissor')->keep_alive( { callback_request => {} } );
+  warn "keep alive";
 }
 
-sub sair: Local {
-    my ($self, $c) = @_;
+sub sair : Local {
+  my ( $self, $c ) = @_;
 
-    $c->model('SOAP')->transport
-        ->addrs([$c->session->{user_jid}.'/cb/emissor']);
-    my $req = $c->model('SOAP::Emissor')->sair
-     ({ callback_request => { }});
+  $c->model('SOAP')
+      ->transport->addrs( [ $c->session->{user_jid} . '/cb/emissor' ] );
+  my $req = $c->model('SOAP::Emissor')->sair( { callback_request => {} } );
 }
 
 1;

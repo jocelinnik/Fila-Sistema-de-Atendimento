@@ -1,4 +1,5 @@
 package Fila::Painel::Model::Output;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -25,17 +26,17 @@ use Data::Dumper;
 my $csv = Text::CSV_XS->new;
 
 sub salvar {
-    my ($self, $senhas) = @_;
-    open my $output, '>', '/home/fila/senhas_chamando.csv'
-      or die 'erro abrindo /home/fila/senhas_chamando.csv'.$!;
-    warn 'Arquivo vazio! /home/fila/senhas_chamando.csv';
-    for (@$senhas) {
-        $csv->print($output, $_);
-        print {$output} "\n";
-        warn Dumper ($_);
-    }
-    warn 'Arquivo gravado!';
-    close $output;
+  my ( $self, $senhas ) = @_;
+  open my $output, '>', '/home/fila/senhas_chamando.csv'
+      or die 'erro abrindo /home/fila/senhas_chamando.csv' . $!;
+  warn 'Arquivo vazio! /home/fila/senhas_chamando.csv';
+  for (@$senhas) {
+    $csv->print( $output, $_ );
+    print {$output} "\n";
+    warn Dumper($_);
+  }
+  warn 'Arquivo gravado!';
+  close $output;
 }
 
 1;

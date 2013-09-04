@@ -1,4 +1,5 @@
 package Fila::ETL::Model::Federado;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -23,20 +24,20 @@ use base 'Catalyst::Model';
 __PACKAGE__->mk_accessors('federacao');
 
 sub target {
-    my ($self, $c, $id, $class) = @_;
-    return $c->model($self->federacao->{$id}.'::'.$class);
+  my ( $self, $c, $id, $class ) = @_;
+  return $c->model( $self->federacao->{$id} . '::' . $class );
 }
 
 sub storage {
-    my ($self, $c, $id) = @_;
-    return $c->model($self->federacao->{$id})->schema->storage;
+  my ( $self, $c, $id ) = @_;
+  return $c->model( $self->federacao->{$id} )->schema->storage;
 }
 
 sub doeach {
-    my ($self, $c, $code) = @_;
-    foreach my $id (keys %{$self->federacao}) {
-	$code->($id);
-    }
+  my ( $self, $c, $code ) = @_;
+  foreach my $id ( keys %{ $self->federacao } ) {
+    $code->($id);
+  }
 }
 
 1;

@@ -1,4 +1,5 @@
 package Fila::Opiniometro::Controller::Callback;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -21,18 +22,17 @@ use warnings;
 use base 'Catalyst::Controller::SOAP';
 
 __PACKAGE__->config->{wsdl} =
-  {wsdl => Fila::Opiniometro->path_to('schemas/FilaOpiniometro.wsdl')};
+    { wsdl => Fila::Opiniometro->path_to('schemas/FilaOpiniometro.wsdl') };
 
-sub iniciar_opiniometro :WSDLPort('FilaOpiniometroCallback') {
-    my ($self, $c) = @_;
-    $c->model('Device')->iniciar;
+sub iniciar_opiniometro : WSDLPort('FilaOpiniometroCallback') {
+  my ( $self, $c ) = @_;
+  $c->model('Device')->iniciar;
 }
 
-sub encerrar_opiniometro :WSDLPort('FilaOpiniometroCallback') {
-    my ($self, $c) = @_;
-    $c->model('Device')->encerrar;
+sub encerrar_opiniometro : WSDLPort('FilaOpiniometroCallback') {
+  my ( $self, $c ) = @_;
+  $c->model('Device')->encerrar;
 }
-
 
 1;
 

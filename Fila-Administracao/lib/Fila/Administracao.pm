@@ -1,4 +1,5 @@
 package Fila::Administracao;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -24,8 +25,10 @@ use parent qw/Catalyst/;
 
 our $VERSION = '0.01';
 
-__PACKAGE__->config( name => 'Fila::Administracao',
-					 static => { dirs => [ 'static', qr/^(images|css|doc)$/ ] }  );
+__PACKAGE__->config(
+  name   => 'Fila::Administracao',
+  static => { dirs => [ 'static', qr/^(images|css|doc)$/ ] }
+);
 __PACKAGE__->setup(qw/ConfigLoader/);
 
 1;

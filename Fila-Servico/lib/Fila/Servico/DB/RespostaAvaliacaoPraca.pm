@@ -1,4 +1,5 @@
 package Fila::Servico::DB::RespostaAvaliacaoPraca;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,30 +21,20 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('resposta_avaliacao_praca');
-__PACKAGE__->add_columns
-  (
-   id_pergunta =>
-   {
-    data_type => 'integer',
-   },
-   id_local =>
-   {
-    data_type => 'integer',
-   },
-   vt_fac =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   resposta =>
-   {
-    data_type => 'integer'
-   },
-  );
+__PACKAGE__->add_columns(
+  id_pergunta => { data_type => 'integer', },
+  id_local    => { data_type => 'integer', },
+  vt_fac      => { data_type => 'timestamp with time zone', },
+  resposta    => { data_type => 'integer' },
+);
 __PACKAGE__->set_primary_key(qw(id_pergunta id_local vt_fac));
-__PACKAGE__->belongs_to('local', 'Fila::Servico::DB::Local',
-                        { 'foreign.id_local' => 'self.id_local' });
-__PACKAGE__->belongs_to('pergunta', 'Fila::Servico::DB::PerguntaAvaliacaoPraca',
-                        { 'foreign.id_pergunta' => 'self.id_pergunta' });
+__PACKAGE__->belongs_to( 'local', 'Fila::Servico::DB::Local',
+  { 'foreign.id_local' => 'self.id_local' } );
+__PACKAGE__->belongs_to(
+  'pergunta',
+  'Fila::Servico::DB::PerguntaAvaliacaoPraca',
+  { 'foreign.id_pergunta' => 'self.id_pergunta' }
+);
 
 1;
 

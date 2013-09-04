@@ -1,4 +1,5 @@
 package Fila::WebApp;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -28,11 +29,10 @@ our $VERSION = '0.01';
 __PACKAGE__->config( name => 'Fila::WebApp' );
 
 {
-    local %ENV;
-    $ENV{CATALYST_ENGINE} = 'XMPP2';
-    __PACKAGE__->setup;
+  local %ENV;
+  $ENV{CATALYST_ENGINE} = 'XMPP2';
+  __PACKAGE__->setup;
 };
-
 
 __END__
 

@@ -1,4 +1,5 @@
 package Fila::ETL::DB::DGuiche;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,19 +23,16 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(Core PK::Auto));
 __PACKAGE__->table('d_guiche');
-__PACKAGE__->add_columns
-  (
-   id_guiche =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_guiche => {
+    data_type         => 'integer',
     is_auto_increment => 1
-   },
-   identificador =>
-   {
-    data_type => 'varchar',
+  },
+  identificador => {
+    data_type   => 'varchar',
     is_nullable => 1,
-   }
-  );
+  }
+);
 
 __PACKAGE__->set_primary_key('id_guiche');
 __PACKAGE__->resultset_class('Fila::ETL::DB::DGuiche::RS');
@@ -42,27 +40,28 @@ __PACKAGE__->resultset_class('Fila::ETL::DB::DGuiche::RS');
 package Fila::ETL::DB::DGuiche::RS;
 use base 'DBIx::Class::ResultSet';
 
-
 sub get_dimension {
-    my ($self, $guiche) = @_;
-    my $ident;
-    if (ref $guiche) {
-      $ident = $guiche->identificador;
-    } else {
-      $ident = $guiche;
-    }
-    if (my $dim = $self->find({ identificador => $ident })) {
-	return $dim->id_guiche;
-    } else {
-	# TODO: Aqui deveríamos ter um conjunto maior de informações
-	# sobre o guichê, como por exemplo, a distância entre o guichê
-	# e a porta, a distância entre o guichê e a cadeira mais
-	# próxima, a distância entre o guichê e a cadeira mais longe
-	# para que pudéssemos obter mais informações. Por enquanto,
-	# consolidamos apenas no número do guichê.
-	return $self->create
-	    ({ identificador => $ident ? $ident : '' })->id_guiche;
-    }
+  my ( $self, $guiche ) = @_;
+  my $ident;
+  if ( ref $guiche ) {
+    $ident = $guiche->identificador;
+  }
+  else {
+    $ident = $guiche;
+  }
+  if ( my $dim = $self->find( { identificador => $ident } ) ) {
+    return $dim->id_guiche;
+  }
+  else {
+    # TODO: Aqui deveríamos ter um conjunto maior de informações
+    # sobre o guichê, como por exemplo, a distância entre o guichê
+    # e a porta, a distância entre o guichê e a cadeira mais
+    # próxima, a distância entre o guichê e a cadeira mais longe
+    # para que pudéssemos obter mais informações. Por enquanto,
+    # consolidamos apenas no número do guichê.
+    return $self->create( { identificador => $ident ? $ident : '' } )
+        ->id_guiche;
+  }
 }
 
 1;

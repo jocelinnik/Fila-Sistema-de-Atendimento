@@ -1,4 +1,5 @@
 package Fila::Servico::DB::PerguntaAvaliacaoPraca;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,31 +21,26 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('pergunta_avaliacao_praca');
-__PACKAGE__->add_columns
-  (
-   id_pergunta =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_pergunta => {
+    data_type         => 'integer',
     is_auto_increment => 1,
-   },
-   vt_ini =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   vt_fim =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   pergunta =>
-   {
-    data_type => 'varchar'
-   },
-  );
+  },
+  vt_ini   => { data_type => 'timestamp with time zone', },
+  vt_fim   => { data_type => 'timestamp with time zone', },
+  pergunta => { data_type => 'varchar' },
+);
 __PACKAGE__->set_primary_key(qw(id_pergunta));
-__PACKAGE__->has_many('respostas', 'Fila::Servico::DB::RespostaAvaliacaoPraca',
-                      { 'foreign.id_pergunta' => 'self.id_pergunta' });
-__PACKAGE__->belongs_to('configuracoes_perguntas_praca', 'Fila::Servico::DB::ConfiguracaoPerguntasPraca',
-                      { 'foreign.id_pergunta' => 'self.id_pergunta' });
+__PACKAGE__->has_many(
+  'respostas',
+  'Fila::Servico::DB::RespostaAvaliacaoPraca',
+  { 'foreign.id_pergunta' => 'self.id_pergunta' }
+);
+__PACKAGE__->belongs_to(
+  'configuracoes_perguntas_praca',
+  'Fila::Servico::DB::ConfiguracaoPerguntasPraca',
+  { 'foreign.id_pergunta' => 'self.id_pergunta' }
+);
 
 1;
 

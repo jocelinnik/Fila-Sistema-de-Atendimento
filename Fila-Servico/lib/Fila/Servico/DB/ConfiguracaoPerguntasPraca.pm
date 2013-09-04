@@ -1,4 +1,5 @@
 package Fila::Servico::DB::ConfiguracaoPerguntasPraca;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,54 +21,44 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('configuracao_perguntas_praca');
-__PACKAGE__->add_columns
-  (
-   id_local =>
-   {
-    data_type => 'integer',
-   },
-   vt_ini =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   vt_fim =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   pergunta1 =>
-   {
-    data_type => 'integer'
-   },
-   pergunta2 =>
-   {
-    data_type => 'integer'
-   },
-   pergunta3 =>
-   {
-    data_type => 'integer'
-   },
-   pergunta4 =>
-   {
-    data_type => 'integer'
-   },
-   pergunta5 =>
-   {
-    data_type => 'integer'
-   },
-  );
+__PACKAGE__->add_columns(
+  id_local  => { data_type => 'integer', },
+  vt_ini    => { data_type => 'timestamp with time zone', },
+  vt_fim    => { data_type => 'timestamp with time zone', },
+  pergunta1 => { data_type => 'integer' },
+  pergunta2 => { data_type => 'integer' },
+  pergunta3 => { data_type => 'integer' },
+  pergunta4 => { data_type => 'integer' },
+  pergunta5 => { data_type => 'integer' },
+);
 __PACKAGE__->set_primary_key(qw(id_local vt_fim vt_ini));
-__PACKAGE__->belongs_to('local', 'Fila::Servico::DB::Local',
-                        { 'foreign.id_local' => 'self.id_local' });
-__PACKAGE__->belongs_to('pergunta1', 'Fila::Servico::DB::PerguntaAvaliacaoPraca',
-                        { 'foreign.id_pergunta' => 'self.pergunta1' });
-__PACKAGE__->belongs_to('pergunta2', 'Fila::Servico::DB::PerguntaAvaliacaoPraca',
-                        { 'foreign.id_pergunta' => 'self.pergunta2' });
-__PACKAGE__->belongs_to('pergunta3', 'Fila::Servico::DB::PerguntaAvaliacaoPraca',
-                        { 'foreign.id_pergunta' => 'self.pergunta3' });
-__PACKAGE__->belongs_to('pergunta4', 'Fila::Servico::DB::PerguntaAvaliacaoPraca',
-                        { 'foreign.id_pergunta' => 'self.pergunta4' });
-__PACKAGE__->belongs_to('pergunta5', 'Fila::Servico::DB::PerguntaAvaliacaoPraca',
-                        { 'foreign.id_pergunta' => 'self.pergunta5' });
+__PACKAGE__->belongs_to( 'local', 'Fila::Servico::DB::Local',
+  { 'foreign.id_local' => 'self.id_local' } );
+__PACKAGE__->belongs_to(
+  'pergunta1',
+  'Fila::Servico::DB::PerguntaAvaliacaoPraca',
+  { 'foreign.id_pergunta' => 'self.pergunta1' }
+);
+__PACKAGE__->belongs_to(
+  'pergunta2',
+  'Fila::Servico::DB::PerguntaAvaliacaoPraca',
+  { 'foreign.id_pergunta' => 'self.pergunta2' }
+);
+__PACKAGE__->belongs_to(
+  'pergunta3',
+  'Fila::Servico::DB::PerguntaAvaliacaoPraca',
+  { 'foreign.id_pergunta' => 'self.pergunta3' }
+);
+__PACKAGE__->belongs_to(
+  'pergunta4',
+  'Fila::Servico::DB::PerguntaAvaliacaoPraca',
+  { 'foreign.id_pergunta' => 'self.pergunta4' }
+);
+__PACKAGE__->belongs_to(
+  'pergunta5',
+  'Fila::Servico::DB::PerguntaAvaliacaoPraca',
+  { 'foreign.id_pergunta' => 'self.pergunta5' }
+);
 
 1;
 

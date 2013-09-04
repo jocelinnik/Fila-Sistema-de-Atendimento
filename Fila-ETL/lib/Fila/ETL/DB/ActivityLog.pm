@@ -1,4 +1,5 @@
 package Fila::ETL::DB::ActivityLog;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -22,25 +23,12 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('activitylog');
-__PACKAGE__->add_columns
-  (
-   id_local =>
-   {
-    data_type => 'integer',
-   },
-   activity_type =>
-   {
-    data_type => 'varchar',
-   },
-   vt_ini =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   vt_base =>
-   {
-    data_type => 'timestamp with time zone',
-   }
-  );
+__PACKAGE__->add_columns(
+  id_local      => { data_type => 'integer', },
+  activity_type => { data_type => 'varchar', },
+  vt_ini        => { data_type => 'timestamp with time zone', },
+  vt_base       => { data_type => 'timestamp with time zone', }
+);
 
 __PACKAGE__->set_primary_key(qw(id_local activity_type vt_ini));
 

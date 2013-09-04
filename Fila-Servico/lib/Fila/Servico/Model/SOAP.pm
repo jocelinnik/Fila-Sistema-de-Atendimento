@@ -1,4 +1,5 @@
 package Fila::Servico::Model::SOAP;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -23,33 +24,50 @@ use base 'Catalyst::Model::SOAP';
 
 __PACKAGE__->config->{transport} = XML::CompileX::Transport::SOAPXMPP->new();
 
-__PACKAGE__->register_wsdl
-  ({ wsdl => Fila::Servico->path_to('/schemas/FilaWebApp.wsdl'),
-     schema => Fila::Servico->path_to('/schemas/fila-servico.xsd') },
-   { render_gerente => 'CB::Gerente',
-     render_guiche_gerente => 'CB::GuicheGerente',
-     render_atendente => 'CB::Atendente',
-     render_error => 'CB::Error' });
+__PACKAGE__->register_wsdl(
+  {
+    wsdl   => Fila::Servico->path_to('/schemas/FilaWebApp.wsdl'),
+    schema => Fila::Servico->path_to('/schemas/fila-servico.xsd')
+  },
+  {
+    render_gerente        => 'CB::Gerente',
+    render_guiche_gerente => 'CB::GuicheGerente',
+    render_atendente      => 'CB::Atendente',
+    render_error          => 'CB::Error'
+  }
+);
 
-__PACKAGE__->register_wsdl
-  ({ wsdl => Fila::Servico->path_to('/schemas/FilaSenha.wsdl'),
-     schema => Fila::Servico->path_to('/schemas/fila-servico.xsd') },
-   { FilaSenhaCallback => 'Senha' });
+__PACKAGE__->register_wsdl(
+  {
+    wsdl   => Fila::Servico->path_to('/schemas/FilaSenha.wsdl'),
+    schema => Fila::Servico->path_to('/schemas/fila-servico.xsd')
+  },
+  { FilaSenhaCallback => 'Senha' }
+);
 
-__PACKAGE__->register_wsdl
-  ({ wsdl => Fila::Servico->path_to('/schemas/FilaServico.wsdl'),
-     schema => Fila::Servico->path_to('/schemas/fila-servico.xsd') },
-   { Scheduler => 'Scheduler' });
+__PACKAGE__->register_wsdl(
+  {
+    wsdl   => Fila::Servico->path_to('/schemas/FilaServico.wsdl'),
+    schema => Fila::Servico->path_to('/schemas/fila-servico.xsd')
+  },
+  { Scheduler => 'Scheduler' }
+);
 
-__PACKAGE__->register_wsdl
-  ({ wsdl => Fila::Servico->path_to('/schemas/FilaOpiniometro.wsdl'),
-     schema => Fila::Servico->path_to('/schemas/fila-servico.xsd') },
-   { FilaOpiniometroCallback => 'Opiniometro' });
+__PACKAGE__->register_wsdl(
+  {
+    wsdl   => Fila::Servico->path_to('/schemas/FilaOpiniometro.wsdl'),
+    schema => Fila::Servico->path_to('/schemas/fila-servico.xsd')
+  },
+  { FilaOpiniometroCallback => 'Opiniometro' }
+);
 
-__PACKAGE__->register_wsdl
-  ({ wsdl => Fila::Servico->path_to('/schemas/FilaPainel.wsdl'),
-     schema => Fila::Servico->path_to('/schemas/fila-servico.xsd') },
-   { FilaPainelCallback => 'Painel' });
+__PACKAGE__->register_wsdl(
+  {
+    wsdl   => Fila::Servico->path_to('/schemas/FilaPainel.wsdl'),
+    schema => Fila::Servico->path_to('/schemas/fila-servico.xsd')
+  },
+  { FilaPainelCallback => 'Painel' }
+);
 
 1;
 

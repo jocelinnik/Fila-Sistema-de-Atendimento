@@ -1,4 +1,5 @@
 package Fila::Agendamento::DB::Atendimento;
+
 # Copyright 2008, 2009 - Oktiva Comércio e Serviços de Informática Ltda.
 #
 # Este arquivo é parte do programa FILA - Sistema de Atendimento
@@ -20,51 +21,28 @@ use base qw(DBIx::Class);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime PK::Auto Core));
 __PACKAGE__->table('atendimento');
-__PACKAGE__->add_columns
-  (
-   id_atendimento =>
-   {
-    data_type => 'integer',
+__PACKAGE__->add_columns(
+  id_atendimento => {
+    data_type         => 'integer',
     is_auto_increment => 1,
-   },
-   data =>
-   {
-    data_type => 'timestamp with time zone',
-   },
-   id_local =>
-   {
-    data_type => 'integer'
-   },
-   nome =>
-   {
-    data_type => 'varchar'
-   },
-   email =>
-   {
-    data_type => 'varchar'
-   },
-   telefone =>
-   {
-    data_type => 'varchar'
-   },
- 
-   tipopessoa =>
-   {
-    data_type => 'varchar',
-   },
-   cnpjf =>
-   {
-    data_type => 'varchar',
-   },
-   senha =>
-   {
-    data_type => 'varchar',
-   }
-  );
+  },
+  data     => { data_type => 'timestamp with time zone', },
+  id_local => { data_type => 'integer' },
+  nome     => { data_type => 'varchar' },
+  email    => { data_type => 'varchar' },
+  telefone => { data_type => 'varchar' },
+
+  tipopessoa => { data_type => 'varchar', },
+  cnpjf      => { data_type => 'varchar', },
+  senha      => { data_type => 'varchar', }
+);
 __PACKAGE__->set_primary_key(qw(id_atendimento));
 
-__PACKAGE__->belongs_to('local', 'Fila::Agendamento::DB::Local',
-                        { 'foreign.id_local' => 'self.id_local' });
+__PACKAGE__->belongs_to(
+  'local',
+  'Fila::Agendamento::DB::Local',
+  { 'foreign.id_local' => 'self.id_local' }
+);
 
 1;
 
