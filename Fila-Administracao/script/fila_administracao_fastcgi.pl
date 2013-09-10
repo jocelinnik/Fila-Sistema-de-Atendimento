@@ -28,25 +28,26 @@ use Fila::Administracao;
 
 my $help = 0;
 my ( $listen, $nproc, $pidfile, $manager, $detach, $keep_stderr );
- 
+
 GetOptions(
-    'help|?'      => \$help,
-    'listen|l=s'  => \$listen,
-    'nproc|n=i'   => \$nproc,
-    'pidfile|p=s' => \$pidfile,
-    'manager|M=s' => \$manager,
-    'daemon|d'    => \$detach,
-    'keeperr|e'   => \$keep_stderr,
+  'help|?'      => \$help,
+  'listen|l=s'  => \$listen,
+  'nproc|n=i'   => \$nproc,
+  'pidfile|p=s' => \$pidfile,
+  'manager|M=s' => \$manager,
+  'daemon|d'    => \$detach,
+  'keeperr|e'   => \$keep_stderr,
 );
 
 pod2usage(1) if $help;
 
-Fila::Administracao->run( 
-    $listen, 
-    {   nproc   => $nproc,
-        pidfile => $pidfile, 
-        manager => $manager,
-        detach  => $detach,
-	keep_stderr => $keep_stderr,
-    }
+Fila::Administracao->run(
+  $listen,
+  {
+    nproc       => $nproc,
+    pidfile     => $pidfile,
+    manager     => $manager,
+    detach      => $detach,
+    keep_stderr => $keep_stderr,
+  }
 );

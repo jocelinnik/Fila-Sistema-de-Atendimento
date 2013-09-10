@@ -169,8 +169,8 @@ sub associar_gerente : Chained('preload') : PathPart('gerente/associar') :
   }
 }
 
-sub associar_local : Chained('preload') : PathPart('local/associar') : Args(0)
-{
+sub associar_local : Chained('preload') : PathPart('local/associar') :
+    Args(0) {
   my ( $self, $c ) = @_;
   $c->stash->{funcionario}->locais->create(
     {

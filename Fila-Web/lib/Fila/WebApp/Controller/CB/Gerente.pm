@@ -252,14 +252,15 @@ sub pular_opiniometro : WSDLPort('FilaWebGerenteCallback') {
 
   $c->model('SOAP')
       ->transport->addrs( ['motor@gestao.fila.vhost/ws/gestao/local'] );
-  my $pular_opiniometro = $c->model('SOAP::Gestao::Local')->pular_opiniometro(
+  my $pular_opiniometro =
+      $c->model('SOAP::Gestao::Local')->pular_opiniometro(
     {
       guiche => {
         id_guiche         => $id_guiche,
         pular_opiniometro => $valor
       }
     }
-  );
+      );
 
 }
 

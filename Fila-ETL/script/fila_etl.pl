@@ -24,18 +24,15 @@ use Getopt::Long;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-
-my $debug             = 0;
-my $help              = 0;
+my $debug = 0;
+my $help  = 0;
 
 my @argv = @ARGV;
 
-GetOptions(
-    'debug|d'             => \$debug,
-);
+GetOptions( 'debug|d' => \$debug, );
 
-if ( $debug ) {
-    $ENV{CATALYST_DEBUG} = 1;
+if ($debug) {
+  $ENV{CATALYST_DEBUG} = 1;
 }
 
 require Fila::ETL;
@@ -43,8 +40,8 @@ require Fila::ETL;
 my $action = shift || die 'Nenhuma ação definida';
 
 my $http_response;
-my $http_request = HTTP::Request->new(GET => $action);
-Fila::ETL->handle_request($http_request, \$http_response);
+my $http_request = HTTP::Request->new( GET => $action );
+Fila::ETL->handle_request( $http_request, \$http_response );
 print $http_response->as_string;
 
 1;

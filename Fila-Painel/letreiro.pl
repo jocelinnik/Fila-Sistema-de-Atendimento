@@ -20,56 +20,59 @@ use strict;
 use Gtk2 '-init';
 use Gnome2::Canvas;
 
-my $ts ;
-my $tempo = 20; #maior é mais lento
-my $cor = "red"; #red, green, blue, black, white, etc..
-my $tamanho = "80000"; #tamanho da fonte
-my $width = 1200; #largura da janela
-my $height = 120; #altura da janela
-my $altura_texto = 60; #posicao do texto relativa a janela
-my $deslocamento = 5; #deslocamento em pixels do texto
+my $ts;
+my $tempo        = 20;         #maior é mais lento
+my $cor          = "red";      #red, green, blue, black, white, etc..
+my $tamanho      = "80000";    #tamanho da fonte
+my $width        = 1200;       #largura da janela
+my $height       = 120;        #altura da janela
+my $altura_texto = 60;         #posicao do texto relativa a janela
+my $deslocamento = 5;          #deslocamento em pixels do texto
 
-if($ARGV[0]){
-    open my $source, '<:utf8', $ARGV[0];
-    read($source, $ts, -s $source );
-    close $source;
-}else{
-    $ts = "Erro ao abrir o arquivo.";
+if ( $ARGV[0] ) {
+  open my $source, '<:utf8', $ARGV[0];
+  read( $source, $ts, -s $source );
+  close $source;
+}
+else {
+  $ts = "Erro ao abrir o arquivo.";
 }
 
-$ts =~ tr[\x0a\x0d][  ]d; #strip newlines
+$ts =~ tr[\x0a\x0d][  ]d;      #strip newlines
 
-my $window = Gtk2::Window->new();
-my $vp = Gtk2::Viewport->new();
-my $text = Gtk2::Label->new($ts.' ');
+my $window   = Gtk2::Window->new();
+my $vp       = Gtk2::Viewport->new();
+my $text     = Gtk2::Label->new( $ts . ' ' );
 my $fontdesc = Gtk2::Pango::FontDescription->from_string("Sans 70");
 $text->modify_font($fontdesc);
-$vp->modify_bg($text->state, Gtk2::Gdk::Color->new(0x0000,0x0000,0x0000));
-$text->modify_fg($text->state, Gtk2::Gdk::Color->new(0xFFFF,0x0000,0x0000));
+$vp->modify_bg( $text->state,
+  Gtk2::Gdk::Color->new( 0x0000, 0x0000, 0x0000 ) );
+$text->modify_fg( $text->state,
+  Gtk2::Gdk::Color->new( 0xFFFF, 0x0000, 0x0000 ) );
 $window->add($vp);
 $vp->add($text);
-$window->signal_connect('destroy'=>\&_closeapp);
-$vp->set_size_request($width, $height);
+$window->signal_connect( 'destroy' => \&_closeapp );
+$vp->set_size_request( $width, $height );
 $window->show_all();
 
-my ($wi, $he) = $text->get_size_request();
-print $wi,$he,$/;
+my ( $wi, $he ) = $text->get_size_request();
+print $wi, $he, $/;
 
-my $timer = Glib::Timeout->add($tempo, \&timer);
+my $timer = Glib::Timeout->add( $tempo, \&timer );
 my $posicao = $vp->get_hadjustment->lower();
-
 
 Gtk2->main();
 
 sub timer {
-    sleep 1 if $posicao == $vp->get_hadjustment->lower();
-    $posicao += $deslocamento;
-    $posicao = $vp->get_hadjustment->lower() if $posicao > $vp->get_hadjustment->upper();
-    $vp->get_hadjustment->set_value($posicao);
-    return 1;
+  sleep 1 if $posicao == $vp->get_hadjustment->lower();
+  $posicao += $deslocamento;
+  $posicao = $vp->get_hadjustment->lower()
+      if $posicao > $vp->get_hadjustment->upper();
+  $vp->get_hadjustment->set_value($posicao);
+  return 1;
 }
 
-sub _closeapp{
-    Gtk2->main_quit();
-    return 0;
+sub _closeapp {
+  Gtk2->main_quit();
+  return 0;
 }

@@ -21,8 +21,8 @@ use strict;
 use warnings;
 use parent 'Catalyst::Controller';
 
-sub preload : Chained('/locais/preload') : PathPart('guiche') : CaptureArgs(1)
-{
+sub preload : Chained('/locais/preload') : PathPart('guiche') :
+    CaptureArgs(1) {
   my ( $self, $c, $id_guiche ) = @_;
   $c->stash->{guiche} =
       $c->stash->{local}->guiches->find( { id_guiche => $id_guiche } );
@@ -118,7 +118,8 @@ sub criar : Chained('/locais/preload') : PathPart('guiche/criar') : Args(0) {
           vt_fim            => 'Infinity',
           pular_opiniometro => 0,
           (
-            map { $_ => $c->req->param($_) } qw(identificador jid_opiniometro)
+            map { $_ => $c->req->param($_) }
+                qw(identificador jid_opiniometro)
           )
         }
       );

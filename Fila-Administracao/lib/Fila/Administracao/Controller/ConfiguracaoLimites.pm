@@ -21,8 +21,8 @@ use strict;
 use warnings;
 use parent 'Catalyst::Controller';
 
-sub preload : Chained('/locais/preload') : PathPart('limite') : CaptureArgs(1)
-{
+sub preload : Chained('/locais/preload') : PathPart('limite') :
+    CaptureArgs(1) {
   my ( $self, $c, $id_estado ) = @_;
   $c->stash->{limite} = $c->stash->{local}->configuracoes_limite->find(
     {

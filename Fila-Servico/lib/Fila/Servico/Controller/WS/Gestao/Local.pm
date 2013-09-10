@@ -535,8 +535,8 @@ sub status_local : WSDLPort('GestaoLocal') : DBICTransaction('DB') : MI {
   }
 
   my $estado_local =
-      $c->stash->{local}->estado_atual->search( {}, { prefetch => 'estado' } )
-      ->first;
+      $c->stash->{local}
+      ->estado_atual->search( {}, { prefetch => 'estado' } )->first;
 
   #encaminhamentos
 

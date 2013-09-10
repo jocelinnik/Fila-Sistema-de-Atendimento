@@ -27,20 +27,20 @@ use lib "$FindBin::Bin/../lib";
 
 use Catalyst::Engine::XMPP2;
 
-my $debug             = 0;
-my $help              = 0;
+my $debug = 0;
+my $help  = 0;
 
 my @argv = @ARGV;
 
 GetOptions(
-    'debug|d'             => \$debug,
-    'help|?'              => \$help,
+  'debug|d' => \$debug,
+  'help|?'  => \$help,
 );
 
 pod2usage(1) if $help;
 
-if ( $debug ) {
-    $ENV{CATALYST_DEBUG} = 1;
+if ($debug) {
+  $ENV{CATALYST_DEBUG} = 1;
 }
 
 require Fila::Servico;

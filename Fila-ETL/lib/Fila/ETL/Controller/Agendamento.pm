@@ -65,8 +65,8 @@ sub agendar : Chained('agendamento') : PathPart : Args(0) {
           ->target( $c, $agendamento->id_local, 'TipoEstadoAtendimento' )
           ->find( { nome => 'espera' } );
       my $senha =
-          $c->model('Federado')->target( $c, $agendamento->id_local, 'Senha' )
-          ->find(
+          $c->model('Federado')
+          ->target( $c, $agendamento->id_local, 'Senha' )->find(
         {
           id_categoria => $categoria->id_categoria,
           codigo       => substr( $agendamento->senha, 1 )

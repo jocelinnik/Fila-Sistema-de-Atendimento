@@ -30,31 +30,29 @@ use AnyEvent;
 use Net::XMPP2::Connection;
 use Catalyst::Engine::XMPP2;
 {
-#    no warnings;
-    *Catalyst::Engine::XMPP2::loop = *EV::loop;
+  #    no warnings;
+  *Catalyst::Engine::XMPP2::loop = *EV::loop;
 }
 
-my $debug             = 0;
-my $help              = 0;
+my $debug = 0;
+my $help  = 0;
 
 # alteracao para setar o username variavel
 $::username = $ARGV[0];
-$::praca    = $ARGV[1]; #recebe 1 ou 0 para opiniometro de praca.
+$::praca    = $ARGV[1];    #recebe 1 ou 0 para opiniometro de praca.
 
 GetOptions(
-    'debug|d'             => \$debug,
-    'help|?'              => \$help,
+  'debug|d' => \$debug,
+  'help|?'  => \$help,
 );
 
 pod2usage(1) if $help;
 
-if ( $debug ) {
-    $ENV{CATALYST_DEBUG} = 1;
+if ($debug) {
+  $ENV{CATALYST_DEBUG} = 1;
 }
 
-
 require Fila::Opiniometro;
-
 
 Fila::Opiniometro->run();
 

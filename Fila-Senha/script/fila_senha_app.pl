@@ -19,7 +19,7 @@
 $ENV{CATALYST_ENGINE} = 'XMPP2';
 
 use utf8;
-binmode(STDOUT, ":utf8");
+binmode( STDOUT, ":utf8" );
 use strict;
 use warnings;
 use Getopt::Long;
@@ -32,24 +32,24 @@ use AnyEvent;
 use Net::XMPP2::Connection;
 use Catalyst::Engine::XMPP2;
 {
-    no warnings;
-    *Catalyst::Engine::XMPP2::loop = *EV::loop;
+  no warnings;
+  *Catalyst::Engine::XMPP2::loop = *EV::loop;
 }
 
-my $debug             = 0;
-my $help              = 0;
+my $debug = 0;
+my $help  = 0;
 
 my @argv = @ARGV;
 
 GetOptions(
-    'debug|d'             => \$debug,
-    'help|?'              => \$help,
+  'debug|d' => \$debug,
+  'help|?'  => \$help,
 );
 
 pod2usage(1) if $help;
 
-if ( $debug ) {
-    $ENV{CATALYST_DEBUG} = 1;
+if ($debug) {
+  $ENV{CATALYST_DEBUG} = 1;
 }
 
 require Fila::Senha;

@@ -28,27 +28,28 @@ use Fila::Agendamento;
 
 my $help = 0;
 my ( $listen, $nproc, $pidfile, $manager, $detach, $keep_stderr );
- 
+
 GetOptions(
-    'help|?'      => \$help,
-    'listen|l=s'  => \$listen,
-    'nproc|n=i'   => \$nproc,
-    'pidfile|p=s' => \$pidfile,
-    'manager|M=s' => \$manager,
-    'daemon|d'    => \$detach,
-    'keeperr|e'   => \$keep_stderr,
+  'help|?'      => \$help,
+  'listen|l=s'  => \$listen,
+  'nproc|n=i'   => \$nproc,
+  'pidfile|p=s' => \$pidfile,
+  'manager|M=s' => \$manager,
+  'daemon|d'    => \$detach,
+  'keeperr|e'   => \$keep_stderr,
 );
 
 pod2usage(1) if $help;
 
-Fila::Agendamento->run( 
-    $listen, 
-    {   nproc   => $nproc,
-        pidfile => $pidfile, 
-        manager => $manager,
-        detach  => $detach,
-	keep_stderr => $keep_stderr,
-    }
+Fila::Agendamento->run(
+  $listen,
+  {
+    nproc       => $nproc,
+    pidfile     => $pidfile,
+    manager     => $manager,
+    detach      => $detach,
+    keep_stderr => $keep_stderr,
+  }
 );
 
 1;

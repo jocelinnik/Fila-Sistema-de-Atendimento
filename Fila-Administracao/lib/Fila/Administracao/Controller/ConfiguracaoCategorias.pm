@@ -41,8 +41,8 @@ sub encerrar : Chained('preload') : PathPart : Args(0) {
     $c->uri_for( '/locais/' . $c->stash->{local}->id_local ) );
 }
 
-sub criar : Chained('/locais/preload') : PathPart('categoria/criar') : Args(0)
-{
+sub criar : Chained('/locais/preload') : PathPart('categoria/criar') :
+    Args(0) {
   my ( $self, $c ) = @_;
   if ( $c->req->param('submitted') ) {
 
